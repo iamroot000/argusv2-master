@@ -1,0 +1,47 @@
+--- /ansible/nginx/hostgroups/sabang-test/nginx/conf.d/other/dj-payhomesite.conf	2021-03-30 11:55:46.121353628 +0800
++++ /tmp/dj-payhomesite.conf	2021-03-30 12:31:09.254780738 +0800
+@@ -1,4 +1,43 @@
+ 
++
++server {
++        listen         80;
++        server_name    wwwdj.payhome.site;
++        index   index.jsp index.html index.htm;
++  		rewrite ^(.*)$ https://wwwdj.payhome.site$1 permanent;
++        charset utf-8;
++
++        access_log  logs/dj-pms2.access.log ;
++		error_log  logs/dj-pms2.error.log ;
++}
++
++
++server {
++        listen         443 ssl;
++        server_name    wwwdj.payhome.site;
++        index   index.jsp index.html index.htm;
++
++        charset utf-8;
++  
++  		ssl on;
++    	ssl_certificate /usr/local/nginx/conf.d/ssl/payhome.site/fullchain.pem;
++    	ssl_certificate_key /usr/local/nginx/conf.d/ssl/payhome.site/privkey.pem;
++
++        access_log  logs/dj-pms2.access.log ;
++  		error_log  logs/dj-pms2.error.log ;
++
++         location ~ ^/(WEB-INF)/ {
++            deny all;
++         }
++
++        location / {
++            include /usr/local/nginx/conf.d/proxy.include;
++    		proxy_pass http://18.166.243.116:8080;
++        }
++
++}
++
++
+ server {
+         listen         443 ssl;
+         server_name    dj-cstest.payhome.site;
+

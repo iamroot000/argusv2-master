@@ -1,0 +1,12 @@
+---
+- name: Check File System
+  shell: "grep /home /etc/fstab"
+  register: filesys
+  #failed_when: false
+  ignore_errors: yes
+
+
+- name: Filesystem process
+  shell: "sed -i 's/home/opt/' /etc/fstab && mount -o remount -a"
+  when: "{{ filesys.rc }} == 0"
+

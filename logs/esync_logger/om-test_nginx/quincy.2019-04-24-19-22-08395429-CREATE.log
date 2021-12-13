@@ -1,0 +1,54 @@
+--- /ansible/nginx/hostgroups/om-test_nginx/nginx/conf.d/other/yifu-test-9004.conf	2019-04-04 17:27:28.635019756 +0800
++++ /tmp/yifu-test-9004.conf	2019-04-24 19:22:08.295310805 +0800
+@@ -1,5 +1,5 @@
+ server {
+-        listen         9004;
++        listen         9010;
+         server_name    www99.payhome.site cstest2.payhome.site cstest3.payhome.site;
+         index   index.jsp index.html index.htm;
+ 
+@@ -27,4 +27,42 @@
+             proxy_pass http://test-yifu1-9004;
+         }
+ 
++}
++
++
++server {
++        listen         9004;
++        server_name    www99.payhome.site cstest2.payhome.site cstest3.payhome.site  ;
++        index   index.jsp index.html index.htm;
++
++        charset utf-8;
++  
++  		  ssl on;
++       ssl_certificate /usr/local/nginx/conf.d/ssl/payhome.site/fullchain.pem;
++       ssl_certificate_key /usr/local/nginx/conf.d/ssl/payhome.site/privkey.pem;
++
++        access_log  logs/payhome.site.access.log ;
++
++         location ~ ^/(WEB-INF)/ {
++            deny all;
++         }
++
++        location / {
++			proxy_redirect          off; 
++			proxy_set_header        Host            $host; 
++			proxy_set_header        X-Forwarded-For $proxy_add_x_forwarded_for; 
++			proxy_connect_timeout   80; 
++			proxy_send_timeout      80; 
++			proxy_read_timeout      80; 
++			client_max_body_size    35m;
++			client_body_buffer_size 256k;
++			proxy_buffer_size       256k;
++			proxy_buffers           4 256k;
++			proxy_busy_buffers_size 256k;
++			proxy_temp_file_write_size      256k;
++            proxy_pass http://test-yifu1-domain;
++        }
++
++}
++
+ }
+\ No newline at end of file
+

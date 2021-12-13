@@ -1,0 +1,55 @@
+--- /srv/Mirror-CPMS-ClientGameCalled__NginxForward/nginx/conf.d/other/globalebet.conf	2018-11-12 15:59:08.075604772 +0800
++++ /tmp/globalebet.conf	2018-11-21 14:01:17.745100702 +0800
+@@ -228,7 +228,7 @@
+ server {
+         #listen     443;
+ 	    listen 80;
+-        server_name isb.gameapi.me;
++        server_name wallet.isb.gameapi.me;
+         index index.jsp index.html index.htm;
+         charset utf-8;
+         #ssl on;
+@@ -249,6 +249,42 @@
+         }
+ 
+         error_page   404 404.jsp;
++        error_page   500 502 503 500.jsp;
++        }
++
++
++
++upstream isbchannelreal {
++        #server 203.177.198.116:7114 max_fails=1  fail_timeout=2s ;
++        server 203.192.151.12:7114 max_fails=1  fail_timeout=2s ;
++        #server 101.78.133.212:7114 max_fails=1  fail_timeout=2s;
++        #server 205.177.199.12:7114 max_fails=1  fail_timeout=2s;
++}
++
++server {
++        #listen     443;
++	    listen 80;
++        server_name channel.isb.gameapi.me;
++        index index.jsp index.html index.htm;
++        charset utf-8;
++        #ssl on;
++        #ssl_certificate /usr/local/nginx/conf/ssl/ebetapi888.com/fullchain.pem;
++        #ssl_certificate_key /usr/local/nginx/conf/ssl/ebetapi888.com/privkey.pem;
++
++        access_log  logs/channelreal.isb.ebetapi888.com.access.log main;
++        location ~ ^/(WEB-INF)/ {
++        deny all;
++        }
++
++        location / {
++            include /usr/local/nginx/conf.d/include/proxy.conf.globalebet.include;
++	    proxy_http_version 1.1;
++            proxy_set_header Upgrade $http_upgrade;
++            proxy_set_header Connection "upgrade";
++            proxy_pass http://isbchannelreal;
++        }
++
++        error_page   404 404.jsp;
+         error_page   500 502 503 500.jsp;
+         }
+ upstream isbchannel {
+

@@ -1,0 +1,37 @@
+--- /ansible/nginx/hostgroups/om-clientgamecalled_nginx/nginx/conf.d/other/cpms-callback-xj.conf	2019-09-09 16:32:51.064571314 +0800
++++ /tmp/cpms-callback-xj.conf	2019-09-09 16:35:49.973571314 +0800
+@@ -1,4 +1,33 @@
++upstream cpms-callback-xj {
++       server 101.78.133.212:8503 max_fails=2  fail_timeout=30s weight=5 backup;
++       server 205.177.199.12:8503 max_fails=2  fail_timeout=30s weight=10;
++	   server 58.64.207.211:8503 max_fails=2  fail_timeout=30s backup;
++	   server 59.148.22.111:8503 max_fails=2  fail_timeout=30s backup;
+ 
++}
++
++
++server {
++	listen       80;
++	server_name xj.779hm.com;
++	index   index.jsp index.html index.htm;
++
++	charset utf-8;
++
++	access_log  logs/xj.779hm.com.access.log main;
++  	access_log  logs/xj.779hm.com.logstash.access.log logstash;
++	error_log  logs/xj.779hm.com.error.log ;
++
++	location ~ ^/(WEB-INF)/ {
++		deny all;
++	}
++
++	location / {
++#        include /usr/local/nginx/conf.d/include/whiteEBETgame.include;
++		include /usr/local/nginx/conf.d/include/proxy.conf.fwd.include;
++		proxy_pass http://cpms-callback-xj;
++	}
++}
+ 
+ 
+ 
+

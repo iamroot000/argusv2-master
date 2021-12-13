@@ -1,0 +1,94 @@
+{% extends "base.html" %}
+
+{% block style %}
+    {{ block.super }} {# includes previous content in block #}
+    <style>
+        .domainname {
+            font-weight: bold;
+        }
+
+        .tag{
+            padding-top:30px;
+        }
+
+    </style>
+
+{% endblock %}
+
+{% block title %}
+SSR Servers
+{% endblock %}
+{% block header %}
+SSR Servers
+{% endblock %}
+
+{% block details %}
+{% endblock %}
+
+{% block action %}
+{% if 'can_add_server_proxycontroller' in request.session.permissions %}
+<div class="col-sm-12 pull-right">
+    <button class="btn btn-primary" onclick="addServersModal()"><i class="fa fa-plus"></i> Add Servers</button>
+</div>
+{% endif %}
+
+
+{% endblock %}
+{% block content %}
+{% if 'can_add_server_proxycontroller' in request.session.permissions %}
+<div class="modal fade" id="addServersModal" role="dialog">
+    <div class="modal-dialog">
+    <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal">&times;</button>
+          <h2 class="modal-title" style="font-weight:bold">Add New Servers</h2>
+        </div>
+
+    <div class="modal-body" id='modal-body'>
+
+        <div class="row">
+            <div class="col-lg-12 form-group">
+                  <label for="server_address">Servers to be added (New Line Delimited:</label>
+                  <textarea rows="20" style="width:100%" class="form-control" id="server_address"></textarea>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-lg-12 form-group">
+                  <label for="channel">IDC</label>
+                  <select style="width:100%" class="form-control select2" id="idc"></select>
+            </div>
+        </div>
+
+
+    </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-success"onclick="addServers()">Submit</button>
+            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        </div>
+
+    </div>
+    </div>
+</div> 
+{% endif %}
+
+<div class="row border-bottom white-bg dashboard-header">
+
+
+    <div class="row">
+        <div class="col-lg-12">
+            <table class="table table-bordered table-striped table-responsive" id="serversTable" width="100%"></table>
+        </div>
+    </div>
+    
+</div>
+
+{% endblock %}
+
+{% block js %}
+    {{ block.super }} {# includes previous content in block #}
+
+    <script src="/static/js/select2/select2.full.min.js"></script>
+    <script type="text/javascript" src="/static/multiselect/js/multiselect.min.js"></script>
+    <script type="text/javascript" src="/static/js/proxycontroller/servers.js"></script>
+
+{% endblock %}

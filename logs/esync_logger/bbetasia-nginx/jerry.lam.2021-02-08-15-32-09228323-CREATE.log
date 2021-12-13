@@ -1,0 +1,25 @@
+--- /ansible/nginx/hostgroups/bbetasia-nginx/nginx/conf.d/other/j72.me.conf	2021-02-08 15:28:56.995716811 +0800
++++ /tmp/j72.me.conf	2021-02-08 15:32:09.237232487 +0800
+@@ -1,7 +1,8 @@
+ server {
+     listen 80;
+     server_name j72.me www.j72.me;
+-    rewrite ^(.*)$ https://www.j72.me$1 permanent;
++    #rewrite ^(.*)$ https://www.j72.me$1 permanent;
++    return      301 https://$http_host$1;
+ }
+ 
+ server {
+@@ -11,7 +12,10 @@
+     ssl_certificate /usr/local/nginx/conf.d/ssl/j72.me/fullchain.pem;
+     ssl_certificate_key /usr/local/nginx/conf.d/ssl/j72.me/privkey.pem;
+ 
+-    if ($http_host !~* 'www') {
++    if ($http_host !~* 'www') { set $pp yes; }
++    if ($http_host ~* 10880|10883|55808|55805|55838|55811|55822|10885|55818|10887|10825|10829|10879) {set $pp 'no'; }
++
++    if ( $pp ~* 'yes' ) {
+         rewrite ^(.*)$ https://www.$http_host$1 permanent;
+     }
+ 
+

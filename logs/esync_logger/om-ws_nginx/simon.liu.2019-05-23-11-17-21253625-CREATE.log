@@ -1,0 +1,21 @@
+--- /ansible/nginx/hostgroups/om-ws_nginx/nginx/conf.d/include/ws_official_masterconfig.include	2019-05-22 17:59:43.322255189 +0800
++++ /tmp/ws_official_masterconfig.include	2019-05-23 11:17:21.157427852 +0800
+@@ -51,7 +51,7 @@
+         set $test ALLOW;
+ }
+ 
+-if ( $test = "BLOCK" ) { return 403;  }
++#if ( $test = "BLOCK" ) { return 403;  }
+ 
+ location /websocket {
+         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+@@ -64,5 +64,8 @@
+         proxy_connect_timeout   1800;
+         proxy_send_timeout      1800;
+         proxy_read_timeout      1800;
++  		if ($http_host = 'dev.qczxz.top'){
++  			proxy_pass http://9281;
++  		}
+         proxy_pass http://9280;
+ }
+

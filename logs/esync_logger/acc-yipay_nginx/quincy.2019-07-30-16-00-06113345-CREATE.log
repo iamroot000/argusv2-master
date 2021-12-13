@@ -1,0 +1,115 @@
+--- /ansible/nginx/hostgroups/acc-yipay_nginx/nginx/conf.d/other/pms2_yifu.conf	2019-05-16 09:04:58.702749908 +0800
++++ /tmp/pms2_yifu.conf	2019-07-30 16:00:05.994040290 +0800
+@@ -38,111 +38,6 @@
+ }
+ 
+ server {
+-        listen      80;
+-        server_name  yifu.paymeweb.co;
+-        index   index.jsp index.html index.htm;
+-        charset utf-8;
+-        access_log  logs/yifu.access.log main;
+-        access_log  logs/yifu.logstash.access.log logstash;
+-        location ~ ^/(WEB-INF)/ {
+-            deny all;
+-         }
+-  rewrite ^(.*)$ https://yifu.paymeweb.co$1 permanent;
+-        location / {
+-			proxy_redirect          off;
+-			proxy_set_header        Host            $host;
+-			proxy_set_header        X-Real-IP       $remote_addr;
+-			proxy_set_header        referer         "";
+-			proxy_set_header        X-Forwarded-For $proxy_add_x_forwarded_for;
+-        proxy_cache cache_after;
+-        proxy_cache_key    $uri$is_args$args;
+-        add_header X-Cache $upstream_cache_status;
+-        proxy_cache_valid 200 10m;
+-        proxy_cache_valid 301 302 5m;
+-        proxy_cache_valid any 1m;
+-        proxy_cache_use_stale error http_500 http_502 http_503 http_504;
+-			proxy_connect_timeout   30;
+-			proxy_send_timeout      30;
+-			proxy_read_timeout      60;
+-			client_max_body_size    30m;
+-			client_body_buffer_size 256k;
+-			proxy_buffer_size       256k;
+-			proxy_buffers           4 256k;
+-			proxy_busy_buffers_size 256k;
+-			proxy_temp_file_write_size      256k;
+-            proxy_pass http://yifu;
+-        }
+-
+-}
+-
+-server {
+-        listen      80;
+-        server_name yifu.paystar.site;
+-        index   index.jsp index.html index.htm;
+-        charset utf-8;
+-        access_log  logs/yifu.access.log main;
+-        access_log  logs/yifu.logstash.access.log logstash;
+-        location ~ ^/(WEB-INF)/ {
+-            deny all;
+-         }
+-  rewrite ^(.*)$ https://yifu.paystar.site$1 permanent;
+-        location / {
+-			proxy_redirect          off;
+-			proxy_set_header        Host            $host;
+-			proxy_set_header        X-Real-IP       $remote_addr;
+-			proxy_set_header        referer         "";
+-			proxy_set_header        X-Forwarded-For $proxy_add_x_forwarded_for;
+-        proxy_cache cache_after;
+-        proxy_cache_key    $uri$is_args$args;
+-        add_header X-Cache $upstream_cache_status;
+-        proxy_cache_valid 200 10m;
+-        proxy_cache_valid 301 302 5m;
+-        proxy_cache_valid any 1m;
+-        proxy_cache_use_stale error http_500 http_502 http_503 http_504;
+-			proxy_connect_timeout   30;
+-			proxy_send_timeout      30;
+-			proxy_read_timeout      60;
+-			client_max_body_size    30m;
+-			client_body_buffer_size 256k;
+-			proxy_buffer_size       256k;
+-			proxy_buffers           4 256k;
+-			proxy_busy_buffers_size 256k;
+-			proxy_temp_file_write_size      256k;
+-            proxy_pass http://yifu;
+-        }
+-
+-}
+-
+-
+-server {
+-        listen      9004;
+-        server_name yifu.paymehome.co yifu.paymeweb.co yifu.paystar.site;
+-        index   index.jsp index.html index.htm;
+-        charset utf-8;
+-        access_log  logs/pms2.access.log main;
+-        access_log  logs/pms2.logstash.access.log logstash;
+-        location / {
+-			proxy_redirect          off;
+-			proxy_set_header        Host            $host;
+-			proxy_set_header        X-Real-IP       $remote_addr;
+-			proxy_set_header        referer         "";
+-			proxy_set_header        X-Forwarded-For $proxy_add_x_forwarded_for;
+-			proxy_connect_timeout   30;
+-			proxy_send_timeout      30;
+-			proxy_read_timeout      60;
+-			client_max_body_size    30m;
+-			client_body_buffer_size 256k;
+-			proxy_buffer_size       256k;
+-			proxy_buffers           4 256k;
+-			proxy_busy_buffers_size 256k;
+-			proxy_temp_file_write_size      256k;
+-            proxy_pass http://pms2_9004;
+-        }
+-}
+-
+-
+-
+-server {
+         listen     443;
+         server_name yifu.paymehome.co;
+         index   index.jsp index.html index.htm;
+

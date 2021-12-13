@@ -1,0 +1,58 @@
+---
+
+- name: Copying nginx centos7
+
+  copy:
+
+    src: "{{ item.src }}"
+
+    dest: "{{ item.dest }}"
+
+  with_items:
+
+   - src: "nginx-centos7.rpm"
+
+     dest: "/root/"
+
+  when: (ansible_facts['distribution'] == "CentOS" and ansible_facts['distribution_major_version'] == "7") 
+
+
+- name: Copying nginx repo
+
+  template:
+
+    src: "{{ item.src }}"
+
+    dest: "{{ item.dest }}"
+
+  with_items:
+
+   - src: "nginx.repo"
+
+     dest: "/etc/yum.repos.d/"
+
+
+
+- name: Installing nginx
+
+  command: rpm -Uvh /root/nginx-centos7.rpm
+
+  failed_when: false
+
+
+
+
+
+- name: Installing packages
+
+  yum:
+
+    name: '{{ item }}'
+
+    state: present
+
+  with_items:
+
+    - nginx
+
+  ignore_errors: yes

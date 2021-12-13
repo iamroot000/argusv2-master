@@ -1,0 +1,24 @@
+FILENAME: 80-443/eu8.eu.conf
+-  
++  server {
++      listen 80;
++      server_name eu8.eu www.eu8.eu;
++      rewrite ^(.*)$ https://www.eu8.eu$1 permanent;
++  }
++  
++  server {
++      listen 443;
++      server_name eu8.eu www.eu8.eu;
++      ssl on;
++      ssl_certificate /usr/local/nginx/conf.d/ssl/eu8.eu/fullchain.pem;
++      ssl_certificate_key /usr/local/nginx/conf.d/ssl/eu8.eu/privkey.pem;
++  
++      if ($http_host !~* 'www') {
++          rewrite ^(.*)$ https://www.$http_host$1 permanent;
++      }
++  
++      include /usr/local/nginx/conf.d/include/eu_official_masterconfig.include;
++  }
++  
++  
+

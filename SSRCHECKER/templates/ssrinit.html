@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+<!--password-->
+    <link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+
+	<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+
+	<script type="text/javascript" src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+
+	<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-show-password/1.0.3/bootstrap-show-password.min.js"></script>
+<!--password-->
+<!--table-->
+<!--    <meta charset="utf-8">-->
+<!--    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.1.3/css/bootstrap.css">-->
+<!--    <link rel="stylesheet" href="https://cdn.datatables.net/1.10.20/css/dataTables.bootstrap4.min.css">-->
+<!--table-->
+<body>
+        <div class="col-10">
+        <div class="container mb-3 mt-3">
+            <div class="row">
+                <div class="form-inline mx-sm-3">
+                <form class="form-group mx-sm-1" method="POST" action="{% url 'SSR_home' %}">
+                    {% csrf_token %}
+                    <div class="form-inline mx-sm-3">
+                        <div class="form-inline mx-sm-3">
+                        <td>{{ form.IP.label_tag }}&emsp;{{ form.IP }}</td>
+<!--                            &emsp;-->
+                            <td>
+                                <p>{{ form.PORT.label_tag }}&emsp;{{ form.PORT }}</p>
+                                <p>{{ form.USER.label_tag }}&emsp;{{ form.USER }}</p><br>
+                                <p>{{ form.PASSWORD.label_tag }}&emsp;{{ form.PASSWORD }}</p>
+                                <p>{{ form.IDC.label_tag }}&emsp;{{ form.IDC }}</p>
+                            </td>
+                            &emsp;
+                            {% if logs_recap is not True %}
+                                <button type="submit" class="btn btn-info" disabled><span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>Loading...</button>
+                            {% else %}
+                                <button type="submit" class="btn btn-info">Add</button>
+                            {% endif %}
+                        </div>
+                    </div>
+                </form>
+                </div>
+            </div>
+            <div class="row-3 mb-3">
+            </div>
+            {% if form.IP.errors %}
+                {% for error in form.IP.errors %}
+                <div align="center" class="alert alert-danger" ><h4>{{ error }}<h4></div>
+                {% endfor %}
+            {% endif %}
+            {% if form.PORT.errors %}
+                {% for error in form.PORT.errors %}
+                <div align="center" class="alert alert-danger" ><h4>{{ error }}<h4></div>
+                {% endfor %}
+            {% endif %}
+            {% if form.USER.errors %}
+                {% for error in form.USER.errors %}
+                <div align="center" class="alert alert-danger" ><h4>{{ error }}<h4></div>
+                {% endfor %}
+            {% endif %}
+            {% if form.PASSWORD.errors %}
+                {% for error in form.PASSWORD.errors %}
+                <div align="center" class="alert alert-danger" ><h4>{{ error }}<h4></div>
+                {% endfor %}
+            {% endif %}
+            {% if form.IDC.errors %}
+                {% for error in form.IDC.errors %}
+                <div align="center" class="alert alert-danger" ><h4>{{ error }}<h4></div>
+                {% endfor %}
+            {% endif %}
+            <h1></h1>
+            <div class="row">
+              <div class="col">
+                  <table class="table table-sm table-striped table-bordered" id="mydatatable" style="width: 100%">
+                    <thead>
+                        <tr class="thead-default">
+                            <th align="center" scope="col">SSR IP</th>
+                            <th align="center" scope="col">PORT</th>
+                            <th align="center" scope="col">USER</th>
+                            <th align="center" scope="col">PASSWORD</th>
+                            <th align="center" scope="col">IDC</th>
+                            <th align="center" scope="col">ACTION</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    {% for ssrdata in ssr_data %}
+                        <tr>
+                                <td align="center">{{ ssrdata.IP }}</td>
+                                <td align="center">{{ ssrdata.PORT }}</td>
+                                <td align="center">{{ ssrdata.USER }}</td>
+                                <td align="center">{{ ssrdata.PASSWORD }}</td>
+                                <td align="center">{{ ssrdata.IDC }}</td>
+                            {% if logs_recap is not True %}
+                                <td align="center"><button type="button" class="btn btn-danger" disabled><span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>Loading...</button></td>
+                            {% else %}
+                                <td align="center"><a href='{% url "SSR_delete" ssrdata.id %}'><button type="button" class="btn btn-danger">Delete</button></a></td>
+                            {% endif %}
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                    <tfoot>
+                    </tfoot>
+                </table>
+              </div>
+        </div>
+        {% if logs_recap is not True %}
+             <div class="row-2 mb-3">
+            <p align="right"><button type="submit" class="btn btn-primary btn-lg" disabled><span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>Loading...</button><a href='#'>History</a></p>
+            </div>
+        {% else %}
+        <div class="row-2 mb-3">
+            <p align="right"><a href='{% url "SSR_init" %}'><button type="submit" class="btn btn-primary btn-lg ">Initialize</button></a>&emsp;<a href='#'>History</a></p>
+        </div>
+        {% endif %}
+        <div class="row-3 mb-3">
+            <h1 class="display-3">Logs:</h1>
+            <ul class="nav nav-pills mb-3" id="pills-tab" role="tablist">
+              <li class="nav-item">
+                <a class="nav-link active" id="pills-home-tab" data-toggle="pill" href="{% url 'SSR_home' %}" role="tab" aria-controls="pills-home" aria-selected="true">Latest</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" id="pills-profile-tab" data-toggle="pill" href="#pills-profile" role="tab" aria-controls="pills-profile" aria-selected="false">Previous</a>
+              </li>
+            </ul>
+            <style>
+            ex1 {
+              min-height: 200px;
+            }
+            </style>
+            <div class="ex1" id="log-scroll">
+                <pre class="pre-scrollable" id="execute_content">
+                {{ logs }}
+                </pre>
+            </dev>
+        </div>
+    <center>
+        <div>
+            <!-- click on this button
+              and see the change -->
+            {% if logs_recap is not True %}
+                <div class="spinner-border text-primary" role="status">
+                  <span class="sr-only">Loading...</span>
+                </div>
+            {% endif %}
+        </div>
+    </center>
+        </div>
+
+</body>
+<script>
+$(document).ready(function() {
+$('.mdb-select').materialSelect();
+});</script>
+<script type="text/javascript">
+	$("#password").password('toggle');
+</script>
+<script src="https://code.jquery.com/jquery-3.3.1.js"></script>
+<script src="https://cdn.datatables.net/1.10.20/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.10.20/js/dataTables.bootstrap4.min.js"></script>
+<script>
+    $(document).ready(function() {$('#mydatatable').DataTable();} );
+</script>
+<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+<script src=
+"https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js">
+    </script>
+
+    <!-- jQuery code to show the working of this method -->
+
+{% if logs_recap is not True %}
+   <script>
+    setTimeout(function() {
+       location.reload();
+    },5000);
+   </script>
+{% endif %}
+</html>

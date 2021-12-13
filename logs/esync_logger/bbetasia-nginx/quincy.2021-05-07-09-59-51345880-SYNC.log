@@ -1,0 +1,173 @@
+ESYNC_WORKER1_COMMAND_START
+[WARNING]: Invalid characters were found in group names but not replaced, use
+-vvvv to see details
+
+PLAY [bbetasia-nginx] **********************************************************
+
+
+TASK [Gathering Facts] *********************************************************
+ok: [13.78.94.20]
+ok: [119.9.91.148]
+
+TASK [nginx_sync : Change python interpreter] **********************************
+
+skipping: [119.9.91.148]
+skipping: [13.78.94.20]
+
+TASK [nginx_sync : change python interpreter] **********************************
+skipping: [119.9.91.148]
+
+skipping: [13.78.94.20]
+
+TASK [nginx_sync : set_fact] ***************************************************
+ok: [119.9.91.148]
+ok: [13.78.94.20]
+
+
+TASK [nginx_sync : set_fact] ***************************************************
+ok: [119.9.91.148]
+ok: [13.78.94.20]
+
+
+TASK [nginx_sync : Notify] *****************************************************
+ok: [119.9.91.148] => {
+    "msg": "Syncing bbetasia-nginx"
+}
+ok: [13.78.94.20] => {
+
+    "msg": "Syncing bbetasia-nginx"
+}
+
+TASK [nginx_sync : include_vars] ***********************************************
+ok: [119.9.91.148]
+
+ok: [13.78.94.20]
+
+TASK [nginx_sync : Synchronizing Nginx] ****************************************
+ok: [119.9.91.148] => (item=conf)
+ok: [119.9.91.148] => (item=conf.d)
+
+ok: [13.78.94.20] => (item=conf)
+ok: [119.9.91.148] => (item=data)
+changed: [119.9.91.148] => (item=html)
+ok: [13.78.94.20] => (item=conf.d)
+ok: [13.78.94.20] => (item=data)
+
+changed: [13.78.94.20] => (item=html)
+
+TASK [nginx_sync : Synchronizing Nginx Excluding HTML] *************************
+skipping: [119.9.91.148] => (item=conf) 
+skipping: [119.9.91.148] => (item=conf.d) 
+
+skipping: [119.9.91.148] => (item=data) 
+skipping: [13.78.94.20] => (item=conf) 
+skipping: [13.78.94.20] => (item=conf.d) 
+skipping: [13.78.94.20] => (item=data) 
+
+
+TASK [nginx_sync : Set HTML Dir to root] ***************************************
+changed: [119.9.91.148]
+changed: [13.78.94.20]
+
+TASK [all_servers : include_vars] **********************************************
+
+ok: [119.9.91.148]
+ok: [13.78.94.20]
+
+TASK [all_servers : Notify] ****************************************************
+ok: [119.9.91.148] => {
+
+    "msg": "Clearing Nginx Cache for bbetasia-nginx"
+}
+ok: [13.78.94.20] => {
+    "msg": "Clearing Nginx Cache for bbetasia-nginx"
+}
+
+
+TASK [all_servers : Copying clear_nginxcache.sh to remote hosts] ***************
+ok: [119.9.91.148]
+ok: [13.78.94.20]
+
+
+TASK [all_servers : Nginx Clear Cache] *****************************************
+fatal: [119.9.91.148]: FAILED! => {"changed": true, "cmd": ["/bak/bin/clear_nginxcache.sh"], "delta": "0:00:01.106503", "end": "2021-05-07 10:00:15.499811", "msg": "non-zero return code", "rc": 1, "start": "2021-05-07 10:00:14.393308", "stderr": "nginx: the configuration file /usr/local/nginx/conf/nginx.conf syntax is ok\nnginx: [alert] mmap(MAP_ANON|MAP_SHARED, 209715200) failed (12: Cannot allocate memory)\nnginx: configuration file /usr/local/nginx/conf/nginx.conf test failed", "stderr_lines": ["nginx: the configuration file /usr/local/nginx/conf/nginx.conf syntax is ok", "nginx: [alert] mmap(MAP_ANON|MAP_SHARED, 209715200) failed (12: Cannot allocate memory)", "nginx: configuration file /usr/local/nginx/conf/nginx.conf test failed"], "stdout": "-----------------------------------------------------------\n|                 Checking Nginx Config                   |\n-----------------------------------------------------------\n\n nginx -t \n\n+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n|                  CONFIGURATION ERROR!                   |\n+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++", "stdout_lines": ["-----------------------------------------------------------", "|                 Checking Nginx Config                   |", "-----------------------------------------------------------", "", " nginx -t ", "", "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++", "|                  CONFIGURATION ERROR!                   |", "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"]}
+changed: [13.78.94.20]
+
+TASK [all_servers : debug] *****************************************************
+
+ok: [13.78.94.20] => {
+    "script_result.stdout_lines": [
+        "-----------------------------------------------------------", 
+        "|                 Checking Nginx Config                   |", 
+        "-----------------------------------------------------------", 
+
+        "", 
+        " nginx -t ", 
+        "", 
+        "-----------------------------------------------------------", 
+        "|                 Stopping Nginx Process                  |", 
+
+        "-----------------------------------------------------------", 
+        "", 
+        " /usr/bin/killall -9 nginx ", 
+        "", 
+        "-----------------------------------------------------------", 
+
+        "|                 Clearing Proxy Cache                    |", 
+        "-----------------------------------------------------------", 
+        "", 
+        " /bin/rm -rf /tmp/nginx_cache ", 
+        "", 
+
+        "-----------------------------------------------------------", 
+        "|                Restarting Nginx Process                 |", 
+        "-----------------------------------------------------------", 
+        "root      60804  0.0  0.1  15228  7844 ?        Sl   Apr06   5:40 ./nginx-vts-exporter -nginx.scrape_uri http://localhost:8088/status/format/json", 
+        "root     108207  0.8  0.0 113188  1480 ?        S    10:00   0:00 /bin/bash /bak/bin/clear_nginxcache.sh", 
+
+        "root     108218  0.0  2.8 604388 116716 ?       Ss   10:00   0:00 nginx: master process /usr/local/nginx/sbin/nginx", 
+        "nobody   108219  0.0  3.0 753284 122156 ?       S    10:00   0:00 nginx: worker process", 
+        "nobody   108221  0.0  2.9 753284 120552 ?       S    10:00   0:00 nginx: worker process", 
+        "nobody   108222  0.0  3.0 753284 121892 ?       S    10:00   0:00 nginx: worker process", 
+        "nobody   108223  0.0  2.9 753284 120552 ?       S    10:00   0:00 nginx: worker process", 
+
+        "nobody   108224  0.0  2.9 750960 117476 ?       S    10:00   0:00 nginx: cache manager process", 
+        "nobody   108225  0.0  2.9 750960 117244 ?       S    10:00   0:00 nginx: cache loader process", 
+        "root     108227  0.0  0.0 112716   940 ?        S    10:00   0:00 grep nginx", 
+        "              total        used        free      shared  buff/cache   available", 
+        "Mem:           3931         603         679         344        2648        2693", 
+
+        "Swap:             0           0           0", 
+        "-----------------------------------------------------------", 
+        "|                     Reload SUCCESS!                     |", 
+        "-----------------------------------------------------------"
+    ]
+
+}
+
+PLAY [127.0.0.1] ***************************************************************
+
+TASK [sync_to_git : Synchronizing Nginx To GIT] ********************************
+
+changed: [127.0.0.1]
+
+TASK [sync_to_git : debug] *****************************************************
+ok: [127.0.0.1] => {
+    "msg": " [u'# On branch master', u'nothing to commit, working directory clean', u'Branch master set up to track remote branch master from origin.']"
+
+}
+
+PLAY [bbetasia-nginx] **********************************************************
+
+PLAY [127.0.0.1] ***************************************************************
+
+
+PLAY RECAP *********************************************************************
+119.9.91.148               : ok=10   changed=2    unreachable=0    failed=1    skipped=3    rescued=0    ignored=0   
+127.0.0.1                  : ok=2    changed=1    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0   
+13.78.94.20                : ok=12   changed=3    unreachable=0    failed=0    skipped=3    rescued=0    ignored=0   
+
+
+
+ESYNC_WORKER1_COMMAND_END
+MAX RETRIES EXECUTED, COMMAND NOT RESPONDING

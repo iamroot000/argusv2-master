@@ -1,0 +1,37 @@
+---
+- block:
+  - name: Installing packages Redhat family
+    yum:
+      name: '{{ item  }}'
+      state: present
+    with_items:
+      - vim
+      - unzip
+      - net-tools
+      - python
+  when: 'ansible_os_family == "RedHat"'
+  ignore_errors: yes
+
+
+
+- block:
+  - name: Installing packages Debian family
+    apt:
+      name: '{{ item  }}'
+      state: present
+    with_items:
+      - vim
+      - unzip
+      - net-tools
+      - python
+  when: 'ansible_os_family != "RedHat"'
+  ignore_errors: yes
+
+
+
+- name: Copying Shanghai to localtime
+  copy:
+    remote_src: yes
+    src: /usr/share/zoneinfo/Asia/Shanghai
+    dest: /etc/localtime
+    force: yes

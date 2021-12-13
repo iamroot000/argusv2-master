@@ -1,0 +1,318 @@
+{% extends "base.html" %}
+
+{% block js %}
+    {{ block.super }} {# includes previous content in block #}
+
+    <script src="/static/js/select2/select2.full.min.js"></script>
+
+    <script src="/static/js/plugins/codemirror/codemirror.js"></script>
+    <script src="/static/js/esync/nginx-format.js" type="text/javascript"></script>
+    <script src="/static/js/plugins/codemirror/mode/javascript/javascript.js"></script>
+    <script src="/static/js/plugins/toastr/toastr.min.js"></script>
+
+    <script type="text/javascript" src="/static/multiselect/js/multiselect.min.js"></script>
+
+
+    <script src="/static/js/esync/index2.js" type="text/javascript"></script>
+
+
+{% endblock %}
+
+{% block style %}
+    {{ block.super }} {# includes previous content in block #}
+
+    <link href="/static/css/plugins/codemirror/codemirror.css" rel="stylesheet">
+    <link href="/static/css/plugins/codemirror/monokai.css" rel="stylesheet">
+
+
+<style>
+
+
+    .CodeMirror {
+  border: 1px solid #eee;
+  height: auto;
+
+}
+.cm-s-monokai .CodeMirror-cursor {border-left: 5px solid #f8f8f0 !important;}
+
+.filename-btn {
+    margin-bottom:5px;
+}
+
+pre{
+    white-space: pre-wrap;
+}
+
+.row-eq-height {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display:         flex;
+}
+
+</style>
+{% endblock %}
+
+
+{% block title %}
+ESync
+{% endblock %}
+{% block header %}
+Esync
+<div id="hgr" style="padding-top:10px">
+
+</div>
+
+{% endblock %}
+
+
+{% block details %}
+<span id="hgr_count"> </span> Server(s)
+<br/>
+<span id="au">Allowed Users:  </span>
+
+{% endblock %}
+
+
+{% block action %}
+    <button id="showActivity" class="btn btn-default " onclick="showActivity();"><i class="fa fa-check"></i> Show History bar</button>
+
+    {% if "can_use_ESYNC_deploy" in request.session.permissions %}
+    <a class="btn btn-primary " href="/esync/deploy" target="_blank"><i class="fa fa-plus"></i> Deploy new Hostgroup</a>
+    {% endif %}
+
+{% endblock %}
+
+{% block content %}
+
+<div onkeyup="resetCounter()" onclick="resetCounter()">
+<div class="modal fade" id="progress_MODAL" role="dialog">
+    <div class="modal-dialog" style="width:1000px;">
+    <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal">&times;</button>
+          <h2 class="modal-title" style="font-weight:bold">Command Result</h2>
+        </div>
+
+    <div class="modal-body" id='modal-body'>
+        <div class="row">
+            <div class="col-lg-12">
+                <label for="prog">Result:</label>
+                <pre id="prog">
+                </pre>
+            </div>
+        </div>
+    </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        </div>
+
+    </div>
+    </div>
+</div>
+
+
+<div class="modal fade" id="newFile_MODAL" role="dialog">
+    <div class="modal-dialog" style="width:1000px;">
+    <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal">&times;</button>
+          <h2 class="modal-title" style="font-weight:bold">Create New Configuration</h2>
+        </div>
+
+    <div class="modal-body" id='modal-body'>
+        <div class="row">
+            <div class="col-lg-12 pull-right">
+                <label for="dir_new">Directory:</label>
+               <select class="form-control select2 directory"  data-placeholder="Directory" style="width:100%;" onchange="changeNewForm(this);" id="dir_new" required>
+                </select>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-lg-12 form-group" id="newDomainDiv">
+
+            </div>
+        </div>
+
+        <div class="row"  >
+            <div class="col-lg-12 form-group">
+                <pre id="generatedCode" >
+                </pre>
+
+            </div>
+            <div class="col-lg-12" id='filehandler_container' style="display=none">
+                <div id="filename_container">
+
+                </div>
+
+                <textarea id="filehandler_new">
+                            </textarea>
+            </div>
+        </div>
+
+    </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-success" id="generateButton" onclick="generateConfig()">Generate Config</button>
+            <button type="button" class="btn btn-primary" id='createButton' onclick="createConfig()" >Create Config</button>
+            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        </div>
+
+    </div>
+    </div>
+</div>
+
+<div class="row border-bottom white-bg dashboard-header" id="activityROW" style="display:none">
+
+    <div class="col-lg-12" id="activityDIV" >
+        <div class="panel panel-success">
+            <div class="panel-heading">
+                History (Last 100 changes)
+            </div>
+            <div class="panel-body" style="overflow-y: scroll; height: 200px">
+                <div class="mid-width wrapItems" id="activities" style="height:200px">
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row border-bottom white-bg dashboard-header row-eq-height ">
+
+                <div class="col-lg-3" style="border-right:1px solid">
+                    <div class="col-lg-12">
+                        <button id="sync" class="btn btn-primary col-lg-12" onclick="sync();"><i class="fa fa-sync"></i> Sync</button>
+                    </div>
+
+
+
+                    <div class="col-lg-12" style="padding-top:5px">
+                        <label for="hst">HOSTS:</label>
+                        <div id="hst">
+                            <div id="hostip" style="padding-top:5px">
+
+                            </div>
+                        </div>
+
+                    </div>
+                    <div class="col-lg-12" style="padding-top:5px">
+                        <label for="sip">IP Search:</label>
+                        <select class="form-control select2 searchip"  data-placeholder="Search IP" style="width:100%;" name="sip" id="sip" onchange="changeipFocus()" required>
+
+                        </select>
+                    </div>
+
+                </div>
+                <div class="col-lg-4" >
+                    <div class="col-lg-12"  >
+                        <button id="test" class="btn btn-success col-lg-12 " onclick="checkConfig();"><i class="fa fa-check"></i> Test Configuration</button>
+                    </div>
+
+                    <div class="col-lg-12" style="padding-top:5px">
+                        <button id="clearCache" class="btn btn-info col-lg-12" onclick="clearCache();" ><i class="fa fa-sync"></i> Clear Nginx Cache</button>
+                    </div>
+
+                    <label for="hg" style="padding-top:5px">&nbsp;HOSTROUP:</label>
+                    <div id="hg">
+
+
+                        <div class="col-lg-6" >
+                            <label for="entity">Entity:</label>
+                            <select class="form-control select2"  data-placeholder="Entity" style="width:100%;" id="entity" onchange="getFunction()">
+                            </select>
+                        </div>
+
+                        <div class="col-lg-6" >
+                            <label for="entity_function">Function:</label>
+                            <select class="form-control select2"  data-placeholder="Function" style="width:100%;" id="entity_function" onchange="getfileset()" ></select>
+                        </div>
+
+
+                    </div>
+
+
+
+                </div>
+                <div class="col-lg-5" style="border-left:1px solid">
+                    <div class="col-lg-12">
+                        <label for="fs" >&nbsp;FILES:</label>
+                        <div id="fs">
+                            <div class="input-group col-lg-12" style="padding-bottom:10px;padding-left:15px;width:98%;">
+                                <input type="text" id="findstring" class="form-control" placeholder="Search String..."> <span class="input-group-btn"> <button type="button" class="btn btn-primary" onclick="findString();"><i class="fa fa-search"></i></button></span>
+                            </div>
+                            <div class="col-lg-6">
+                                <label for="dir">Directory:</label>
+                                <select class="form-control select2 directory"  data-placeholder="Directory" style="width:100%;" name="dir" id="dir" onchange="getfilefromdir(this);" required>
+                                </select>
+                            </div>
+                            <div class="col-lg-6" id="filediv" >
+                                <label for="file">Filename:</label>
+                                <select class="form-control select2"  data-placeholder="File" style="width:100%;" name="file" id="file" onchange="getConfig(this.value);" required>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-lg-12" style="padding-top:5px">
+                        <div class="col-lg-12" style="padding-bottom:5px">
+                            <button id="createFile" class="btn btn-default col-lg-12" onclick="createFileInvoke();"><i class="fa fa-edit"></i> Create New Config</button>
+                        </div>
+                        <div class="col-lg-6" id="editCodeDIV" style="display:none">
+                            <button id="editCode" class="btn btn-primary col-lg-12" onclick="editCode();" ><i class="fa fa-edit"></i> Edit</button>
+                        </div>
+                        <div class="col-lg-6"  id="cancelEditDIV" style="display:none">
+                            <button id="cancelEdit" class="btn btn-default col-lg-12" onclick="cancelEdit();">Cancel</button>
+                        </div>
+                        <div class="col-lg-6" id="saveEditDIV" style="display:none">
+                            <button id="saveEdit" class="btn btn-success col-lg-12 " onclick="saveEdit();"><i class="fa fa-check"></i> Save</button>
+                        </div>
+                        <div class="col-lg-6" id="deleteDIV" style="display:none">
+                            <button id="delete" class="btn btn-danger col-lg-12" onclick="deleteFile();"><i class="fa fa-exclamation"></i> Delete File</button>
+                        </div>
+                    </div>
+
+                    <div class="col-lg-12" id="searchDiv" style="padding-top:10px;display:none">
+                        <div class="panel panel-success">
+                            <div class="panel-body" style="overflow-y: scroll; height: 100px">
+                                <div class="mid-width wrapItems" style="height:200px">
+                                    <ul id="searchResults">
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+</div>
+
+<div class="row border-bottom white-bg dashboard-header">
+
+            <div class="row" id="sslrow" style="display:none;padding-bottom:100px">
+                <div class="col-sm-5">
+                    <select name="from[]" id="certstore" class="form-control" size="25" multiple="multiple">
+                    </select>
+                </div>
+
+                <div class="col-sm-2">
+                    <button type="button" id="certstore_rightSelected" class="btn btn-block"><i class="glyphicon glyphicon-chevron-right"></i></button>
+                    <button type="button" id="certstore_leftSelected" class="btn btn-block"><i class="glyphicon glyphicon-chevron-left"></i></button>
+                </div>
+
+                <div class="col-sm-5">
+                    <select name="to[]" id="certstore_to" class="form-control" size="25" multiple="multiple"></select>
+                </div>
+            </div>
+            <div class="row">
+
+            </div>
+            <div class="row" id="textrow">
+                    <div class="col-lg-12" id="raw_grp" >
+                        <label for="raw_grp">Code <i id="readonly">(READ ONLY)</i>: </label>
+                            <textarea id="filehandler">
+                            </textarea>
+                    </div>
+            </div>
+
+</div>
+</div>
+
+{% endblock %}

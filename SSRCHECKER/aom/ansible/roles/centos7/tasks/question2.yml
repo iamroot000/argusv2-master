@@ -1,0 +1,38 @@
+---
+  - name: Question2
+    pause:
+      prompt: "Cloud Provider\nSample: ali, az, aws, sl, ali\n##############################\n"
+    register: cprov
+  - name: Save-linuxname1
+    command: echo "{{ LINUXGROUP.user_input }}{{ LINUXNUMBER.user_input }}.{{ cntry.stdout }}.{{ cprov.user_input }}.monaco1.me"
+    register: LINUXNAME
+  - name: Question3
+    pause:
+      prompt: "Are you sure about the hostname: Y/N\n##############################\n{{ LINUXNAME.stdout }}\n##############################\n"
+    register: checker
+  - name: Set-server-hostname
+    hostname:
+      name: "{{ LINUXNAME.stdout }}"
+    when: 'checker.user_input == "y" or checker.user_input == "Y"'
+  - name: Add-again
+    fail:
+      prompt: "Please add again"
+    when: 'checker.user_input == "n" or checker.user_input == "N"'
+  - name: Add-name-checking
+    command: echo "Y y n N"
+    register: checker1
+  - name: Add-name
+    fail:
+      prompt: "Please add name"
+    when: 'checker.user_input not in checker1.stdout'
+  - name: Checking-server-hostname
+    command: "uname -a"
+    register: s_hostname
+  - name: Server-hostname-good
+    debug:
+      msg: "Server hostname is {{ s_hostname.stdout }}"
+    when: '"monaco1.me" in s_hostname.stdout'
+  - name: Server-hostname-failed
+    fail:
+      prompt: "Server hostname not changed"
+    when: '"monaco1.me" not in s_hostname.stdout'

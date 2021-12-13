@@ -1,0 +1,43 @@
+--- /ansible/nginx/hostgroups/om-ws_nginx/nginx/conf.d/global/_default.conf	2019-05-22 17:58:08.368255189 +0800
++++ /tmp/_default.conf	2019-05-22 18:02:27.447255189 +0800
+@@ -1,39 +1,4 @@
+-server {
+-    listen       80 default_server;#HTTP Port
+-    server_name  _;
+ 
+-    include /usr/local/nginx/conf.d/include/ruibo_official_masterconfig.include;
+-  	location = /statuscheck {
+-        set $test BLOCK;
+-
+-        if ($allowed_ip ~ "yes" ){
+-          set $test ALLOW;
+-        }
+-
+-        if ( $test = "BLOCK" ) {
+-          return 403 '{"status":false}';
+-          add_header Content-Type text/plain;
+-        }
+-        return 200 '{"status":true}';
+-        add_header Content-Type text/plain;
+-    }
+-
+-    access_log  logs/default.access.log main;
+-    access_log  logs/default.logstash.access.log logstash;
+-}
+-
+-server {
+-    listen 443 default_server;
+-    server_name _;
+-    ssl on;
+-    ssl_certificate /usr/local/nginx/conf.d/ssl/kingbaly.com/fullchain.pem;
+-    ssl_certificate_key /usr/local/nginx/conf.d/ssl/kingbaly.com/privkey.pem;
+-
+-    include /usr/local/nginx/conf.d/include/ruibo_official_masterconfig.include;
+-  
+-    access_log  logs/default.access.log main;
+-    access_log  logs/default.logstash.access.log logstash;
+-}
+ 
+ 
+ 
+

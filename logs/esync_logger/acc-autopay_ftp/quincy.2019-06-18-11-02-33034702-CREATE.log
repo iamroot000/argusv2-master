@@ -1,0 +1,26 @@
+--- /ansible/nginx/hostgroups/acc-autopay_ftp/nginx/conf.d/other/pms2-ftp.conf	2019-06-18 10:24:15.987351188 +0800
++++ /tmp/pms2-ftp.conf	2019-06-18 11:02:32.920713387 +0800
+@@ -10,6 +10,22 @@
+ }
+ 
+ server {
++        listen 443 ssl;
++        server_name images.xiantjtzy.com;
++ 
++  		ssl on;
++        ssl_certificate /usr/local/nginx/conf.d/ssl/xiantjtzy.com/fullchain.pem;
++        ssl_certificate_key /usr/local/nginx/conf.d/ssl/xiantjtzy.com/privkey.pem;
++  		location  / {
++        root /web/images/qrcode;
++    	  access_log  logs/pms2-ftp.access.log main ;
++      	  access_log  logs/pms2-ftp.logstash.access.log logstash ;
++        error_log  logs/pms2-ftp.error.log ;
++    }
++}
++
++
++server {
+         listen 80;
+         server_name images-test.xiantjtzy.com;
+         location  / {
+

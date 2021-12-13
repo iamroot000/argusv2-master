@@ -1,0 +1,52 @@
+--- /ansible/nginx/hostgroups/df-nginx/nginx/conf.d/include/news_service.include	2019-08-13 15:54:14.575814323 +0800
++++ /tmp/news_service.include	2019-08-13 18:15:52.477356155 +0800
+@@ -24,15 +24,42 @@
+       proxy_read_timeout 180;
+        proxy_pass http://news_service;
+    }
++
+     location ~* ^.*\.(js|ico|jpg|gif|png|css)$ {
+-      proxy_set_header        Host            $http_host;
+-      proxy_set_header        X-Real-IP       $remote_addr;
+-      proxy_set_header        X-Forwarded-For  $proxy_add_x_forwarded_for;
+-      proxy_connect_timeout 180;
+-      proxy_send_timeout 180;
+-      proxy_read_timeout 180;
++        proxy_cache cache_web;
++        proxy_set_header Host $host;
++        proxy_set_header X-Real-IP $remote_addr;
++        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
++        proxy_connect_timeout 180;
++        proxy_send_timeout 180;
++        proxy_read_timeout 180;
++        proxy_buffer_size 128k;
++        proxy_buffers 4 128k;
++        proxy_busy_buffers_size 128k;
++        proxy_temp_file_write_size 128k;
++        proxy_cache_valid 200 304 1h;
++        proxy_cache_valid 404 1m;
++        proxy_cache_key   $host$uri$is_args$args;
++        add_header     Nginx-Cache   "$upstream_cache_status";
+         proxy_pass  http://news_service;
+         }
+ 
+ 
+ 
++     location  /login {
++       include /etc/nginx/conf.d/global/location_proxy_config.include;
++       proxy_pass http://news_service/login;
++    }
++     location  /news/add {
++       include /etc/nginx/conf.d/global/location_proxy_config.include;
++       proxy_pass http://news_service/news/add;
++    }
++
++ location /druid/login.html {
++       proxy_set_header        Host            $http_host;
++       proxy_set_header        X-Real-IP       $remote_addr;
++       proxy_set_header        X-Forwarded-For  $proxy_add_x_forwarded_for;
++       proxy_pass http://news_service/druid/login.html;
++   }
++
++
+

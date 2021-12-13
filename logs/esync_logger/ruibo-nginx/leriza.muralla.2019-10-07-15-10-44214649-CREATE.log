@@ -1,0 +1,24 @@
+FILENAME: 80-443/jinbaili6.com.conf
+-  
++  server {
++      listen 80;
++      server_name jinbaili6.com www.jinbaili6.com;
++      rewrite ^(.*)$ https://www.jinbaili6.com$1 permanent;
++  }
++  
++  server {
++      listen 443;
++      server_name jinbaili6.com www.jinbaili6.com;
++      ssl on;
++      ssl_certificate /usr/local/nginx/conf.d/ssl/jinbaili6.com/fullchain.pem;
++      ssl_certificate_key /usr/local/nginx/conf.d/ssl/jinbaili6.com/privkey.pem;
++  
++      if ($http_host !~* 'www') {
++          rewrite ^(.*)$ https://www.$http_host$1 permanent;
++      }
++  
++      include /usr/local/nginx/conf.d/include/ruibo_official_masterconfig.include;
++  }
++  
++  
+

@@ -1,0 +1,120 @@
+ESYNC_WORKER1_COMMAND_START
+
+PLAY [callmeboss-nginx] ********************************************************
+
+TASK [nginx_sync : Notify] *****************************************************
+ok: [47.91.226.16] => {
+
+    "msg": "Syncing callmeboss-nginx"
+}
+ok: [13.75.65.196] => {
+    "msg": "Syncing callmeboss-nginx"
+}
+
+
+TASK [nginx_sync : include_vars] ***********************************************
+ok: [47.91.226.16]
+ok: [13.75.65.196]
+
+
+TASK [nginx_sync : Synchronizing Nginx] ****************************************
+ok: [13.75.65.196] => (item=conf)
+ok: [47.91.226.16] => (item=conf)
+changed: [13.75.65.196] => (item=conf.d)
+ok: [13.75.65.196] => (item=data)
+
+ok: [13.75.65.196] => (item=html)
+changed: [47.91.226.16] => (item=conf.d)
+ok: [47.91.226.16] => (item=data)
+ok: [47.91.226.16] => (item=html)
+
+
+TASK [all_servers : include_vars] **********************************************
+ok: [47.91.226.16]
+ok: [13.75.65.196]
+
+TASK [all_servers : Notify] ****************************************************
+
+ok: [47.91.226.16] => {
+    "msg": "Clearing Nginx Cache for callmeboss-nginx"
+}
+ok: [13.75.65.196] => {
+    "msg": "Clearing Nginx Cache for callmeboss-nginx"
+
+}
+
+TASK [all_servers : Copying clear_nginxcache.sh to remote hosts] ***************
+fatal: [13.75.65.196]: UNREACHABLE! => {"changed": false, "msg": "SSH Error: data could not be sent to remote host \"13.75.65.196\". Make sure this host can be reached over ssh", "unreachable": true}
+ok: [47.91.226.16]
+
+
+TASK [all_servers : Nginx Clear Cache] *****************************************
+changed: [47.91.226.16]
+
+TASK [all_servers : debug] *****************************************************
+
+ok: [47.91.226.16] => {
+    "script_result.stdout_lines": [
+        "-----------------------------------------------------------", 
+        "|                 Checking Nginx Config                   |", 
+        "-----------------------------------------------------------", 
+
+        "", 
+        " nginx -t ", 
+        "", 
+        "-----------------------------------------------------------", 
+        "|                 Stopping Nginx Process                  |", 
+
+        "-----------------------------------------------------------", 
+        "", 
+        " /usr/bin/killall -9 nginx ", 
+        "", 
+        "-----------------------------------------------------------", 
+
+        "|                 Clearing Proxy Cache                    |", 
+        "-----------------------------------------------------------", 
+        "", 
+        " /bin/rm -rf /tmp/nginx_cache ", 
+        "", 
+
+        "-----------------------------------------------------------", 
+        "|                Restarting Nginx Process                 |", 
+        "-----------------------------------------------------------", 
+        "root     12991  0.0  0.0 113176  1484 ?        S    18:28   0:00 /bin/bash /bak/bin/clear_nginxcache.sh", 
+        "root     13002  0.0  0.1 372712 16804 ?        Ss   18:28   0:00 nginx: master process /usr/local/nginx/sbin/nginx", 
+
+        "nobody   13003  0.0  0.1 374640 20280 ?        S    18:28   0:00 nginx: worker process", 
+        "nobody   13005  0.0  0.1 374640 21960 ?        S    18:28   0:00 nginx: worker process", 
+        "nobody   13006  0.0  0.1 374640 20280 ?        S    18:28   0:00 nginx: worker process", 
+        "nobody   13007  0.0  0.1 374640 21496 ?        S    18:28   0:00 nginx: worker process", 
+        "nobody   13008  0.0  0.1 372712 17208 ?        S    18:28   0:00 nginx: cache manager process", 
+
+        "nobody   13009  0.0  0.1 372712 17208 ?        S    18:28   0:00 nginx: cache loader process", 
+        "root     13011  0.0  0.0 112708   936 ?        S    18:28   0:00 grep nginx", 
+        "              total        used        free      shared  buff/cache   available", 
+        "Mem:          15886         517        7017          14        8351       14985", 
+        "Swap:             0           0           0", 
+
+        "-----------------------------------------------------------", 
+        "|                     Reload SUCCESS!                     |", 
+        "-----------------------------------------------------------"
+    ]
+}
+
+
+PLAY [127.0.0.1] ***************************************************************
+
+TASK [sync_to_git : Synchronizing Nginx To GIT] ********************************
+fatal: [127.0.0.1]: FAILED! => {"changed": true, "cmd": "git add .\n git commit -m \"quincy\"\n git push\n git push -u origin master", "delta": "0:00:00.865370", "end": "2019-04-11 18:28:52.592058", "msg": "non-zero return code", "rc": 128, "start": "2019-04-11 18:28:51.726688", "stderr": "warning: You ran 'git add' with neither '-A (--all)' or '--ignore-removal',\nwhose behaviour will change in Git 2.0 with respect to paths you removed.\nPaths like 'nginx/conf.d/80/callmeboss168.com.conf' that are\nremoved from your working tree are ignored with this version of Git.\n\n* 'git add --ignore-removal <pathspec>', which is the current default,\n  ignores paths you removed from your working tree.\n\n* 'git add --all <pathspec>' will let you also record the removals.\n\nRun 'git status' to check the paths you removed from your working tree.\n\nfatal: Authentication failed for 'http://om:VA1913wm@git.neweb.me/nginx_cloud/callmeboss-nginx.git/'\nfatal: Authentication failed for 'http://om:VA1913wm@git.neweb.me/nginx_cloud/callmeboss-nginx.git/'", "stderr_lines": ["warning: You ran 'git add' with neither '-A (--all)' or '--ignore-removal',", "whose behaviour will change in Git 2.0 with respect to paths you removed.", "Paths like 'nginx/conf.d/80/callmeboss168.com.conf' that are", "removed from your working tree are ignored with this version of Git.", "", "* 'git add --ignore-removal <pathspec>', which is the current default,", "  ignores paths you removed from your working tree.", "", "* 'git add --all <pathspec>' will let you also record the removals.", "", "Run 'git status' to check the paths you removed from your working tree.", "", "fatal: Authentication failed for 'http://om:VA1913wm@git.neweb.me/nginx_cloud/callmeboss-nginx.git/'", "fatal: Authentication failed for 'http://om:VA1913wm@git.neweb.me/nginx_cloud/callmeboss-nginx.git/'"], "stdout": "[master f9960b2] quincy\n 2 files changed, 2 insertions(+), 2 deletions(-)", "stdout_lines": ["[master f9960b2] quincy", " 2 files changed, 2 insertions(+), 2 deletions(-)"]}
+
+	to retry, use: --limit @/ansible/nginx/site.retry
+
+PLAY RECAP *********************************************************************
+127.0.0.1                  : ok=0    changed=0    unreachable=0    failed=1   
+13.75.65.196               : ok=5    changed=1    unreachable=1    failed=0   
+
+47.91.226.16               : ok=8    changed=2    unreachable=0    failed=0   
+
+
+ESYNC_WORKER1_COMMAND_END
+MAX RETRIES EXECUTED, COMMAND NOT RESPONDING

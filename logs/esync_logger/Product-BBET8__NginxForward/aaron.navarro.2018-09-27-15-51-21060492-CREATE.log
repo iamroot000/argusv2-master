@@ -1,0 +1,24 @@
+FILENAME: 80-443/xinde2.net.conf
+-  
++  server {
++      listen 80;
++      server_name xinde2.net www.xinde2.net;
++      rewrite ^(.*)$ https://www.xinde2.net$1 permanent;
++  }
++  
++  server {
++      listen 443;
++      server_name xinde2.net www.xinde2.net;
++      ssl on;
++      ssl_certificate /usr/local/nginx/conf.d/ssl/xinde2.net/fullchain.pem;
++      ssl_certificate_key /usr/local/nginx/conf.d/ssl/xinde2.net/privkey.pem;
++  
++      if ($http_host !~* 'www') {
++          rewrite ^(.*)$ https://www.$http_host$1 permanent;
++      }
++  
++      include /usr/local/nginx/conf.d/include/bbet8_official_masterconfig.include;
++  }
++  
++  
+

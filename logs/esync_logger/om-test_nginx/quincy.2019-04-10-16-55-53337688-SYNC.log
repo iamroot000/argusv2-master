@@ -1,0 +1,172 @@
+ESYNC_WORKER1_COMMAND_START
+
+PLAY [om-test_nginx] ***********************************************************
+
+TASK [nginx_sync : Notify] *****************************************************
+ok: [47.52.158.87] => {
+
+    "msg": "Syncing om-test_nginx"
+}
+ok: [23.101.9.146] => {
+    "msg": "Syncing om-test_nginx"
+}
+
+
+TASK [nginx_sync : include_vars] ***********************************************
+ok: [47.52.158.87]
+ok: [23.101.9.146]
+
+
+TASK [nginx_sync : Synchronizing Nginx] ****************************************
+ok: [47.52.158.87] => (item=conf)
+ok: [23.101.9.146] => (item=conf)
+changed: [47.52.158.87] => (item=conf.d)
+changed: [23.101.9.146] => (item=conf.d)
+
+ok: [47.52.158.87] => (item=data)
+ok: [23.101.9.146] => (item=data)
+ok: [47.52.158.87] => (item=html)
+ok: [23.101.9.146] => (item=html)
+
+
+TASK [all_servers : include_vars] **********************************************
+ok: [47.52.158.87]
+ok: [23.101.9.146]
+
+TASK [all_servers : Notify] ****************************************************
+
+ok: [47.52.158.87] => {
+    "msg": "Clearing Nginx Cache for om-test_nginx"
+}
+ok: [23.101.9.146] => {
+    "msg": "Clearing Nginx Cache for om-test_nginx"
+
+}
+
+TASK [all_servers : Copying clear_nginxcache.sh to remote hosts] ***************
+ok: [47.52.158.87]
+ok: [23.101.9.146]
+
+
+TASK [all_servers : Nginx Clear Cache] *****************************************
+changed: [47.52.158.87]
+changed: [23.101.9.146]
+
+
+TASK [all_servers : debug] *****************************************************
+ok: [47.52.158.87] => {
+    "script_result.stdout_lines": [
+        "-----------------------------------------------------------", 
+        "|                 Checking Nginx Config                   |", 
+
+        "-----------------------------------------------------------", 
+        "", 
+        " nginx -t ", 
+        "", 
+        "-----------------------------------------------------------", 
+
+        "|                 Stopping Nginx Process                  |", 
+        "-----------------------------------------------------------", 
+        "", 
+        " /usr/bin/killall -9 nginx ", 
+        "", 
+
+        "-----------------------------------------------------------", 
+        "|                 Clearing Proxy Cache                    |", 
+        "-----------------------------------------------------------", 
+        "", 
+        " /bin/rm -rf /tmp/nginx_cache ", 
+
+        "", 
+        "-----------------------------------------------------------", 
+        "|                Restarting Nginx Process                 |", 
+        "-----------------------------------------------------------", 
+        "root       717  0.0  0.0 106080  1440 ?        S    16:56   0:00 /bin/bash /bak/bin/clear_nginxcache.sh", 
+
+        "root       723  0.0  0.2 726544 21448 ?        Ss   16:56   0:00 nginx: master process /usr/local/nginx/sbin/nginx", 
+        "nobody     724  0.0  0.3 728472 25488 ?        S    16:56   0:00 nginx: worker process      ", 
+        "nobody     726  0.0  0.3 728472 25156 ?        S    16:56   0:00 nginx: worker process      ", 
+        "nobody     727  0.0  0.3 728472 25156 ?        S    16:56   0:00 nginx: worker process      ", 
+        "nobody     728  0.0  0.3 728472 25072 ?        S    16:56   0:00 nginx: worker process      ", 
+
+        "nobody     729  0.0  0.2 726544 21896 ?        S    16:56   0:00 nginx: cache manager process", 
+        "nobody     730  0.0  0.2 726544 21828 ?        S    16:56   0:00 nginx: cache loader process", 
+        "root       732  0.0  0.0 103320   884 ?        S    16:56   0:00 grep nginx", 
+        "             total       used       free     shared    buffers     cached", 
+        "Mem:          8001       7849        152          4        145        416", 
+
+        "-/+ buffers/cache:       7286        714", 
+        "Swap:            0          0          0", 
+        "-----------------------------------------------------------", 
+        "|                     Reload SUCCESS!                     |", 
+        "-----------------------------------------------------------"
+
+    ]
+}
+ok: [23.101.9.146] => {
+    "script_result.stdout_lines": [
+        "-----------------------------------------------------------", 
+
+        "|                 Checking Nginx Config                   |", 
+        "-----------------------------------------------------------", 
+        "", 
+        " nginx -t ", 
+        "", 
+
+        "-----------------------------------------------------------", 
+        "|                 Stopping Nginx Process                  |", 
+        "-----------------------------------------------------------", 
+        "", 
+        " /usr/bin/killall -9 nginx ", 
+
+        "", 
+        "-----------------------------------------------------------", 
+        "|                 Clearing Proxy Cache                    |", 
+        "-----------------------------------------------------------", 
+        "", 
+
+        " /bin/rm -rf /tmp/nginx_cache ", 
+        "", 
+        "-----------------------------------------------------------", 
+        "|                Restarting Nginx Process                 |", 
+        "-----------------------------------------------------------", 
+
+        "root       2086  0.5  0.0 106116  1292 ?        S    16:56   0:00 /bin/bash /bak/bin/clear_nginxcache.sh", 
+        "root       2093  0.0  0.2 726548 21384 ?        Ss   16:56   0:00 nginx: master process /usr/local/nginx/sbin/nginx", 
+        "nobody     2094  0.0  0.3 728476 26328 ?        S    16:56   0:00 nginx: worker process      ", 
+        "nobody     2096  0.3  0.3 728476 26328 ?        R    16:56   0:00 nginx: worker process      ", 
+        "nobody     2097  0.3  0.3 728476 26328 ?        S    16:56   0:00 nginx: worker process      ", 
+
+        "nobody     2098  0.0  0.3 728476 26328 ?        S    16:56   0:00 nginx: worker process      ", 
+        "nobody     2099  0.0  0.2 726548 21904 ?        S    16:56   0:00 nginx: cache manager process", 
+        "nobody     2100  0.0  0.2 726548 21764 ?        S    16:56   0:00 nginx: cache loader process", 
+        "root       2102  0.0  0.0 103324   844 ?        S    16:56   0:00 grep nginx", 
+        "             total       used       free     shared    buffers     cached", 
+
+        "Mem:          7985       6479       1506          4        154        574", 
+        "-/+ buffers/cache:       5750       2235", 
+        "Swap:            0          0          0", 
+        "-----------------------------------------------------------", 
+        "|                     Reload SUCCESS!                     |", 
+
+        "-----------------------------------------------------------"
+    ]
+}
+
+PLAY [127.0.0.1] ***************************************************************
+
+
+TASK [sync_to_git : Synchronizing Nginx To GIT] ********************************
+fatal: [127.0.0.1]: FAILED! => {"changed": true, "cmd": "git add .\n git commit -m \"quincy\"\n git push\n git push -u origin master", "delta": "0:00:00.856974", "end": "2019-04-10 16:56:10.663733", "msg": "non-zero return code", "rc": 128, "start": "2019-04-10 16:56:09.806759", "stderr": "warning: You ran 'git add' with neither '-A (--all)' or '--ignore-removal',\nwhose behaviour will change in Git 2.0 with respect to paths you removed.\nPaths like 'nginx/conf.d/include/devtest.include' that are\nremoved from your working tree are ignored with this version of Git.\n\n* 'git add --ignore-removal <pathspec>', which is the current default,\n  ignores paths you removed from your working tree.\n\n* 'git add --all <pathspec>' will let you also record the removals.\n\nRun 'git status' to check the paths you removed from your working tree.\n\nfatal: Authentication failed for 'http://om:VA1913wm@git.neweb.me/nginx_cloud/om-test_nginx.git/'\nfatal: Authentication failed for 'http://om:VA1913wm@git.neweb.me/nginx_cloud/om-test_nginx.git/'", "stderr_lines": ["warning: You ran 'git add' with neither '-A (--all)' or '--ignore-removal',", "whose behaviour will change in Git 2.0 with respect to paths you removed.", "Paths like 'nginx/conf.d/include/devtest.include' that are", "removed from your working tree are ignored with this version of Git.", "", "* 'git add --ignore-removal <pathspec>', which is the current default,", "  ignores paths you removed from your working tree.", "", "* 'git add --all <pathspec>' will let you also record the removals.", "", "Run 'git status' to check the paths you removed from your working tree.", "", "fatal: Authentication failed for 'http://om:VA1913wm@git.neweb.me/nginx_cloud/om-test_nginx.git/'", "fatal: Authentication failed for 'http://om:VA1913wm@git.neweb.me/nginx_cloud/om-test_nginx.git/'"], "stdout": "[master 8cfc907] quincy\n 2 files changed, 39 insertions(+)\n create mode 100644 nginx/conf.d/other/yifu-test-9003.conf", "stdout_lines": ["[master 8cfc907] quincy", " 2 files changed, 39 insertions(+)", " create mode 100644 nginx/conf.d/other/yifu-test-9003.conf"]}
+	to retry, use: --limit @/ansible/nginx/site.retry
+
+
+PLAY RECAP *********************************************************************
+127.0.0.1                  : ok=0    changed=0    unreachable=0    failed=1   
+23.101.9.146               : ok=8    changed=2    unreachable=0    failed=0   
+47.52.158.87               : ok=8    changed=2    unreachable=0    failed=0   
+
+
+
+ESYNC_WORKER1_COMMAND_END
+MAX RETRIES EXECUTED, COMMAND NOT RESPONDING

@@ -1,0 +1,29 @@
+--- /ansible/nginx/hostgroups/fpms-test_nginx/nginx/conf.d/other/autopay8.conf	2019-03-13 16:02:47.277568716 +0800
++++ /tmp/autopay8.conf	2019-03-15 09:42:40.110845951 +0800
+@@ -13,11 +13,20 @@
+ 
+         location / {
+         proxy_next_upstream http_502 http_504 error timeout invalid_header;
+-        proxy_cache cache_after;
+-        proxy_cache_valid  200 304 12h;
+-        proxy_cache_key $uri$is_args$args;
+-        proxy_set_header Host  $host;
+-        proxy_set_header X-Forwarded-For  $remote_addr;
++        proxy_redirect          off; 
++        proxy_set_header        Host            $host; 
++        proxy_set_header        X-Real-IP       $remote_addr;
++        proxy_set_header        referer         "";
++        proxy_set_header        X-Forwarded-For $proxy_add_x_forwarded_for; 
++proxy_connect_timeout   80; 
++proxy_send_timeout      80; 
++proxy_read_timeout      80; 
++client_max_body_size    35m;
++client_body_buffer_size 256k;
++proxy_buffer_size       256k;
++proxy_buffers           4 256k;
++proxy_busy_buffers_size 256k;
++proxy_temp_file_write_size      256k;
+         proxy_pass http://autopay;
+         }
+ 
+

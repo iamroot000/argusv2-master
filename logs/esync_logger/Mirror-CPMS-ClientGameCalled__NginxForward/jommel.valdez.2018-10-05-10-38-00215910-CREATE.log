@@ -1,0 +1,75 @@
+--- /srv/Mirror-CPMS-ClientGameCalled__NginxForward/nginx/conf.d/other/globalebet.conf	2018-10-05 10:30:31.544208736 +0800
++++ /tmp/globalebet.conf	2018-10-05 10:38:00.119508131 +0800
+@@ -184,6 +184,39 @@
+ 
+ 
+ upstream isbwallet {
++        #server 203.177.198.116:8089 max_fails=1  fail_timeout=2s ;
++        server 203.192.151.12:8089 max_fails=1  fail_timeout=2s ;
++        #server 101.78.133.212:8089 max_fails=1  fail_timeout=2s;
++        #server 205.177.199.12:8089 max_fails=1  fail_timeout=2s;
++}
++
++server {
++        #listen     443;
++	    listen 80;
++        server_name wallet.isb.ebetapi888.com;
++        index index.jsp index.html index.htm;
++        charset utf-8;
++        #ssl on;
++        #ssl_certificate /usr/local/nginx/conf/ssl/ebetapi888.com/fullchain.pem;
++        #ssl_certificate_key /usr/local/nginx/conf/ssl/ebetapi888.com/privkey.pem;
++
++        access_log  logs/wallet.isb.ebetapi888.com.access.log main;
++        location ~ ^/(WEB-INF)/ {
++        deny all;
++        }
++
++        location / {
++            include /usr/local/nginx/conf.d/include/proxy.conf.gm.include;
++	    proxy_http_version 1.1;
++            proxy_set_header Upgrade $http_upgrade;
++            proxy_set_header Connection "upgrade";
++            proxy_pass http://isbwallet;
++        }
++
++        error_page   404 404.jsp;
++        error_page   500 502 503 500.jsp;
++        }
++upstream isbchannel {
+         #server 203.177.198.116:3100 max_fails=1  fail_timeout=2s ;
+         server 203.192.151.12:3100 max_fails=1  fail_timeout=2s ;
+         #server 101.78.133.212:3100 max_fails=1  fail_timeout=2s;
+@@ -193,14 +226,14 @@
+ server {
+         #listen     443;
+ 	    listen 80;
+-        server_name wallet.isb.ebetapi888.com;
++        server_name channel.isb.ebetapi888.com;
+         index index.jsp index.html index.htm;
+         charset utf-8;
+         #ssl on;
+         #ssl_certificate /usr/local/nginx/conf/ssl/ebetapi888.com/fullchain.pem;
+         #ssl_certificate_key /usr/local/nginx/conf/ssl/ebetapi888.com/privkey.pem;
+ 
+-        access_log  logs/wallet.isb.ebetapi888.com.access.log main;
++        access_log  logs/channel.isb.ebetapi888.com.access.log main;
+         location ~ ^/(WEB-INF)/ {
+         deny all;
+         }
+@@ -210,12 +243,13 @@
+ 	    proxy_http_version 1.1;
+             proxy_set_header Upgrade $http_upgrade;
+             proxy_set_header Connection "upgrade";
+-            proxy_pass http://isbwallet;
++            proxy_pass http://isbchannel;
+         }
+ 
+         error_page   404 404.jsp;
+         error_page   500 502 503 500.jsp;
+         }
++
+ upstream isboffice {
+         #server 203.177.198.116:9999 max_fails=1  fail_timeout=2s ;
+         server 203.192.151.12:9999 max_fails=1  fail_timeout=2s ;
+

@@ -1,0 +1,196 @@
+ESYNC_COMMAND_START
+
+PLAY [Product-BAOWANG-FWD__NginxForward] ***************************************
+
+TASK [nginx_sync : Notify] *****************************************************
+ok: [119.9.77.164] => {
+
+    "msg": "Syncing Product-BAOWANG-FWD__NginxForward"
+}
+ok: [65.52.179.46] => {
+    "msg": "Syncing Product-BAOWANG-FWD__NginxForward"
+}
+
+
+TASK [nginx_sync : include_vars] ***********************************************
+ok: [119.9.77.164]
+ok: [65.52.179.46]
+
+
+TASK [nginx_sync : Synchronizing Nginx] ****************************************
+changed: [65.52.179.46] => (item=conf)
+changed: [119.9.77.164] => (item=conf)
+changed: [65.52.179.46] => (item=conf.d)
+changed: [119.9.77.164] => (item=conf.d)
+
+ok: [65.52.179.46] => (item=data)
+ok: [65.52.179.46] => (item=html)
+changed: [119.9.77.164] => (item=data)
+changed: [119.9.77.164] => (item=html)
+
+
+TASK [all_servers : include_vars] **********************************************
+ok: [119.9.77.164]
+ok: [65.52.179.46]
+
+TASK [all_servers : Notify] ****************************************************
+
+ok: [119.9.77.164] => {
+    "msg": "Clearing Nginx Cache for Product-BAOWANG-FWD__NginxForward"
+}
+ok: [65.52.179.46] => {
+    "msg": "Clearing Nginx Cache for Product-BAOWANG-FWD__NginxForward"
+
+}
+
+TASK [all_servers : Copying clear_nginxcache.sh to remote hosts] ***************
+ok: [65.52.179.46]
+changed: [119.9.77.164]
+
+
+TASK [all_servers : Nginx Clear Cache] *****************************************
+changed: [65.52.179.46]
+changed: [119.9.77.164]
+
+
+TASK [all_servers : debug] *****************************************************
+ok: [119.9.77.164] => {
+    "script_result.stdout_lines": [
+        "-----------------------------------------------------------", 
+        "|                 Checking Nginx Config                   |", 
+
+        "-----------------------------------------------------------", 
+        "", 
+        " nginx -t ", 
+        "", 
+        "-----------------------------------------------------------", 
+
+        "|                 Stopping Nginx Process                  |", 
+        "-----------------------------------------------------------", 
+        "", 
+        " /usr/bin/killall -9 nginx ", 
+        "", 
+
+        "-----------------------------------------------------------", 
+        "|                 Clearing Proxy Cache                    |", 
+        "-----------------------------------------------------------", 
+        "", 
+        " /bin/rm -rf /tmp/nginx_cache ", 
+
+        "", 
+        "-----------------------------------------------------------", 
+        "|                Restarting Nginx Process                 |", 
+        "-----------------------------------------------------------", 
+        "root     27653  0.1  0.0 106080  1428 ?        S    12:29   0:00 /bin/bash /bak/bin/clear_nginxcache.sh", 
+
+        "root     27726  0.0  0.0 359564  3616 ?        Ss   12:29   0:00 nginx: master process /usr/local/nginx/sbin/nginx", 
+        "nobody   27727  0.0  0.1 363816  8060 ?        S    12:29   0:00 nginx: worker process      ", 
+        "nobody   27729  0.0  0.1 363816  8060 ?        S    12:29   0:00 nginx: worker process      ", 
+        "nobody   27730  0.0  0.1 363816  8060 ?        S    12:29   0:00 nginx: worker process      ", 
+        "nobody   27731  0.0  0.1 363816  8060 ?        S    12:29   0:00 nginx: worker process      ", 
+
+        "nobody   27732  0.0  0.0 359564  4048 ?        S    12:29   0:00 nginx: cache manager process", 
+        "nobody   27733  0.0  0.0 359564  3996 ?        S    12:29   0:00 nginx: cache loader process", 
+        "root     27737  0.0  0.0 103320   892 ?        S    12:29   0:00 grep nginx", 
+        "             total       used       free     shared    buffers     cached", 
+        "Mem:          7864       1456       6407          1        107        854", 
+
+        "-/+ buffers/cache:        495       7369", 
+        "Swap:            0          0          0", 
+        "-----------------------------------------------------------", 
+        "|                     Reload SUCCESS!                     |", 
+        "-----------------------------------------------------------"
+
+    ]
+}
+ok: [65.52.179.46] => {
+    "script_result.stdout_lines": [
+        "-----------------------------------------------------------", 
+
+        "|                 Checking Nginx Config                   |", 
+        "-----------------------------------------------------------", 
+        "", 
+        " nginx -t ", 
+        "", 
+
+        "-----------------------------------------------------------", 
+        "|                 Stopping Nginx Process                  |", 
+        "-----------------------------------------------------------", 
+        "", 
+        " /usr/bin/killall -9 nginx ", 
+
+        "", 
+        "-----------------------------------------------------------", 
+        "|                 Clearing Proxy Cache                    |", 
+        "-----------------------------------------------------------", 
+        "", 
+
+        " /bin/rm -rf /tmp/nginx_cache ", 
+        "", 
+        "-----------------------------------------------------------", 
+        "|                Restarting Nginx Process                 |", 
+        "-----------------------------------------------------------", 
+
+        "root      66800  0.0  0.0 106116  1280 ?        S    12:29   0:00 /bin/bash /bak/bin/clear_nginxcache.sh", 
+        "root      66806  0.0  0.0 359564  3556 ?        Ss   12:29   0:00 nginx: master process /usr/local/nginx/sbin/nginx", 
+        "nobody    66807  0.0  0.1 363816  9452 ?        S    12:29   0:00 nginx: worker process      ", 
+        "nobody    66809  0.0  0.1 363816  9340 ?        S    12:29   0:00 nginx: worker process      ", 
+        "nobody    66810  0.0  0.1 363816  9368 ?        S    12:29   0:00 nginx: worker process      ", 
+
+        "nobody    66811  0.0  0.1 363816  9340 ?        S    12:29   0:00 nginx: worker process      ", 
+        "nobody    66812  0.0  0.0 359564  3988 ?        S    12:29   0:00 nginx: cache manager process", 
+        "nobody    66813  0.0  0.0 359564  3936 ?        S    12:29   0:00 nginx: cache loader process", 
+        "root      66815  0.0  0.0 103324   852 ?        S    12:29   0:00 grep nginx", 
+        "             total       used       free     shared    buffers     cached", 
+
+        "Mem:          7985       1147       6837          1         79        658", 
+        "-/+ buffers/cache:        409       7575", 
+        "Swap:            0          0          0", 
+        "-----------------------------------------------------------", 
+        "|                     Reload SUCCESS!                     |", 
+
+        "-----------------------------------------------------------"
+    ]
+}
+
+PLAY [127.0.0.1] ***************************************************************
+
+
+TASK [sync_to_git : Synchronizing Nginx To GIT] ********************************
+changed: [127.0.0.1]
+
+TASK [sync_to_git : debug] *****************************************************
+
+ok: [127.0.0.1] => {
+    "script_result.stdout_lines": [
+        "# On branch master", 
+        "# Changes not staged for commit:", 
+        "#   (use \"git add/rm <file>...\" to update what will be committed)", 
+
+        "#   (use \"git checkout -- <file>...\" to discard changes in working directory)", 
+        "#", 
+        "#\tdeleted:    nginx/conf.d/other/cpms_front.conf", 
+        "#\tdeleted:    nginx/conf.d/other/mgclient.conf", 
+        "#\tdeleted:    nginx/conf.d/other/misc_domains.conf", 
+
+        "#", 
+        "no changes added to commit (use \"git add\" and/or \"git commit -a\")", 
+        "Branch master set up to track remote branch master from origin."
+    ]
+}
+
+
+PLAY [Product-BAOWANG-FWD__NginxForward] ***************************************
+
+PLAY [127.0.0.1] ***************************************************************
+
+
+PLAY RECAP *********************************************************************
+119.9.77.164               : ok=8    changed=3    unreachable=0    failed=0   
+127.0.0.1                  : ok=2    changed=1    unreachable=0    failed=0   
+65.52.179.46               : ok=8    changed=2    unreachable=0    failed=0   
+
+
+
+ESYNC_COMMAND_END
+MAX RETRIES EXECUTED, COMMAND NOT RESPONDING

@@ -1,0 +1,104 @@
+ESYNC_COMMAND_START
+
+PLAY [Mirror-CPMS-ClientGameCalled__NginxForward] ******************************
+
+TASK [nginx_sync : Notify] *****************************************************
+ok: [192.168.11.126] => {
+
+    "msg": "Syncing Mirror-CPMS-ClientGameCalled__NginxForward"
+}
+
+TASK [nginx_sync : include_vars] ***********************************************
+ok: [192.168.11.126]
+
+
+TASK [nginx_sync : Synchronizing Nginx] ****************************************
+ok: [192.168.11.126] => (item=conf)
+ok: [192.168.11.126] => (item=conf.d)
+ok: [192.168.11.126] => (item=data)
+
+ok: [192.168.11.126] => (item=html)
+
+TASK [all_servers : include_vars] **********************************************
+ok: [192.168.11.126]
+
+
+TASK [all_servers : Notify] ****************************************************
+ok: [192.168.11.126] => {
+    "msg": "Clearing Nginx Cache for Mirror-CPMS-ClientGameCalled__NginxForward"
+}
+
+
+TASK [all_servers : Copying clear_nginxcache.sh to remote hosts] ***************
+ok: [192.168.11.126]
+
+TASK [all_servers : Nginx Clear Cache] *****************************************
+changed: [192.168.11.126]
+
+
+TASK [all_servers : debug] *****************************************************
+ok: [192.168.11.126] => {
+    "script_result.stdout_lines": [
+        "-----------------------------------------------------------", 
+
+        "|                 Checking Nginx Config                   |", 
+        "-----------------------------------------------------------", 
+        "", 
+        " nginx -t ", 
+        "", 
+
+        "-----------------------------------------------------------", 
+        "|                 Stopping Nginx Process                  |", 
+        "-----------------------------------------------------------", 
+        "", 
+        " /usr/bin/killall -9 nginx ", 
+
+        "", 
+        "-----------------------------------------------------------", 
+        "|                 Clearing Proxy Cache                    |", 
+        "-----------------------------------------------------------", 
+        "", 
+
+        " /bin/rm -rf /tmp/nginx_cache ", 
+        "", 
+        "-----------------------------------------------------------", 
+        "|                Restarting Nginx Process                 |", 
+        "-----------------------------------------------------------", 
+
+        "root     28021  0.0  0.0 106116  1292 ?        S    10:41   0:00 /bin/bash /bak/bin/clear_nginxcache.sh", 
+        "root     28027  0.0  0.2 464496  4440 ?        Ss   10:41   0:00 nginx: master process /usr/local/nginx/sbin/nginx", 
+        "nobody   28029  0.0  0.8 471064 12716 ?        S    10:41   0:00 nginx: worker process      ", 
+        "nobody   28030  0.0  0.8 471064 12716 ?        S    10:41   0:00 nginx: worker process      ", 
+        "nobody   28031  0.0  0.8 471064 12716 ?        S    10:41   0:00 nginx: worker process      ", 
+
+        "nobody   28032  0.0  0.8 471064 12716 ?        S    10:41   0:00 nginx: worker process      ", 
+        "nobody   28033  0.0  0.3 464496  4856 ?        S    10:41   0:00 nginx: cache manager process", 
+        "nobody   28034  0.0  0.3 464496  4796 ?        S    10:41   0:00 nginx: cache loader process", 
+        "root     28036  0.0  0.0 103272   836 ?        S    10:41   0:00 grep nginx", 
+        "             total       used       free     shared    buffers     cached", 
+
+        "Mem:          1464        654        809          0        163        302", 
+        "-/+ buffers/cache:        189       1274", 
+        "Swap:         1591          0       1591", 
+        "-----------------------------------------------------------", 
+        "|                     Reload SUCCESS!                     |", 
+
+        "-----------------------------------------------------------"
+    ]
+}
+
+PLAY [127.0.0.1] ***************************************************************
+
+
+TASK [sync_to_git : Synchronizing Nginx To GIT] ********************************
+fatal: [127.0.0.1]: FAILED! => {"changed": true, "cmd": "git add .\n git commit -m \"jommel.valdez\"\n git push\n git push -u origin master", "delta": "0:00:00.671082", "end": "2018-09-27 10:41:58.941058", "msg": "non-zero return code", "rc": 128, "start": "2018-09-27 10:41:58.269976", "stderr": "warning: push.default is unset; its implicit value is changing in\nGit 2.0 from 'matching' to 'simple'. To squelch this message\nand maintain the current behavior after the default changes, use:\n\n  git config --global push.default matching\n\nTo squelch this message and adopt the new behavior now, use:\n\n  git config --global push.default simple\n\nSee 'git help config' and search for 'push.default' for further information.\n(the 'simple' mode was introduced in Git 1.7.11. Use the similar mode\n'current' instead of 'simple' if you sometimes use older versions of Git)\n\nfatal: could not read Password for 'http://om@git.neweb.me': No such device or address\nfatal: could not read Password for 'http://om@git.neweb.me': No such device or address", "stderr_lines": ["warning: push.default is unset; its implicit value is changing in", "Git 2.0 from 'matching' to 'simple'. To squelch this message", "and maintain the current behavior after the default changes, use:", "", "  git config --global push.default matching", "", "To squelch this message and adopt the new behavior now, use:", "", "  git config --global push.default simple", "", "See 'git help config' and search for 'push.default' for further information.", "(the 'simple' mode was introduced in Git 1.7.11. Use the similar mode", "'current' instead of 'simple' if you sometimes use older versions of Git)", "", "fatal: could not read Password for 'http://om@git.neweb.me': No such device or address", "fatal: could not read Password for 'http://om@git.neweb.me': No such device or address"], "stdout": "# On branch master\nnothing to commit, working directory clean", "stdout_lines": ["# On branch master", "nothing to commit, working directory clean"]}
+	to retry, use: --limit @/ansible/nginx/site.retry
+
+
+PLAY RECAP *********************************************************************
+127.0.0.1                  : ok=0    changed=0    unreachable=0    failed=1   
+192.168.11.126             : ok=8    changed=1    unreachable=0    failed=0   
+
+
+ESYNC_COMMAND_END
+MAX RETRIES EXECUTED, COMMAND NOT RESPONDING

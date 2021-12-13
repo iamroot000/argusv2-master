@@ -1,0 +1,104 @@
+
+
+index   index.jsp index.html index.htm;
+    if ($http_user_agent ~* "(iPhone|iPad|iPod|Linux|android|Android|bb\d+|meego).+mobile|Android|MobileSafari|iPhone|iPad|iPod|Linux|android|avantgo|bada\/|blackberry|blazer|compal|elaine|fennec|hiptop|iemobile|ip(hone|od)|iris|kindle|lge |maemo|midp|mmp|netfront|opera m(ob|in)i|palm( os)?|phone|p(ixi|re)\/|plucker|pocket|psp|series(4|6)0|symbian|treo|up\.(browser|link)|vodafone|wap|windows (ce|phone)|xda|xiino|android 3.0") {
+        set $mobile_rewrite perform;
+           } 
+
+	if ( $mobile_rewrite = perform )
+	{ set $upstream sms_api_server_test; }
+		
+        if ($http_user_agent ~* "(x11)") 
+	{ set $mobile_rewrite per;  }
+		
+	if ( $mobile_rewrite != perform )
+        { set $upstream sms_api_server_test; }
+
+	if ($host ~* pc\.(.*))
+        { set $upstream sms_api_server_test; }
+
+        if ($http_user_agent ~* "qihoobot|Baiduspider|Googlebot|Googlebot-Mobile|Googlebot-Image|Mediapartners-Google|Adsbot-Google|Feedfetcher-Google|Yahoo! Slurp|Yahoo! Slurp China|YoudaoBot|Sosospider|Sogou spider|Sogou web spider|MSNBot|ia_archiver|Tomato Bot")
+        {
+                return 403;
+        }
+
+
+        if ($http_user_agent ~* "baiduspider") {
+                set $anti_spider $http_user_agent;
+        }
+
+        if ($request_method !~* GET|POST|HEAD) {
+                return 403;
+        }
+       
+        location ~ /\.
+        { return 444; }
+
+	error_page 403 = @403;
+	location @403 {
+		root html;
+		allow all;
+		#if ( $request_uri ~ 'page-404.jsp' ){ rewrite ^(.*)$ /red-map.jpg break; }
+		rewrite ^(.*)$ /red-map.jpg break; 
+	}
+
+
+	location / {
+            proxy_set_header Host  $host;
+            proxy_set_header X-Forwarded-For  $remote_addr;
+            proxy_set_header X-Forwarded-Proto $scheme ;
+	    proxy_pass http://$upstream;
+        }
+
+       location /websocket {
+            proxy_set_header            X-Forwarded-For $proxy_add_x_forwarded_for;
+            #proxy_set_header X-Forwarded-For  $remote_addr;
+            proxy_set_header        X-Real-IP       $remote_addr;
+            proxy_next_upstream http_502 http_504 http_404 error timeout invalid_header;
+            proxy_set_header Host $host:$server_port;
+            proxy_http_version 1.1;
+            proxy_set_header Upgrade $http_upgrade;
+            proxy_set_header Connection $connection_upgrade;
+            #proxy_pass http://9288;
+  				 if ($http_host = 'haomen-proxy.neweb.me' ){
+            proxy_pass http://9288;
+ 				 }
+            proxy_pass http://9280;
+            
+        }
+
+
+
+ location /sms {
+            proxy_set_header            X-Forwarded-For $proxy_add_x_forwarded_for;
+            #proxy_set_header X-Forwarded-For  $remote_addr;
+            proxy_set_header        X-Real-IP       $remote_addr;
+            proxy_next_upstream http_502 http_504 http_404 error timeout invalid_header;
+            proxy_set_header Host $host:$server_port;
+            proxy_http_version 1.1;
+            proxy_set_header Upgrade $http_upgrade;
+            proxy_set_header Connection $connection_upgrade;
+            #proxy_pass http://9288;
+  			
+   			  proxy_pass http://$upstream;
+            
+        }
+
+
+
+
+	location ~* .*\.(png|jpg|gif|jpeg|bmp|ico|css|js|json|exe)?$ {
+            proxy_next_upstream http_502 http_504 error timeout invalid_header;
+            #proxy_cache cache_after;
+            #proxy_cache_valid  200 304 12h;
+	         #proxy_cache_key $host$uri$query_string;
+            proxy_set_header Host  $host;
+            proxy_set_header X-Forwarded-For  $remote_addr;
+            proxy_set_header X-Forwarded-Proto $scheme ;
+	         proxy_pass http://$upstream;
+            #expires      2h;
+       }
+
+
+
+

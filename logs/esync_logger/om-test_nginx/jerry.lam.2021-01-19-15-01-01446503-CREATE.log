@@ -1,0 +1,79 @@
+--- /ansible/nginx/hostgroups/om-test_nginx/nginx/conf.d/include/available-cdn.include	2021-01-19 11:36:13.892409750 +0800
++++ /tmp/available-cdn.include	2021-01-19 15:01:01.596639091 +0800
+@@ -6,74 +6,17 @@
+         set $mobile_rewrite perform;
+            } 
+ 
+-	if ( $mobile_rewrite = perform )
+-	{ set $upstream available-cdn; }
+-		
+-        if ($http_user_agent ~* "(x11)") 
+-	{ set $mobile_rewrite per;  }
+-		
+-	if ( $mobile_rewrite != perform )
+-        { set $upstream available-cdn; }
+-
+-	if ($host ~* pc\.(.*))
+-        { set $upstream available-cdn; }
+-
+-        if ($http_user_agent ~* "qihoobot|Baiduspider|Googlebot|Googlebot-Mobile|Googlebot-Image|Mediapartners-Google|Adsbot-Google|Feedfetcher-Google|Yahoo! Slurp|Yahoo! Slurp China|YoudaoBot|Sosospider|Sogou spider|Sogou web spider|MSNBot|ia_archiver|Tomato Bot")
+-        {
+-                return 403;
+-        }
+-
+-
+-        if ($http_user_agent ~* "baiduspider") {
+-                set $anti_spider $http_user_agent;
+-        }
+ 
+      
+-       
+-        location ~ /\.
+-        { return 444; }
+-
+-	error_page 403 = @403;
+-	location @403 {
+-		root html;
+-		allow all;
+-		#if ( $request_uri ~ 'page-404.jsp' ){ rewrite ^(.*)$ /red-map.jpg break; }
+-		rewrite ^(.*)$ /red-map.jpg break; 
+-	}
+-
+-
+-
+-	location / {
+-  
+-           		proxy_pass http://available-cdn;
+-               
+-                proxy_set_header Host $host;
+-               
+ 
+-        }
+ 
+ 	location /avabilety_cdn {
+     		default_type application/json;
+    			return 200 '{"1":"wws.css", "static": "ssocdn3.99gov.com"}';
+-  			proxy_pass http://available-cdn;
++  		
+  		 }
+        
+ 
+-	location ~* .*\.(png|jpg|gif|jpeg|bmp|ico|css|js|json|exe)?$ {
+-            proxy_next_upstream http_502 http_504 error timeout invalid_header;
+-            #proxy_cache cache_after;
+-            #proxy_cache_valid  200 304 12h;
+-	         #proxy_cache_key $host$uri$query_string;
+-            proxy_set_header Host  $host;
+-            proxy_set_header X-Forwarded-For  $remote_addr;
+-            proxy_set_header X-Forwarded-Proto $scheme ;
+-	         proxy_pass http://$upstream;
+-            #expires      2h;
+-       }
+-
+-
+-
+-
+ 
+ 
+ 
+

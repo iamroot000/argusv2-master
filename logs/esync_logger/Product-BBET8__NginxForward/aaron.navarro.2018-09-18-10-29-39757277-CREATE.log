@@ -1,0 +1,51 @@
+--- /srv/Product-BBET8__NginxForward/nginx/conf.d/include/bbet8_veligood_admin.include	2018-09-18 10:29:17.818874497 +0800
++++ /tmp/bbet8_veligood_admin.include	2018-09-18 10:29:39.642874497 +0800
+@@ -3,37 +3,37 @@
+ 
+ if ($http_user_agent ~* "qihoobot|Baiduspider|Googlebot|Googlebot-Mobile|Googlebot-Image|Mediapartners-Google|Adsbot-Google|Feedfetcher-Google|Yahoo! Slurp|Yahoo! Slurp China|YoudaoBot|Sosospider|Sogou spider|Sogou web spider|MSNBot|ia_archiver|Tomato Bot")
+ {
+-return 403;
++	return 403;
+ }
+ 
+ limit_req zone=anti_spider burst=5 nodelay;
+ if ($http_user_agent ~* "baiduspider") {
+-set $anti_spider $http_user_agent;
++	set $anti_spider $http_user_agent;
+ }
+ 
+ if ($request_method !~* GET|POST|HEAD) {
+-return 403;
++	return 403;
+ }
+ 
+ location ~ /\.
+ { return 444; }
+ 
+ error_page 403 = @403;
+-location @403 {
+-root html;
+-allow all;
+-rewrite ^(.*)$ /red-map.jpg break; 
++    location @403 {
++    root html;
++    allow all;
++    rewrite ^(.*)$ /red-map.jpg break; 
+ }
+ 
+ if ($geoip_country_code !~* "PH" ){
+-set $test BLOCK;
++	set $test BLOCK;
+ }
+ 
+ if ($geoip_country_code ~ "PH" ){
+-set $test ALLOW;
++	set $test ALLOW;
+ }
+ if ($allowed_ip ~ "yes" ){ 
+-set $test ALLOW; 
++	set $test ALLOW; 
+ }
+ 
+ location / {
+

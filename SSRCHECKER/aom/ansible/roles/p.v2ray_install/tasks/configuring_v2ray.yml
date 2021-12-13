@@ -1,0 +1,63 @@
+---
+
+- name: Configuring v2ray
+
+  template:
+
+    src: '{{ item.src }}'
+
+    dest: '{{ item.dest }}'
+
+    owner: '{{ item.own_grp }}'
+
+    group: '{{ item.own_grp }}'
+
+    mode: '{{ item.mod }}'
+
+  with_items:
+
+    - { src: 'config.json.j2', dest: '/etc/v2ray/config.json', own_grp: 'root', mod: '0644' }
+
+    - { src: '233blog_v2ray_config.json.j2', dest: '/etc/v2ray/233blog_v2ray_config.json', own_grp: 'root', mod: '0644' }
+
+    - { src: '233blog_v2ray_backup.conf.j2', dest: '/etc/v2ray/233blog_v2ray_backup.conf', own_grp: 'root', mod: '0644' }
+
+    - { src: 'v2ray_url.json.j2', dest: '/etc/v2ray/v2ray_url.json', own_grp: 'root', mod: '0644' }
+
+
+
+
+
+
+
+
+
+- name: Adding v2ray alias
+
+  lineinfile:
+
+    dest: /root/.bashrc
+
+    regexp: '^alias v2ray='
+
+    line: 'alias v2ray={{ _v2ray_sh }}'
+
+    state: present
+
+
+
+
+
+
+
+
+
+- name: Source /root/.bashrc
+
+  shell: source /root/.bashrc
+
+  args:
+
+   executable: /bin/bash
+
+

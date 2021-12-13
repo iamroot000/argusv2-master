@@ -1,0 +1,61 @@
+--- /ansible/nginx/hostgroups/acc-autopay_ftp/nginx/conf.d/other/sslserver.conf	2019-06-04 11:30:37.395635428 +0800
++++ /tmp/sslserver.conf	2019-06-14 14:32:27.101143073 +0800
+@@ -1,5 +1,43 @@
+ server {
+     listen 80;
++    server_name ssl-ftp.neweb.me ssl-ftp.fpms8.me;
++    rewrite ^(.*)$ https://ssl-ftp.fpms8.me$1 permanent;
++}
++
++server {
++        listen       443 ssl;
++        server_name  ssl-ftp.fpms8.me;
++		gzip on;
++        charset utf-8;
++  		ssl on;
++		ssl_certificate /usr/local/nginx/conf.d/ssl/fpms8.me/fullchain.pem;
++		ssl_certificate_key /usr/local/nginx/conf.d/ssl/fpms8.me/privkey.pem;
++
++        location / {
++    
++    	allow 58.64.207.208;
++    	allow 59.148.22.110;
++    	allow 205.177.199.2;
++    	allow 101.78.133.210;
++    	allow 58.71.201.65;
++   
++		deny all;
++   
++    	root /web/ssl/ssladmin;
++	    autoindex on;
++		autoindex_localtime on;
++        }
++
++        access_log  logs/ssladmin.access.log main;
++        access_log  logs/ssladmin.logstash.access.log logstash;
++        error_log  logs/ssladmin.error.log ;
++
++    }
++
++
++
++server {
++    listen 80;
+     server_name ssl-ftp.neweb.me;
+     rewrite ^(.*)$ https://ssl-ftp.neweb.me$1 permanent;
+ }
+@@ -23,7 +61,7 @@
+    
+ 		deny all;
+    
+-    	root /web/ssl/ssladmin;
++    	root /web/ssl/ssl-test;
+ 	    autoindex on;
+ 		autoindex_localtime on;
+         }
+@@ -35,4 +73,3 @@
+     }
+ 
+ 
+-
+

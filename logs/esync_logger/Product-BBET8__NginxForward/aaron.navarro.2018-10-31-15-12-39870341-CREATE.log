@@ -1,0 +1,26 @@
+--- /srv/Product-BBET8__NginxForward/nginx/conf.d/global/_default.conf	2018-10-31 14:58:31.851876323 +0800
++++ /tmp/_default.conf	2018-10-31 15:12:39.753129546 +0800
+@@ -5,11 +5,19 @@
+     include /usr/local/nginx/conf.d/include/bbet8_official_masterconfig.include;
+   
+ 	location = /statuscheck {
++    	set $test  BLOCK;
++    
++    
++    	if ($allowed_ip ~ "yes" ){ 
++        	set $test ALLOW; 
++        }
++    
++        if ( $test = "BLOCK" ) { 
++            return 403;  
++        }
+     	return 200 '{"status":true}';
+ 		add_header Content-Type text/plain;
+-        allow 103.29.22.114;
+-        allow 203.192.151.10;
+-        deny all;
++
+ 	}
+   
+     access_log  logs/default.access.log main;
+

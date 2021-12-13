@@ -1,0 +1,45 @@
+---
+
+- name: Copying files
+
+  copy:
+
+    remote_src: yes
+
+    src: "{{ item.src }}"
+
+    dest: "{{ item.dest }}"
+
+  with_items:
+
+    - { src: '/tmp/v2ray/v2ray', dest: '/usr/bin/v2ray/v2ray' }
+
+    - { src: '/tmp/v2ray/v2ctl', dest: '/usr/bin/v2ray/v2ctl' }
+
+    - { src: '/etc/v2ray/233boy/v2ray/config/backup.conf', dest: '{{ backup }}' }
+
+    - { src: '/etc/v2ray/233boy/v2ray/v2ray.sh', dest: '{{ _v2ray_sh }}' }
+
+    - { src: '/usr/bin/v2ray/systemd/v2ray.service', dest: '/lib/systemd/system/' }
+
+
+
+
+
+
+
+- name: Changing permission
+
+  file:
+
+    path: '{{ item }}'
+
+    mode: +x
+
+  with_items:
+
+    - '/usr/bin/v2ray/v2ray'
+
+    - '/usr/bin/v2ray/v2ctl'
+
+    - '{{ _v2ray_sh }}'

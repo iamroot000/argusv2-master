@@ -1,0 +1,31 @@
+
+ 		charset utf-8;
+
+       access_log  logs/xbetcms.access.log ;
+       error_log  logs/xbetcms.error.log ;
+
+       location ~ ^/(WEB-INF)/ {
+           deny all;
+        }
+
+       location ~* .*\.(html|png|jpg|gif|jpeg|bmp|ico|css|js|json|exe)?$ {
+           include proxy.conf;
+           proxy_pass http://xbetappcms;
+      }
+
+       location  /api/ {
+               include proxy.conf;
+               proxy_pass http://xbetappcms;
+
+       }
+
+       location / {
+
+                rewrite  ^(.*)$ http://$host/index.html     permanent;
+       }
+
+       error_page 404 404.jsp;
+       error_page 500 502 503 500.jsp;
+
+
+

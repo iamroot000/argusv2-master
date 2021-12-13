@@ -1,0 +1,24 @@
+FILENAME: 80-443/xdl.best.conf
+-  
++  server {
++      listen 80;
++      server_name xdl.best www.xdl.best;
++      rewrite ^(.*)$ https://www.xdl.best$1 permanent;
++  }
++  
++  server {
++      listen 443;
++      server_name xdl.best www.xdl.best;
++      ssl on;
++      ssl_certificate /usr/local/nginx/conf.d/ssl/xdl.best/fullchain.pem;
++      ssl_certificate_key /usr/local/nginx/conf.d/ssl/xdl.best/privkey.pem;
++  
++      if ($http_host !~* 'www') {
++          rewrite ^(.*)$ https://www.$http_host$1 permanent;
++      }
++  
++      include /usr/local/nginx/conf.d/include/xdl_proxy_official_masterconfig.include;
++  }
++  
++  
+

@@ -1,0 +1,132 @@
+ESYNC_WORKER1_COMMAND_START
+[WARNING]: Invalid characters were found in group names but not replaced, use
+-vvvv to see details
+
+PLAY [acc-autopay_ftp] *********************************************************
+
+
+TASK [Gathering Facts] *********************************************************
+ok: [119.9.106.122]
+
+TASK [nginx_sync : Change python interpreter] **********************************
+ok: [119.9.106.122]
+
+
+TASK [nginx_sync : change python interpreter] **********************************
+ok: [119.9.106.122]
+
+TASK [nginx_sync : Notify] *****************************************************
+
+ok: [119.9.106.122] => {
+    "msg": "Syncing acc-autopay_ftp"
+}
+
+TASK [nginx_sync : include_vars] ***********************************************
+
+ok: [119.9.106.122]
+
+TASK [nginx_sync : Synchronizing Nginx] ****************************************
+ok: [119.9.106.122] => (item=conf)
+changed: [119.9.106.122] => (item=conf.d)
+
+ok: [119.9.106.122] => (item=data)
+ok: [119.9.106.122] => (item=html)
+
+TASK [nginx_sync : Set HTML Dir to root] ***************************************
+ok: [119.9.106.122]
+
+
+TASK [all_servers : include_vars] **********************************************
+ok: [119.9.106.122]
+
+TASK [all_servers : Notify] ****************************************************
+
+ok: [119.9.106.122] => {
+    "msg": "Clearing Nginx Cache for acc-autopay_ftp"
+}
+
+TASK [all_servers : Copying clear_nginxcache.sh to remote hosts] ***************
+
+ok: [119.9.106.122]
+
+TASK [all_servers : Nginx Clear Cache] *****************************************
+changed: [119.9.106.122]
+
+
+TASK [all_servers : debug] *****************************************************
+ok: [119.9.106.122] => {
+    "script_result.stdout_lines": [
+        "-----------------------------------------------------------", 
+        "|                 Checking Nginx Config                   |", 
+
+        "-----------------------------------------------------------", 
+        "", 
+        " nginx -t ", 
+        "", 
+        "-----------------------------------------------------------", 
+
+        "|                 Stopping Nginx Process                  |", 
+        "-----------------------------------------------------------", 
+        "", 
+        " /usr/bin/killall -9 nginx ", 
+        "", 
+
+        "-----------------------------------------------------------", 
+        "|                 Clearing Proxy Cache                    |", 
+        "-----------------------------------------------------------", 
+        "", 
+        " /bin/rm -rf /tmp/nginx_cache ", 
+
+        "", 
+        "-----------------------------------------------------------", 
+        "|                Restarting Nginx Process                 |", 
+        "-----------------------------------------------------------", 
+        "root     22457  0.8  0.1 141320  5340 pts/0    S+   09:06   0:00 vim /usr/local/nginx/conf.d/other/pms2-ftp.conf", 
+
+        "root     22496  0.0  0.0 108128  1428 ?        S    09:06   0:00 /bin/bash /bak/bin/clear_nginxcache.sh", 
+        "root     22504  0.0  0.0 294596  2388 ?        Ss   09:06   0:00 nginx: master process /usr/local/nginx/sbin/nginx", 
+        "nobody   22506  0.0  0.1 298848  6824 ?        S    09:06   0:00 nginx: worker process      ", 
+        "nobody   22507  0.0  0.1 298848  6896 ?        S    09:06   0:00 nginx: worker process      ", 
+        "nobody   22508  0.0  0.1 298848  6824 ?        S    09:06   0:00 nginx: worker process      ", 
+
+        "nobody   22509  0.0  0.1 298848  6812 ?        S    09:06   0:00 nginx: worker process      ", 
+        "nobody   22510  0.0  0.0 294596  2792 ?        S    09:06   0:00 nginx: cache manager process", 
+        "nobody   22511  0.0  0.0 294596  2748 ?        S    09:06   0:00 nginx: cache loader process", 
+        "root     22513  0.0  0.0 105368   888 ?        S    09:07   0:00 grep nginx", 
+        "             total       used       free     shared    buffers     cached", 
+
+        "Mem:          3953       3744        209          1        137        889", 
+        "-/+ buffers/cache:       2716       1237", 
+        "Swap:            0          0          0", 
+        "-----------------------------------------------------------", 
+        "|                     Reload SUCCESS!                     |", 
+
+        "-----------------------------------------------------------"
+    ]
+}
+
+PLAY [127.0.0.1] ***************************************************************
+
+
+TASK [sync_to_git : Synchronizing Nginx To GIT] ********************************
+changed: [127.0.0.1]
+
+TASK [sync_to_git : debug] *****************************************************
+
+ok: [127.0.0.1] => {
+    "msg": " [u'# On branch master', u'# Changes not staged for commit:', u'#   (use \"git add/rm <file>...\" to update what will be committed)', u'#   (use \"git checkout -- <file>...\" to discard changes in working directory)', u'#', u'#\\tdeleted:    nginx/conf.d/global/geoip.conf', u'#\\tdeleted:    nginx/conf.d/other/autokey.conf', u'#\\tdeleted:    nginx/conf.d/other/autopay-front-test.conf', u'#\\tdeleted:    nginx/conf.d/other/autopay-test.conf', u'#', u'no changes added to commit (use \"git add\" and/or \"git commit -a\")', u'Branch master set up to track remote branch master from origin.']"
+}
+
+PLAY [acc-autopay_ftp] *********************************************************
+
+
+PLAY [127.0.0.1] ***************************************************************
+
+PLAY RECAP *********************************************************************
+119.9.106.122              : ok=12   changed=2    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0   
+
+127.0.0.1                  : ok=2    changed=1    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0   
+
+
+ESYNC_WORKER1_COMMAND_END
+MAX RETRIES EXECUTED, COMMAND NOT RESPONDING

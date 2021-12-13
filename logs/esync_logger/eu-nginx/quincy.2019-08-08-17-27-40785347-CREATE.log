@@ -1,0 +1,43 @@
+--- /ansible/nginx/hostgroups/eu-nginx/nginx/conf.d/include/eu_proxy_masterconfig.include	2019-08-08 10:33:41.559567155 +0800
++++ /tmp/eu_proxy_masterconfig.include	2019-08-08 17:27:40.676655518 +0800
+@@ -1,6 +1,6 @@
+ index   index.jsp index.html index.htm;
+-access_log  logs/eu.xjw.proxy.access.log main;
+-access_log  logs/eu.xjw.proxy.logstash.access.log logstash;
++access_log  logs/eu_proxy.access.log main;
++access_log  logs/eu_proxy.logstash.access.log logstash;
+ 
+ if ($http_user_agent ~* "(iPhone|iPad|iPod|Linux|android|Android|bb\d+|meego).+mobile|Android|MobileSafari|iPhone|iPad|iPod|Linux|android|avantgo|bada\/|blackberry|blazer|compal|elaine|fennec|hiptop|iemobile|ip(hone|od)|iris|kindle|lge |maemo|midp|mmp|netfront|opera m(ob|in)i|palm( os)?|phone|p(ixi|re)\/|plucker|pocket|psp|series(4|6)0|symbian|treo|up\.(browser|link)|vodafone|wap|windows (ce|phone)|xda|xiino|android 3.0") {
+ set $mobile_rewrite perform;
+@@ -8,7 +8,7 @@
+ 
+ 
+ if ( $mobile_rewrite = perform )
+-{ set $upstream xjw_proxy_eu_h5; }
++{ set $upstream mobile_proxy_eu; }
+ 
+ if ($http_user_agent ~* "(x11)") 
+ { set $mobile_rewrite per;  }
+@@ -18,10 +18,10 @@
+ { return 444;  }
+ 
+ if ( $mobile_rewrite != perform )
+-{ set $upstream xjw_proxy_eu_h5; }
++{ set $upstream desktop_proxy_eu; }
+ 
+ if ($host ~* pc\.(.*))
+-{ set $upstream   xjw_proxy_eu_h5; }
++{ set $upstream desktop_proxy_eu; }
+ 
+ if ($http_user_agent ~* "qihoobot|Yahoo! Slurp|Yahoo! Slurp China|YoudaoBot|Sosospider|Sogou spider|Sogou web spider|MSNBot|ia_archiver|Tomato Bot")
+ {
+@@ -85,8 +85,4 @@
+ 
+ 
+ 
+-
+-
+-
+-
+ 
+

@@ -1,0 +1,127 @@
+ESYNC_WORKER1_COMMAND_START
+
+PLAY [acc-autopay_ftp] *********************************************************
+
+TASK [nginx_sync : Notify] *****************************************************
+ok: [161.202.63.250] => {
+
+    "msg": "Syncing acc-autopay_ftp"
+}
+
+TASK [nginx_sync : include_vars] ***********************************************
+ok: [161.202.63.250]
+
+
+TASK [nginx_sync : Synchronizing Nginx] ****************************************
+changed: [161.202.63.250] => (item=conf)
+changed: [161.202.63.250] => (item=conf.d)
+changed: [161.202.63.250] => (item=data)
+
+changed: [161.202.63.250] => (item=html)
+
+TASK [all_servers : include_vars] **********************************************
+ok: [161.202.63.250]
+
+
+TASK [all_servers : Notify] ****************************************************
+ok: [161.202.63.250] => {
+    "msg": "Clearing Nginx Cache for acc-autopay_ftp"
+}
+
+
+TASK [all_servers : Copying clear_nginxcache.sh to remote hosts] ***************
+changed: [161.202.63.250]
+
+TASK [all_servers : Nginx Clear Cache] *****************************************
+changed: [161.202.63.250]
+
+
+TASK [all_servers : debug] *****************************************************
+ok: [161.202.63.250] => {
+    "script_result.stdout_lines": [
+        "-----------------------------------------------------------", 
+
+        "|                 Checking Nginx Config                   |", 
+        "-----------------------------------------------------------", 
+        "", 
+        " nginx -t ", 
+        "", 
+
+        "-----------------------------------------------------------", 
+        "|                 Stopping Nginx Process                  |", 
+        "-----------------------------------------------------------", 
+        "", 
+        " /usr/bin/killall -9 nginx ", 
+
+        "", 
+        "-----------------------------------------------------------", 
+        "|                 Clearing Proxy Cache                    |", 
+        "-----------------------------------------------------------", 
+        "", 
+
+        " /bin/rm -rf /tmp/nginx_cache ", 
+        "", 
+        "-----------------------------------------------------------", 
+        "|                Restarting Nginx Process                 |", 
+        "-----------------------------------------------------------", 
+
+        "root       471  3.5  0.0 106112  1276 ?        S    14:27   0:00 /bin/bash /bak/bin/clear_nginxcache.sh", 
+        "root       477  0.5  0.1 295672  3196 ?        Ss   14:27   0:00 nginx: master process /usr/local/nginx/sbin/nginx", 
+        "nobody     479  0.5  0.3 299924  7616 ?        S    14:27   0:00 nginx: worker process      ", 
+        "nobody     480  0.0  0.3 299924  7616 ?        S    14:27   0:00 nginx: worker process      ", 
+        "nobody     481  0.5  0.3 299924  7616 ?        S    14:27   0:00 nginx: worker process      ", 
+
+        "nobody     482  0.5  0.3 299924  7616 ?        S    14:27   0:00 nginx: worker process      ", 
+        "nobody     483  0.0  0.1 295672  3604 ?        S    14:27   0:00 nginx: cache manager process", 
+        "nobody     484  0.0  0.1 295672  3564 ?        S    14:27   0:00 nginx: cache loader process", 
+        "root       486  0.0  0.0 103316   836 ?        S    14:27   0:00 grep nginx", 
+        "             total       used       free     shared    buffers     cached", 
+
+        "Mem:          1869       1583        285          1        154       1212", 
+        "-/+ buffers/cache:        216       1652", 
+        "Swap:         2047          7       2039", 
+        "-----------------------------------------------------------", 
+        "|                     Reload SUCCESS!                     |", 
+
+        "-----------------------------------------------------------"
+    ]
+}
+
+PLAY [127.0.0.1] ***************************************************************
+
+
+TASK [sync_to_git : Synchronizing Nginx To GIT] ********************************
+changed: [127.0.0.1]
+
+TASK [sync_to_git : debug] *****************************************************
+
+ok: [127.0.0.1] => {
+    "script_result.stdout_lines": [
+        "[master 8b68d95] quincy", 
+        " 7 files changed, 120 insertions(+)", 
+        " create mode 100644 nginx/conf.d/other/autopay-ca.conf", 
+
+        " create mode 100644 nginx/conf.d/other/autopay-ftp.conf", 
+        " create mode 100644 nginx/conf.d/other/bankqr-ftp.conf", 
+        " create mode 100644 nginx/conf.d/other/callfpms-ftp.conf", 
+        " create mode 100644 nginx/conf.d/other/pms-ftp.conf", 
+        " create mode 120000 nginx/conf.d/ssl/neweb.me", 
+
+        " create mode 120000 nginx/conf.d/ssl/pms8.me", 
+        "Branch master set up to track remote branch master from origin."
+    ]
+}
+
+
+PLAY [acc-autopay_ftp] *********************************************************
+
+PLAY [127.0.0.1] ***************************************************************
+
+PLAY RECAP *********************************************************************
+
+127.0.0.1                  : ok=2    changed=1    unreachable=0    failed=0   
+161.202.63.250             : ok=8    changed=3    unreachable=0    failed=0   
+
+
+ESYNC_WORKER1_COMMAND_END
+MAX RETRIES EXECUTED, COMMAND NOT RESPONDING

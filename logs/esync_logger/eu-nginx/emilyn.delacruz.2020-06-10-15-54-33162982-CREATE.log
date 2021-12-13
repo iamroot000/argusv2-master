@@ -1,0 +1,24 @@
+FILENAME: 80-443/eu666.vip.conf
+-  
++  server {
++      listen 80;
++      server_name eu666.vip www.eu666.vip;
++      rewrite ^(.*)$ https://www.eu666.vip$1 permanent;
++  }
++  
++  server {
++      listen 443;
++      server_name eu666.vip www.eu666.vip;
++      ssl on;
++      ssl_certificate /usr/local/nginx/conf.d/ssl/eu666.vip/fullchain.pem;
++      ssl_certificate_key /usr/local/nginx/conf.d/ssl/eu666.vip/privkey.pem;
++  
++      if ($http_host !~* 'www') {
++          rewrite ^(.*)$ https://www.$http_host$1 permanent;
++      }
++  
++      include /usr/local/nginx/conf.d/include/eu_official_masterconfig.include;
++  }
++  
++  
+

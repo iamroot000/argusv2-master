@@ -1,0 +1,241 @@
+{% extends "base.html" %}
+
+{% block js %}
+    {{ block.super }} {# includes previous content in block #}
+
+    <script src="/static/js/select2/select2.full.min.js"></script>
+
+    <script src="/static/js/plugins/codemirror/codemirror.js"></script>
+    <script src="/static/js/esync/nginx-format.js" type="text/javascript"></script>
+    <script src="/static/js/plugins/codemirror/mode/javascript/javascript.js"></script>
+    <script src="/static/js/plugins/toastr/toastr.min.js"></script>
+
+    <script type="text/javascript" src="/static/multiselect/js/multiselect.min.js"></script>
+    <script src="/static/js/esync/index.js" type="text/javascript"></script>
+
+
+{% endblock %}
+
+{% block style %}
+    {{ block.super }} {# includes previous content in block #}
+
+    <link href="/static/css/plugins/codemirror/codemirror.css" rel="stylesheet">
+    <link href="/static/css/plugins/codemirror/monokai.css" rel="stylesheet">
+
+
+<style>
+
+#myBar {
+  width: 1%;
+  height: 30px;
+  background-color: #4CAF50;
+}
+
+    .CodeMirror {
+  border: 1px solid #eee;
+  height: auto;
+
+}
+.cm-s-monokai .CodeMirror-cursor {border-left: 5px solid #f8f8f0 !important;}
+
+.filename-btn {
+    margin-bottom:5px;
+}
+
+pre{
+    white-space: pre-wrap;
+}
+</style>
+{% endblock %}
+
+
+{% block title %}
+{{ HOSTGROUP }}
+{% endblock %}
+{% block header %}
+<span id="hostgroup">{{ HOSTGROUP }}</span>
+{% endblock %}
+
+
+{% block details %}
+(<span id="config_src">{{ CONFIG_SRC }}</span>)
+{% endblock %}
+
+
+
+
+{% block action %}
+
+
+    <div class="col-lg-3 pull-right">
+        <div class="input-group">
+            <input type="text" id="findstring" class="form-control"> <span class="input-group-btn"> <button type="button" class="btn btn-primary" onclick="findString();"><i class="fa fa-search"></i> Search</button></span>
+        </div>
+    </div>
+
+    <button id="test" class="btn btn-success" onclick="checkConfig();"><i class="fa fa-check"></i> Test Configuration</button>&nbsp;
+    <button id="testSync" class="btn btn-success" onclick="testSync();"><i class="fa fa-question"></i> Test Sync</button>&nbsp;
+    <button id="sync" class="btn btn-primary" onclick="sync();"><i class="fa fa-sync"></i> Sync</button>
+    <button id="clearCache" class="btn btn-info" onclick="clearCache();"><i class="fa fa-sync"></i> Clear Nginx Cache</button>&nbsp;
+    <!--<button href="#" id="find" class="btn btn-default " onclick="findString();"><i class="fa fa-search"></i> Find</button>-->
+    <button id="createFile" class="btn btn-default " onclick="createFileInvoke();"><i class="fa fa-edit"></i> Create New Config</button>
+
+
+
+
+{% endblock %}
+{% block content %}
+
+<div onkeyup="resetCounter()" onclick="resetCounter()">
+<div class="modal fade" id="progress_MODAL" role="dialog">
+    <div class="modal-dialog" style="width:1000px;">
+    <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal">&times;</button>
+          <h2 class="modal-title" style="font-weight:bold">Command Result</h2>
+        </div>
+
+    <div class="modal-body" id='modal-body'>
+        <div class="row">
+            <div class="col-lg-12">
+                <label for="prog">Result:</label>
+                <pre id="prog">
+                </pre>
+            </div>
+        </div>
+    </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        </div>
+
+    </div>
+    </div>
+</div>
+
+
+<div class="modal fade" id="newFile_MODAL" role="dialog">
+    <div class="modal-dialog" style="width:1000px;">
+    <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal">&times;</button>
+          <h2 class="modal-title" style="font-weight:bold">Create New Configuration</h2>
+        </div>
+
+    <div class="modal-body" id='modal-body'>
+        <div class="row">
+            <div class="col-lg-12 pull-right">
+                <label for="dir_new">Directory:</label>
+               <select class="form-control select2 directory"  data-placeholder="Directory" style="width:100%;" onchange="changeNewForm(this);" id="dir_new" required>
+                </select>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-lg-12 form-group" id="newDomainDiv">
+
+            </div>
+        </div>
+
+        <div class="row"  >
+            <div class="col-lg-12 form-group">
+                <pre id="generatedCode" >
+                </pre>
+
+            </div>
+            <div class="col-lg-12" id='filehandler_container' style="display=none">
+                <div id="filename_container">
+
+                </div>
+
+                <textarea id="filehandler_new">
+                            </textarea>
+            </div>
+        </div>
+
+    </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-success" id="generateButton" onclick="generateConfig()">Generate Config</button>
+            <button type="button" class="btn btn-primary" id='createButton' onclick="createConfig()" >Create Config</button>
+            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        </div>
+
+    </div>
+    </div>
+</div>
+
+<div class="row border-bottom white-bg dashboard-header">
+
+            <div class="row">
+
+                <div class="col-lg-6">
+                    <h3>Hosts</h3>
+                    <ul>
+                        {% for i in ansible_hosts %}
+                            <li>{{ i }}</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+                <div class="col-lg-6 pull-right" >
+                    <div class="col-lg-6">
+                        <label for="file">Directory:</label>
+                        <select class="form-control select2 directory"  data-placeholder="Directory" style="width:100%;" name="dir" id="dir" onchange="getfilefromdir(this);" required>
+                        </select>
+                    </div>
+                     <div class="col-lg-6" id="filediv">
+                        <label for="file">Filename:</label>
+                        <select class="form-control select2"  data-placeholder="File" style="width:100%;" name="file" id="file" onchange="getConfig(this.value);" required>
+                        </select>
+                    </div>
+
+                    <div class="col-lg-12" id="searchDiv" style="display:none">
+                        <div class="panel panel-success">
+                            <div class="panel-body" style="overflow-y: scroll; height: 200px">
+                                <div class="mid-width wrapItems" style="height:200px">
+                                    <ul id="searchResults">
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <br/>
+
+            <div class="row" id="sslrow" style="display:none">
+                <div class="col-sm-5">
+                    <select name="from[]" id="certstore" class="form-control" size="25" multiple="multiple">
+                    </select>
+                </div>
+
+                <div class="col-sm-2">
+                    <button type="button" id="certstore_rightSelected" class="btn btn-block"><i class="glyphicon glyphicon-chevron-right"></i></button>
+                    <button type="button" id="certstore_leftSelected" class="btn btn-block"><i class="glyphicon glyphicon-chevron-left"></i></button>
+                </div>
+
+                <div class="col-sm-5">
+                    <select name="to[]" id="certstore_to" class="form-control" size="25" multiple="multiple"></select>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-lg-12">
+                        <button id="delete" class="btn btn-danger  pull-right" onclick="deleteFile();" style="display:none"><i class="fa fa-exclamation"></i> Delete File</button>&nbsp;
+                        <button id="cancelEdit" class="btn btn-default" onclick="cancelEdit();" style="display:none">Cancel</button>&nbsp;
+                        <button id="editCode" class="btn btn-primary" onclick="editCode();" style="display:none"><i class="fa fa-edit"></i> Edit</button>&nbsp;
+                        <button id="saveEdit" class="btn btn-success pull-right" onclick="saveEdit();" style="display:none"><i class="fa fa-check"></i> Save</button>&nbsp;
+                </div>
+            </div>
+            <div class="row" id="textrow">
+                    <div class="col-lg-12" id="raw_grp" >
+                        <label for="raw_grp">Code <i id="readonly">(READ ONLY)</i>: </label>
+                            <textarea id="filehandler">
+                            </textarea>
+                    </div>
+            </div>
+
+</div>
+</div>
+
+{% endblock %}

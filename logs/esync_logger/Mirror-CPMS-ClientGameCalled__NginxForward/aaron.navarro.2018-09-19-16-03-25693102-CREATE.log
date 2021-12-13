@@ -1,0 +1,48 @@
+upstream ebetmlive{
+    server 40.83.121.16:8888 weight=5;
+    server 47.90.23.45:8888 weight=5;
+    server 52.69.2.223:8888 weight=5;
+    server 47.90.51.157:8888 weight=5;
+    server 118.193.185.181:8888 weight=10;
+
+}
+   server {
+        listen 80;
+        server_name ebet.gameapi.me;
+        ssl off;
+        access_log logs/ebetmlive.log main;
+        error_log  logs/ebetmlive.error.log;
+
+        if ($request_method !~* GET|POST|HEAD) {
+                return 403;
+        }
+
+        location / {
+	include whitelistIP.conf;
+	proxy_redirect          off;
+	proxy_set_header        Host            $host;
+	proxy_set_header        X-Real-IP       $remote_addr;
+	proxy_set_header        referer         "";
+	proxy_set_header        X-Forwarded-For $proxy_add_x_forwarded_for;
+	proxy_connect_timeout   30;
+	proxy_send_timeout      30;
+	proxy_read_timeout      60;
+	client_max_body_size    30m;
+	client_body_buffer_size 256k;
+	proxy_buffer_size       256k;
+	proxy_buffers           4 256k;
+	proxy_busy_buffers_size 256k;
+	proxy_temp_file_write_size      256k;
+        proxy_pass   http://ebetmlive;
+        }
+
+location ~* (conf|logs|lib|work|temp|bin)/{
+        return 444;
+        }
+
+}
+
+
+
+
+

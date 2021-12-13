@@ -1,0 +1,43 @@
+--- /ansible/nginx/hostgroups/om-test_nginx/nginx/conf.d/include/xjw3-xbet-test.include	2020-10-20 20:17:14.359477071 +0800
++++ /tmp/xjw3-xbet-test.include	2020-10-21 11:59:58.003209440 +0800
+@@ -42,38 +42,10 @@
+ 	}
+ 
+ 
+-error_page 403 302 /iph;
+-location  /iph {
+- alias html/;
+-    allow all;
+-    index index.html;
+-}
+-
+-if ($allowed_ip = yes ){ 
+- set $test ALLOW; 
+-}
+-if ($allowed_ip = no){
+- set $test BLOCK;
+-}
+-if ($allowed_country = no ){ 
+- set $test BLOCK;
+-}
+-
+-if ($allowed_country = yes ){
+- set $test ALLOW; 
+-}
+-
+-
+-
+-
+-location /ipblock {
+-  if ( $test = BLOCK ) { return 200 'BLOCK';  }
+-  if ( $test = ALLOW ) { return 200 'OK';}
+-}
+ 
+ 
+ 	location / {
+-  			deny 175.144.154.49;
++  			
+             proxy_set_header Host  $host;
+             proxy_set_header X-Forwarded-For  $remote_addr;
+             proxy_set_header X-Forwarded-Proto $scheme ;
+

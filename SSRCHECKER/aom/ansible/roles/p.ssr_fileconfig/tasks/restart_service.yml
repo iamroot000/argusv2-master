@@ -1,0 +1,23 @@
+---
+- name: Check systemctl
+  stat:
+    path: '/usr/bin/systemctl'
+  register: systemctl_loc
+
+
+- name: Restarting ssh service
+  systemd:
+    name: '{{ item }}'
+    state: restarted
+  with_items:
+    - sshd.service
+  when: 'systemctl_loc.stat.path is defined'
+
+
+
+- name: Restarting ssh (2)
+  command: '/etc/init.d/{{ item }} restart'
+  with_items:
+    - sshd
+  when: 'systemctl_loc.stat.path is not defined'
+

@@ -1,0 +1,46 @@
+ESYNC_COMMAND_START
+
+PLAY [Mirror-CPMS-ClientGameCalled__NginxForward] ******************************
+
+TASK [nginx_sync : Notify] *****************************************************
+ok: [192.168.11.126] => {
+
+    "msg": "Syncing Mirror-CPMS-ClientGameCalled__NginxForward"
+}
+
+TASK [nginx_sync : include_vars] ***********************************************
+ok: [192.168.11.126]
+
+
+TASK [nginx_sync : Synchronizing Nginx] ****************************************
+changed: [192.168.11.126] => (item=conf)
+changed: [192.168.11.126] => (item=conf.d)
+changed: [192.168.11.126] => (item=data)
+
+changed: [192.168.11.126] => (item=html)
+
+TASK [all_servers : include_vars] **********************************************
+ok: [192.168.11.126]
+
+
+TASK [all_servers : Notify] ****************************************************
+ok: [192.168.11.126] => {
+    "msg": "Clearing Nginx Cache for Mirror-CPMS-ClientGameCalled__NginxForward"
+}
+
+
+TASK [all_servers : Copying clear_nginxcache.sh to remote hosts] ***************
+changed: [192.168.11.126]
+
+TASK [all_servers : Nginx Clear Cache] *****************************************
+fatal: [192.168.11.126]: FAILED! => {"changed": true, "cmd": ["/bak/bin/clear_nginxcache.sh"], "delta": "0:00:04.061278", "end": "2018-09-27 10:35:56.384560", "msg": "non-zero return code", "rc": 1, "start": "2018-09-27 10:35:52.323282", "stderr": "nginx: [emerg] host not found in upstream \"api.pt8b2b.com\" in /usr/local/nginx/conf.d/other/ptbbet.conf:30\nnginx: configuration file /usr/local/nginx/conf/nginx.conf test failed", "stderr_lines": ["nginx: [emerg] host not found in upstream \"api.pt8b2b.com\" in /usr/local/nginx/conf.d/other/ptbbet.conf:30", "nginx: configuration file /usr/local/nginx/conf/nginx.conf test failed"], "stdout": "-----------------------------------------------------------\n|                 Checking Nginx Config                   |\n-----------------------------------------------------------\n\n nginx -t \n\n+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n|                  CONFIGURATION ERROR!                   |\n+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++", "stdout_lines": ["-----------------------------------------------------------", "|                 Checking Nginx Config                   |", "-----------------------------------------------------------", "", " nginx -t ", "", "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++", "|                  CONFIGURATION ERROR!                   |", "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"]}
+
+	to retry, use: --limit @/ansible/nginx/site.retry
+
+PLAY RECAP *********************************************************************
+192.168.11.126             : ok=6    changed=2    unreachable=0    failed=1   
+
+
+
+ESYNC_COMMAND_END
+MAX RETRIES EXECUTED, COMMAND NOT RESPONDING

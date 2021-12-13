@@ -1,0 +1,77 @@
+upstream ebet_pt {
+#        ip_hash;
+         server 203.192.151.12:8888 max_fails=2  fail_timeout=50s backup;
+	server 101.78.133.212:8888 max_fails=2  fail_timeout=50s;
+}
+
+
+###vhost-ebet_pt
+    server {
+        listen       80;#HTTP 的端口
+        server_name  .ebetpt.com game.ebtpt168.com;
+
+        root    /web/ebet_pt/web/WebRoot/;
+        charset utf-8;
+
+	if ($http_content_type ~ "Ognl") {
+		return 444;
+	}
+        access_log  logs/ebet_pt.access.log main;
+        error_log  logs/error.log  ;
+         location /stat {
+#                 healthcheck_status;
+                 allow   122.2.54.112/29;
+                 allow   122.49.213.120/29;
+                 deny all;
+ #include ip2location-block.conf;
+location ~* (conf|logs|lib|work|temp|bin)/{
+        return 444;
+        }
+
+
+}
+
+
+        error_page 497 "https://$host$uri$is_args$args";
+        ssl_session_timeout  5m;
+        ssl_ciphers   ALL:!ADH:!EXPORT56:RC4+RSA:+HIGH:+MEDIUM:+LOW:+SSLv2:+EXP;
+        ssl_prefer_server_ciphers   on;
+
+
+         location ~ ^/(WEB-INF)/ {
+            deny all;
+         }
+
+         location ~ updatelog {
+            root    /web/ebet_pt/web/WebRoot/;
+         }
+
+         location = /html/potluck-promo.html {
+         return 444;
+         }
+
+
+#location ~ .*\.(gif|jpeg|jpg|png|bmp|ico|txt|css|js|swf)$ {
+#            proxy_cache cache_two;
+#            proxy_cache_valid 200 304 12h; # for nginx proxy cache
+#            proxy_cache_valid 301 302 1m;
+#            proxy_cache_valid any 1m;
+#            proxy_cache_key $host$uri$is_args$args; #$scheme$proxy_host$request_uri; #$host$uri$is_args$args;
+#            proxy_set_header Host $host;
+#            proxy_set_header X-Forwarded_For $remote_addr;
+#            proxy_next_upstream error timeout invalid_header http_500 http_502 http_503 http_504 http_404;
+#            proxy_pass http://ebet_pt; # 反向代理
+ #       }
+
+        location / {
+            include proxy.conf.gm;
+            proxy_next_upstream timeout invalid_header http_500 http_502 http_503 http_504 http_404 error;
+            proxy_pass http://ebet_pt;# 反向代理
+        }
+
+
+
+        #error_page 404 404.jsp;
+        error_page 500 502 503 500.jsp;
+    }
+

@@ -1,0 +1,39 @@
+--- /ansible/nginx/hostgroups/sabang-prod/nginx/conf.d/include/cf381.com.include	2021-05-12 13:09:57.358652908 +0800
++++ /tmp/cf381.com.include	2021-05-12 13:16:37.346745381 +0800
+@@ -49,12 +49,12 @@
+ 
+ 
+ 	
+-	location / {
+-  			
+-           root /sean_marketing/sean-marketing/free-sign-up-4/;
+-           index index.html index.html;
+-  		   proxy_pass http://www.cf381.com;
+-
++	location ~* ^.+\.(jpg|jpeg|gif|png|bmp)$ {
++        access_log off;
++        root /sean_marketing/sean-marketing/free-sign-up-4/;
++  		index index.html index.html;
++        expires 30d;
++        break;
+         }
+ 
+ 	
+@@ -81,16 +81,4 @@
+             
+         }
+ 
+-	location ~* .*\.(png|jpg|gif|jpeg|bmp|ico|css|js|json|exe)?$ {
+-            proxy_next_upstream http_502 http_504 error timeout invalid_header;
+-            #proxy_cache cache_after;
+-            #proxy_cache_valid  200 304 12h;
+-	         #proxy_cache_key $host$uri$query_string;
+-            proxy_set_header Host  $host;
+-            proxy_set_header X-Forwarded-For  $remote_addr;
+-            proxy_set_header X-Forwarded-Proto $scheme ;
+-	         proxy_pass http://$upstream;
+-            #expires      2h;
+-       }
+-
+ 
+

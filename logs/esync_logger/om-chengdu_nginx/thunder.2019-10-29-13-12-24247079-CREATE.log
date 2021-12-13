@@ -1,0 +1,26 @@
+--- /ansible/nginx/hostgroups/om-chengdu_nginx/nginx/conf.d/other/zentao.conf	2019-10-29 13:10:54.798879360 +0800
++++ /tmp/zentao.conf	2019-10-29 13:12:24.134879360 +0800
+@@ -4,9 +4,19 @@
+         access_log logs/90.access.log main;
+         error_log  logs/90.error.log;
+         location ~ .*\.(js|css|jpg|jpeg|gif|png|ico|pdf|txt)$ {
+-               try_files $uri $uri/ /index.html =404;
+-               index  index.html index.htm index.php;
+-               proxy_pass http://zentao.neweb.me/;
++               proxy_redirect          off; 
++               proxy_set_header        Host            $host; 
++proxy_set_header        X-Forwarded-For $proxy_add_x_forwarded_for; 
++proxy_connect_timeout   80; 
++proxy_send_timeout      80; 
++proxy_read_timeout      80; 
++client_max_body_size    35m;
++client_body_buffer_size 256k;
++proxy_buffer_size       256k;
++proxy_buffers           4 256k;
++proxy_busy_buffers_size 256k;
++proxy_temp_file_write_size      256k;
++               proxy_pass http://zentao.neweb.me;
+ 
+          }
+  
+

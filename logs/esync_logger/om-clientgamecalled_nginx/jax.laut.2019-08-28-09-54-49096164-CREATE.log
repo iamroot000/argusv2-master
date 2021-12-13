@@ -1,0 +1,34 @@
+upstream callback-ebet-galaxy {
+       server 101.78.133.212:8495 max_fails=2  fail_timeout=30s weight=5 backup;
+       server 205.177.199.12:8495 max_fails=2  fail_timeout=30s weight=10;
+	   server 58.64.207.211:8495 max_fails=2  fail_timeout=30s backup;
+	   server 59.148.22.111:8495 max_fails=2  fail_timeout=30s backup;
+
+}
+
+
+server {
+	listen       80;
+	server_name cb.ebet.authapi.net;
+	index   index.jsp index.html index.htm;
+
+	charset utf-8;
+
+	access_log  logs/cb.ebet.authapi.net.access.log main;
+  	access_log  logs/cb.ebet.authapi.net.logstash.access.log logstash;
+	error_log  logs/cb.ebet.authapi.net.error.log ;
+
+	location ~ ^/(WEB-INF)/ {
+		deny all;
+	}
+
+	location / {
+        include /usr/local/nginx/conf.d/include/whiteEBETgame.include;
+		include /usr/local/nginx/conf.d/include/proxy.conf.fwd.include;
+		proxy_pass http://callback-ebet-galaxy;
+	}
+}
+
+
+
+

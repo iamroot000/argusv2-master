@@ -1,0 +1,36 @@
+--- /ansible/nginx/hostgroups/om-clientgamecalled_nginx/nginx/conf.d/other/cpms-front-xj.conf	2019-10-04 14:04:53.875348667 +0800
++++ /tmp/cpms-front-xj.conf	2019-10-04 14:05:53.994348667 +0800
+@@ -1,4 +1,32 @@
++upstream cpms-front-xj-real {
++       server 101.78.133.212:8505 max_fails=2  fail_timeout=30s weight=5 backup;
++       server 205.177.199.12:8505 max_fails=2  fail_timeout=30s weight=10;
++           server 58.64.207.211:8505 max_fails=2  fail_timeout=30s backup;
++           server 59.148.22.111:8505 max_fails=2  fail_timeout=30s backup;
+ 
++}
++
++
++server {
++        listen       80;
++        server_name xjclient.987hm.com;
++        index   index.jsp index.html index.htm;
++
++        charset utf-8;
++
++        access_log  logs/xjclient.987hm.com.access.log main;
++        access_log  logs/xjclient.987hm.com.logstash.access.log logstash;
++        error_log  logs/xjclient.987hm.com.error.log ;
++
++        location ~ ^/(WEB-INF)/ {
++                deny all;
++        }
++
++        location / {
++                include /usr/local/nginx/conf.d/proxy.conf.gm.include;
++                proxy_pass http://cpms-front-xj-cstest;
++        }
++}
+ 
+ 
+ 
+

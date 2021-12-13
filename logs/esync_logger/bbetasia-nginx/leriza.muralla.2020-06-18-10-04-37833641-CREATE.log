@@ -1,0 +1,24 @@
+FILENAME: 80-443/bbyz88.net.conf
+-  
++  server {
++      listen 80;
++      server_name bbyz88.net www.bbyz88.net;
++      rewrite ^(.*)$ https://www.bbyz88.net$1 permanent;
++  }
++  
++  server {
++      listen 443;
++      server_name bbyz88.net www.bbyz88.net;
++      ssl on;
++      ssl_certificate /usr/local/nginx/conf.d/ssl/bbyz88.net/fullchain.pem;
++      ssl_certificate_key /usr/local/nginx/conf.d/ssl/bbyz88.net/privkey.pem;
++  
++      if ($http_host !~* 'www') {
++          rewrite ^(.*)$ https://www.$http_host$1 permanent;
++      }
++  
++      include /usr/local/nginx/conf.d/include/bbetasia_official_masterconfig.include;
++  }
++  
++  
+

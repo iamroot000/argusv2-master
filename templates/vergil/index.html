@@ -1,0 +1,90 @@
+{% extends "base.html" %}
+
+{% block js %}
+    {{ block.super }} {# includes previous content in block #}
+    <script src="/static/js/plugins/chartJs/Chart.js"></script>
+    <script src="/static/js/plugins/datapicker/bootstrap-datepicker.js"></script>
+    <script src="/static/js/select2/select2.full.min.js"></script>
+    <script src="/static/js/vergil/index.js"></script>
+{% endblock %}
+
+{% block style %}
+    {{ block.super }} {# includes previous content in block #}
+     <link href="/static/css/plugins/datapicker/datepicker3.css" rel="stylesheet">
+{% endblock %}
+
+{% block title %}
+{% block header %}
+Vergil Analytics
+{% endblock %}
+{% endblock %}
+
+{% block details %}
+Data Visualization: Aaron Navarro<br/>
+Query Optimization API: Nicholas Tumbaga<br/>
+ELK Stack: Jommel Valdez
+{% endblock %}
+
+{% block action %}
+
+
+{% endblock %}
+
+{% block content %}
+
+
+<div class="row border-bottom white-bg dashboard-header">
+
+    <div class="row">
+        <div class="col-lg-1">
+            <label for="bu">Business Unit:</label>
+            <select class="form-control select2 directory"  data-placeholder="Business Unit" style="width:100%;" name="bu" id="bu" required>
+                {% for k in bu %}
+                    <option value="{{ k }}">{{ k }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="col-lg-2">
+            <label for="query">Query:</label>
+            <select class="form-control select2 directory"  data-placeholder="Query" style="width:100%;" name="query" id="query" required>
+                {% for k,v in query.items %}
+                    <option value="{{ k }}">{{ v.function_name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="col-lg-3">
+            <label>Range select: </label>
+            <div class="input-daterange input-group" id="datepicker">
+                <input type="text" class="input form-control" id="start_date" />
+                <span class="input-group-addon">to</span>
+                <input type="text" class="input form-control" id="end_date"  />
+            </div>
+        </div>
+        <div class="col-lg-3">
+            <label>Time Interval: </label>
+            <div class=" input-group" >
+                <input type="text" class="input form-control" id="time_interval" value="15"/>
+                <span class="input-group-addon"></span>
+                <select class="form-control select2 directory"  data-placeholder="time_seg" name="time_seg" id="time_seg">
+                    <option value="m" selected>Minutes(s)</option>
+                    <option value="h">Hour(s)</option>
+                </select>
+            </div>
+        </div>
+
+
+        <div class="col-lg-3" style="padding-top:15px">
+            <button class="btn btn-primary pull-right" onclick="changeChart();"><i class="fa fa-sync"></i> Generate Data</button>
+        </div>
+    </div>
+</div>
+
+<div class="row border-bottom white-bg dashboard-header">
+<div id="cwrapper" style="position: relative;">
+    <canvas id="myChart"></canvas>
+</div>
+
+</div>
+
+
+{% endblock %}

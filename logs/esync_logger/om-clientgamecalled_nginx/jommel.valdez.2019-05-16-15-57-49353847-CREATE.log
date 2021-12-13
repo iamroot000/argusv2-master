@@ -1,0 +1,111 @@
+--- /ansible/nginx/hostgroups/om-clientgamecalled_nginx/nginx/conf.d/other/mg-gameapi.conf	2019-05-16 09:55:53.160749908 +0800
++++ /tmp/mg-gameapi.conf	2019-05-16 15:57:49.242118668 +0800
+@@ -11,6 +11,7 @@
+         charset utf-8;
+ 
+         access_log  logs/mg_api.access.log main ;
++        access_log  logs/mg_api.logstash.access.log logstash ;
+         error_log  logs/mg_api.error.log ;
+ 
+         if ($request_method !~* GET|POST|HEAD) {
+@@ -53,6 +54,7 @@
+         charset utf-8;
+ 
+         access_log  logs/mggameapi-hm.access.log main; 
++        access_log  logs/mggameapi-hm.logstash.access.log logstash; 
+         location ~ ^/(WEB-INF)/ {
+         deny all;
+         }
+@@ -92,6 +94,7 @@
+         charset utf-8;
+ 
+         access_log  logs/mggameapi-eu.access.log main;
++        access_log  logs/mggameapi-eu.logstash.access.log logstash;
+         error_log  logs/mggameapi-eu.error.log ;
+ 
+         if ($request_method !~* GET|POST|HEAD) {
+@@ -133,6 +136,7 @@
+         charset utf-8;
+ 
+         access_log  logs/mggameapi-b8a.access.log main;
++        access_log  logs/mggameapi-b8a.logstash.access.log logstash;
+         error_log  logs/mggameapi-b8a.error.log ;
+         location ~ ^/(WEB-INF)/ {
+         deny all;
+@@ -169,6 +173,7 @@
+         charset utf-8;
+ 
+         access_log  logs/mggameapi-msgreen.access.log main;
++        access_log  logs/mggameapi-msgreen.logstash.access.log logstash;
+         error_log  logs/mggameapi-msgreen.error.log ;
+         location ~ ^/(WEB-INF)/ {
+         deny all;
+@@ -205,6 +210,7 @@
+         charset utf-8;
+ 
+         access_log  logs/mggameapi-jsh.access.log main;
++        access_log  logs/mggameapi-jsh.logstash.access.log logstash;
+         error_log  logs/mggameapi-jsh.error.log ;
+         location ~ ^/(WEB-INF)/ {
+         deny all;
+@@ -230,43 +236,6 @@
+         error_page   500 502 503 500.jsp;
+         }
+ 
+-#mggameapi-blb
+-upstream mggameapi-blb {
+- #       server 101.78.133.212:8234 max_fails=2  fail_timeout=30s backup;
+-        server 205.177.199.12:8234 max_fails=2  fail_timeout=30s;
+-}
+-
+-server {
+-        listen     80;
+-        server_name mgapi.888blb.net;
+-        index index.jsp index.html index.htm;
+-        charset utf-8;
+-
+-        if ($request_method !~* GET|POST|HEAD) {
+-                return 403;
+-        }
+-
+-        access_log  logs/mggameapi-blb.access.log main;
+-        error_log  logs/mggameapi-blb.error.log ;
+-        location ~ ^/(WEB-INF)/ {
+-        deny all;
+-        }
+-
+-        location / {
+-	include /usr/local/nginx/conf.d/include/whitelistIP.include;
+-            include /usr/local/nginx/conf.d/include/proxy.conf.gm.include;
+-            proxy_pass http://mggameapi-blb;
+-        }
+-
+-location ~* (conf|logs|lib|work|temp|bin)/{
+-        return 444;
+-        }
+-
+-
+-
+-        error_page   404 404.jsp;
+-        error_page   500 502 503 500.jsp;
+-        }
+ 
+ #mggameapi-xbet
+ upstream mggameapi-xbet {
+@@ -281,6 +250,7 @@
+         charset utf-8;
+ 
+         access_log  logs/mggameapi-xbet.access.log main;
++        access_log  logs/mggameapi-xbet.logstash.access.log logstash;
+         error_log  logs/mggameapi-xbet.error.log ;
+         location ~ ^/(WEB-INF)/ {
+         deny all;
+@@ -320,6 +290,7 @@
+         charset utf-8;
+ 
+         access_log  logs/mggameapi-lisboa.access.log main;
++        access_log  logs/mggameapi-lisboa.logstash.access.log logstash;
+         error_log  logs/mggameapi-lisboa.error.log ;
+         location ~ ^/(WEB-INF)/ {
+         deny all;
+

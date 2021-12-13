@@ -1,0 +1,20 @@
+---
+  - name: Source .bashrc and /etc/profile                         #source .bashrc and /etc/profile
+    shell: source {{ item }}
+    args:
+     executable: /bin/bash
+    with_items:
+     - .bashrc
+     - /etc/profile
+#  - name: Network service restart
+#    service:
+#     name: network
+#     state: restarted
+  - name: Changing root password                                 #changing root password
+    shell: echo -e "{{ forwarding_password }}\n{{ forwarding_password }}" | passwd root
+  - name: Completed
+    debug:
+     msg:
+      - "Server Initialization Complete"
+      - "Kindly source again .bashrc and /etc/profile"
+      - "Please test ssh by accessing the newly initialized server in another terminal. If able to access, you may now reboot the server."

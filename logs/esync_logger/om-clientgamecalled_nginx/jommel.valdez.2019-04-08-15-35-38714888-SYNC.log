@@ -1,0 +1,173 @@
+ESYNC_WORKER1_COMMAND_START
+
+PLAY [om-clientgamecalled_nginx] ***********************************************
+
+TASK [nginx_sync : Notify] *****************************************************
+ok: [119.9.110.31] => {
+
+    "msg": "Syncing om-clientgamecalled_nginx"
+}
+ok: [23.99.114.30] => {
+    "msg": "Syncing om-clientgamecalled_nginx"
+}
+
+
+TASK [nginx_sync : include_vars] ***********************************************
+ok: [119.9.110.31]
+ok: [23.99.114.30]
+
+
+TASK [nginx_sync : Synchronizing Nginx] ****************************************
+ok: [119.9.110.31] => (item=conf)
+ok: [23.99.114.30] => (item=conf)
+changed: [119.9.110.31] => (item=conf.d)
+changed: [23.99.114.30] => (item=conf.d)
+
+ok: [119.9.110.31] => (item=data)
+ok: [23.99.114.30] => (item=data)
+ok: [119.9.110.31] => (item=html)
+ok: [23.99.114.30] => (item=html)
+
+
+TASK [all_servers : include_vars] **********************************************
+ok: [119.9.110.31]
+ok: [23.99.114.30]
+
+TASK [all_servers : Notify] ****************************************************
+
+ok: [119.9.110.31] => {
+    "msg": "Clearing Nginx Cache for om-clientgamecalled_nginx"
+}
+ok: [23.99.114.30] => {
+    "msg": "Clearing Nginx Cache for om-clientgamecalled_nginx"
+
+}
+
+TASK [all_servers : Copying clear_nginxcache.sh to remote hosts] ***************
+ok: [23.99.114.30]
+ok: [119.9.110.31]
+
+
+TASK [all_servers : Nginx Clear Cache] *****************************************
+changed: [23.99.114.30]
+changed: [119.9.110.31]
+
+
+TASK [all_servers : debug] *****************************************************
+ok: [119.9.110.31] => {
+    "script_result.stdout_lines": [
+        "-----------------------------------------------------------", 
+        "|                 Checking Nginx Config                   |", 
+
+        "-----------------------------------------------------------", 
+        "", 
+        " nginx -t ", 
+        "", 
+        "-----------------------------------------------------------", 
+
+        "|                 Stopping Nginx Process                  |", 
+        "-----------------------------------------------------------", 
+        "", 
+        " /usr/bin/killall -9 nginx ", 
+        "", 
+
+        "-----------------------------------------------------------", 
+        "|                 Clearing Proxy Cache                    |", 
+        "-----------------------------------------------------------", 
+        "", 
+        " /bin/rm -rf /tmp/nginx_cache ", 
+
+        "", 
+        "-----------------------------------------------------------", 
+        "|                Restarting Nginx Process                 |", 
+        "-----------------------------------------------------------", 
+        "root     19416  0.0  0.0 106064  1432 ?        S    15:35   0:00 /bin/bash /bak/bin/clear_nginxcache.sh", 
+
+        "root     19578  0.0  0.1 464688  5552 ?        Ss   15:36   0:00 nginx: master process /usr/local/nginx/sbin/nginx", 
+        "nobody   19579  0.0  0.3 471256 13900 ?        S    15:36   0:00 nginx: worker process      ", 
+        "nobody   19580  0.0  0.3 471256 13900 ?        S    15:36   0:00 nginx: worker process      ", 
+        "nobody   19581  0.0  0.3 471256 13900 ?        S    15:36   0:00 nginx: worker process      ", 
+        "nobody   19583  0.0  0.3 471256 13900 ?        S    15:36   0:00 nginx: worker process      ", 
+
+        "nobody   19584  0.0  0.1 464688  6056 ?        S    15:36   0:00 nginx: cache manager process", 
+        "nobody   19585  0.0  0.1 464688  5928 ?        S    15:36   0:00 nginx: cache loader process", 
+        "root     19622  0.0  0.0 103244   876 ?        S    15:36   0:00 grep nginx", 
+        "             total       used       free     shared    buffers     cached", 
+        "Mem:          3954       3587        366          2        370        387", 
+
+        "-/+ buffers/cache:       2829       1124", 
+        "Swap:            0          0          0", 
+        "-----------------------------------------------------------", 
+        "|                     Reload SUCCESS!                     |", 
+        "-----------------------------------------------------------"
+
+    ]
+}
+ok: [23.99.114.30] => {
+    "script_result.stdout_lines": [
+        "-----------------------------------------------------------", 
+
+        "|                 Checking Nginx Config                   |", 
+        "-----------------------------------------------------------", 
+        "", 
+        " nginx -t ", 
+        "", 
+
+        "-----------------------------------------------------------", 
+        "|                 Stopping Nginx Process                  |", 
+        "-----------------------------------------------------------", 
+        "", 
+        " /usr/bin/killall -9 nginx ", 
+
+        "", 
+        "-----------------------------------------------------------", 
+        "|                 Clearing Proxy Cache                    |", 
+        "-----------------------------------------------------------", 
+        "", 
+
+        " /bin/rm -rf /tmp/nginx_cache ", 
+        "", 
+        "-----------------------------------------------------------", 
+        "|                Restarting Nginx Process                 |", 
+        "-----------------------------------------------------------", 
+
+        "root      93962  0.0  0.0   9120   652 ?        Ss   Mar19   0:00 /sbin/dhclient -H om-clientgamecalled_nginx2.hk.az.monaco1.me -1 -q -lf /var/lib/dhclient/dhclient-eth0.leases -pf /var/run/dhclient-eth0.pid eth0", 
+        "root     120140  0.0  0.0 106120  1292 ?        S    15:35   0:00 /bin/bash /bak/bin/clear_nginxcache.sh", 
+        "root     120161  0.0  0.1 462544  5424 ?        Ss   15:35   0:00 nginx: master process /usr/local/nginx/sbin/nginx", 
+        "nobody   120162  0.5  0.4 469112 14136 ?        S    15:35   0:00 nginx: worker process      ", 
+        "nobody   120164  0.5  0.4 469112 14196 ?        S    15:35   0:00 nginx: worker process      ", 
+
+        "nobody   120165  0.5  0.4 469112 14264 ?        S    15:35   0:00 nginx: worker process      ", 
+        "nobody   120166  0.5  0.4 469112 14256 ?        S    15:35   0:00 nginx: worker process      ", 
+        "nobody   120167  0.0  0.1 462544  5832 ?        S    15:35   0:00 nginx: cache manager process", 
+        "nobody   120168  0.0  0.1 462544  5780 ?        S    15:35   0:00 nginx: cache loader process", 
+        "root     120170  0.0  0.0 103328   848 ?        S    15:35   0:00 grep nginx", 
+
+        "             total       used       free     shared    buffers     cached", 
+        "Mem:          3440       2728        712          2        190        968", 
+        "-/+ buffers/cache:       1568       1872", 
+        "Swap:            0          0          0", 
+        "-----------------------------------------------------------", 
+
+        "|                     Reload SUCCESS!                     |", 
+        "-----------------------------------------------------------"
+    ]
+}
+
+
+PLAY [127.0.0.1] ***************************************************************
+
+TASK [sync_to_git : Synchronizing Nginx To GIT] ********************************
+fatal: [127.0.0.1]: FAILED! => {"changed": true, "cmd": "git add .\n git commit -m \"jommel.valdez\"\n git push\n git push -u origin master", "delta": "0:00:00.895138", "end": "2019-04-08 15:36:11.179785", "msg": "non-zero return code", "rc": 128, "start": "2019-04-08 15:36:10.284647", "stderr": "fatal: Authentication failed for 'http://om:VA1913wm@git.neweb.me/nginx_cloud/om-clientgamecalled_nginx.git/'\nfatal: Authentication failed for 'http://om:VA1913wm@git.neweb.me/nginx_cloud/om-clientgamecalled_nginx.git/'", "stderr_lines": ["fatal: Authentication failed for 'http://om:VA1913wm@git.neweb.me/nginx_cloud/om-clientgamecalled_nginx.git/'", "fatal: Authentication failed for 'http://om:VA1913wm@git.neweb.me/nginx_cloud/om-clientgamecalled_nginx.git/'"], "stdout": "[master 26d175b] jommel.valdez\n 20 files changed, 85 insertions(+), 140 deletions(-)", "stdout_lines": ["[master 26d175b] jommel.valdez", " 20 files changed, 85 insertions(+), 140 deletions(-)"]}
+	to retry, use: --limit @/ansible/nginx/site.retry
+
+
+PLAY RECAP *********************************************************************
+119.9.110.31               : ok=8    changed=2    unreachable=0    failed=0   
+127.0.0.1                  : ok=0    changed=0    unreachable=0    failed=1   
+23.99.114.30               : ok=8    changed=2    unreachable=0    failed=0   
+
+
+
+ESYNC_WORKER1_COMMAND_END
+MAX RETRIES EXECUTED, COMMAND NOT RESPONDING

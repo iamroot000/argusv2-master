@@ -1,0 +1,88 @@
+--- /ansible/nginx/hostgroups/ruibo-nginx/nginx/conf.d/include/ruibo_official_masterconfig.include	2020-02-20 11:13:01.339109532 +0800
++++ /tmp/ruibo_official_masterconfig.include	2020-07-02 07:07:56.885613122 +0800
+@@ -1,25 +1,26 @@
++
+ index   index.jsp index.html index.htm;
+-access_log  logs/xjw2_jbl.access.log main;
+-access_log  logs/xjw2_jbl.logstash.access.log logstash;
++access_log  logs/xjw2_maintenance.access.log main;
++access_log  logs/xjw2_maintenance.logstash.access.log logstash;
+ 
+ if ($http_user_agent ~* "(iPhone|iPad|iPod|Linux|android|Android|bb\d+|meego).+mobile|Android|MobileSafari|iPhone|iPad|iPod|Linux|android|avantgo|bada\/|blackberry|blazer|compal|elaine|fennec|hiptop|iemobile|ip(hone|od)|iris|kindle|lge |maemo|midp|mmp|netfront|opera m(ob|in)i|palm( os)?|phone|p(ixi|re)\/|plucker|pocket|psp|series(4|6)0|symbian|treo|up\.(browser|link)|vodafone|wap|windows (ce|phone)|xda|xiino|android 3.0") {
+ set $mobile_rewrite perform;
+ } 
+ 
+ if ( $mobile_rewrite = perform ){
+-set $upstream xjw2-jbl-pro-h5; 
++set $upstream h5; 
+ }
+ 
+ if ($http_user_agent ~* "(x11)") {
+-set $mobile_rewrite per;  
++set $mobile_rewrite pc;  
+ }
+ 
+ if ( $mobile_rewrite != perform ){
+-set $upstream xjw2-jbl-pro-web; 
++set $upstream pc; 
+ }
+ 
+ if ($host ~* pc\.(.*)){ 
+-set $upstream xjw2-jbl-pro-web; 
++set $upstream pc; 
+ }
+ 
+ if ($http_user_agent ~* "qihoobot|Yahoo! Slurp|Yahoo! Slurp China|YoudaoBot|Sosospider|Sogou spider|Sogou web spider|MSNBot|ia_archiver|Tomato Bot")
+@@ -41,10 +42,6 @@
+ return 444; 
+ }
+ 
+-	location /mstest/ {
+-  		return 404;
+-	}
+-
+ error_page 403 302 /iph;
+ location  /iph {
+ 	alias html/kbl;
+@@ -92,30 +89,17 @@
+ 
+ location / {
+ 	if ( $test = BLOCK ) { return 403;  }
+-
+-	proxy_set_header Host				$host;
+-	proxy_set_header X-Forwarded-For	$remote_addr;
+-	proxy_set_header X-Forwarded-Proto	$scheme ;
+-	#proxy_connect_timeout   1800;
+-	#proxy_send_timeout      1800;
+-	#proxy_read_timeout      1800;
+-  	#proxy_ignore_client_abort on;
+-	proxy_pass http://$upstream;
++	if ( $upstream = pc ) {
++	  root html/kb_maintenance/pc;
++  
++    } 
++    if ( $upstream = h5 ){
++      root html/kb_maintenance/h5;
++ 
++    }
++    index index.html;
++    
+ }
+ 
+ 
+-location /websocket {
+-	proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+-	proxy_set_header X-Real-IP  $remote_addr;
+-	proxy_next_upstream http_502 http_504 http_404 error timeout invalid_header;
+-	proxy_set_header Host $host:$server_port;
+-	proxy_http_version 1.1;
+-	proxy_set_header Upgrade $http_upgrade;
+-	proxy_set_header Connection $connection_upgrade;
+-	proxy_connect_timeout   1800;
+-	proxy_send_timeout      1800;
+-	proxy_read_timeout      1800;
+-	proxy_pass http://9280;
+-}
+-
+ 
+

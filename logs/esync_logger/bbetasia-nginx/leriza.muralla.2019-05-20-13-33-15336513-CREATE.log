@@ -1,0 +1,24 @@
+FILENAME: 80-443/jsh181.com.conf
+-  
++  server {
++      listen 80;
++      server_name jsh181.com www.jsh181.com;
++      rewrite ^(.*)$ https://www.jsh181.com$1 permanent;
++  }
++  
++  server {
++      listen 443;
++      server_name jsh181.com www.jsh181.com;
++      ssl on;
++      ssl_certificate /usr/local/nginx/conf.d/ssl/jsh181.com/fullchain.pem;
++      ssl_certificate_key /usr/local/nginx/conf.d/ssl/jsh181.com/privkey.pem;
++  
++      if ($http_host !~* 'www') {
++          rewrite ^(.*)$ https://www.$http_host$1 permanent;
++      }
++  
++      include /usr/local/nginx/conf.d/include/bbetasia_official_masterconfig.include;
++  }
++  
++  
+

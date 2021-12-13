@@ -1,0 +1,138 @@
+ESYNC_WORKER1_COMMAND_START
+
+PLAY [acc-autopay_ftp] *********************************************************
+
+TASK [nginx_sync : Notify] *****************************************************
+ok: [119.9.106.122] => {
+
+    "msg": "Syncing acc-autopay_ftp"
+}
+ok: [161.202.63.250] => {
+    "msg": "Syncing acc-autopay_ftp"
+}
+
+
+TASK [nginx_sync : include_vars] ***********************************************
+ok: [119.9.106.122]
+ok: [161.202.63.250]
+
+
+TASK [nginx_sync : Synchronizing Nginx] ****************************************
+changed: [119.9.106.122] => (item=conf)
+ok: [161.202.63.250] => (item=conf)
+changed: [119.9.106.122] => (item=conf.d)
+changed: [161.202.63.250] => (item=conf.d)
+
+changed: [119.9.106.122] => (item=data)
+ok: [161.202.63.250] => (item=data)
+changed: [119.9.106.122] => (item=html)
+ok: [161.202.63.250] => (item=html)
+
+
+TASK [all_servers : include_vars] **********************************************
+ok: [119.9.106.122]
+ok: [161.202.63.250]
+
+TASK [all_servers : Notify] ****************************************************
+
+ok: [119.9.106.122] => {
+    "msg": "Clearing Nginx Cache for acc-autopay_ftp"
+}
+ok: [161.202.63.250] => {
+    "msg": "Clearing Nginx Cache for acc-autopay_ftp"
+
+}
+
+TASK [all_servers : Copying clear_nginxcache.sh to remote hosts] ***************
+changed: [119.9.106.122]
+ok: [161.202.63.250]
+
+
+TASK [all_servers : Nginx Clear Cache] *****************************************
+fatal: [119.9.106.122]: FAILED! => {"changed": true, "cmd": ["/bak/bin/clear_nginxcache.sh"], "delta": "0:00:00.012741", "end": "2019-03-20 13:25:14.136995", "msg": "non-zero return code", "rc": 1, "start": "2019-03-20 13:25:14.124254", "stderr": "nginx: [emerg] unknown directive \"geoip_country\" in /usr/local/nginx/conf.d/global/geoip.conf:2\nnginx: configuration file /usr/local/nginx/conf/nginx.conf test failed", "stderr_lines": ["nginx: [emerg] unknown directive \"geoip_country\" in /usr/local/nginx/conf.d/global/geoip.conf:2", "nginx: configuration file /usr/local/nginx/conf/nginx.conf test failed"], "stdout": "-----------------------------------------------------------\n|                 Checking Nginx Config                   |\n-----------------------------------------------------------\n\n nginx -t \n\n+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n|                  CONFIGURATION ERROR!                   |\n+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++", "stdout_lines": ["-----------------------------------------------------------", "|                 Checking Nginx Config                   |", "-----------------------------------------------------------", "", " nginx -t ", "", "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++", "|                  CONFIGURATION ERROR!                   |", "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"]}
+changed: [161.202.63.250]
+
+
+TASK [all_servers : debug] *****************************************************
+ok: [161.202.63.250] => {
+    "script_result.stdout_lines": [
+        "-----------------------------------------------------------", 
+        "|                 Checking Nginx Config                   |", 
+
+        "-----------------------------------------------------------", 
+        "", 
+        " nginx -t ", 
+        "", 
+        "-----------------------------------------------------------", 
+
+        "|                 Stopping Nginx Process                  |", 
+        "-----------------------------------------------------------", 
+        "", 
+        " /usr/bin/killall -9 nginx ", 
+        "", 
+
+        "-----------------------------------------------------------", 
+        "|                 Clearing Proxy Cache                    |", 
+        "-----------------------------------------------------------", 
+        "", 
+        " /bin/rm -rf /tmp/nginx_cache ", 
+
+        "", 
+        "-----------------------------------------------------------", 
+        "|                Restarting Nginx Process                 |", 
+        "-----------------------------------------------------------", 
+        "root     20214  3.5  0.0 106112  1276 ?        S    13:25   0:00 /bin/bash /bak/bin/clear_nginxcache.sh", 
+
+        "root     20220  0.3  0.1 295672  3192 ?        Ss   13:25   0:00 nginx: master process /usr/local/nginx/sbin/nginx", 
+        "nobody   20222  0.0  0.3 299924  7612 ?        S    13:25   0:00 nginx: worker process      ", 
+        "nobody   20223  0.0  0.3 299924  7612 ?        S    13:25   0:00 nginx: worker process      ", 
+        "nobody   20224  0.3  0.3 299924  7612 ?        S    13:25   0:00 nginx: worker process      ", 
+        "nobody   20225  0.0  0.3 299924  7612 ?        S    13:25   0:00 nginx: worker process      ", 
+
+        "nobody   20226  0.0  0.1 295672  3600 ?        S    13:25   0:00 nginx: cache manager process", 
+        "nobody   20227  0.0  0.1 295672  3560 ?        S    13:25   0:00 nginx: cache loader process", 
+        "root     20229  0.0  0.0 103316   840 ?        S    13:25   0:00 grep nginx", 
+        "             total       used       free     shared    buffers     cached", 
+        "Mem:          1869       1593        275          1        157       1213", 
+
+        "-/+ buffers/cache:        222       1646", 
+        "Swap:         2047          7       2039", 
+        "-----------------------------------------------------------", 
+        "|                     Reload SUCCESS!                     |", 
+        "-----------------------------------------------------------"
+
+    ]
+}
+
+PLAY [127.0.0.1] ***************************************************************
+
+
+TASK [sync_to_git : Synchronizing Nginx To GIT] ********************************
+changed: [127.0.0.1]
+
+TASK [sync_to_git : debug] *****************************************************
+ok: [127.0.0.1] => {
+
+    "script_result.stdout_lines": [
+        "# On branch master", 
+        "nothing to commit, working directory clean", 
+        "Branch master set up to track remote branch master from origin."
+    ]
+
+}
+
+PLAY [acc-autopay_ftp] *********************************************************
+
+PLAY [127.0.0.1] ***************************************************************
+
+	to retry, use: --limit @/ansible/nginx/site.retry
+
+PLAY RECAP *********************************************************************
+119.9.106.122              : ok=6    changed=2    unreachable=0    failed=1   
+127.0.0.1                  : ok=2    changed=1    unreachable=0    failed=0   
+
+161.202.63.250             : ok=8    changed=2    unreachable=0    failed=0   
+
+
+ESYNC_WORKER1_COMMAND_END
+MAX RETRIES EXECUTED, COMMAND NOT RESPONDING

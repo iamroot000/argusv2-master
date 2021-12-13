@@ -1,0 +1,20 @@
+--- /srv/Mirror-CPMS-ClientGameCalled__NginxForward/nginx/conf.d/other/callback-ebet-lisboa.conf	2019-01-03 10:55:54.118482402 +0800
++++ /tmp/callback-ebet-lisboa.conf	2019-01-03 10:57:57.977761964 +0800
+@@ -13,7 +13,15 @@
+ server {
+     listen 80;
+     server_name  cb.ebetlisboa.authapi.net;
+-    rewrite     ^(.*)   https://$http_$host$1 permanent;
++        charset utf-8;
++        access_log  logs/realcallbackebetlisboa.access.log main;
++        error_log  logs/realcallbackebetlisboa.error.log  ;
++
++        location / {
++        include /usr/local/nginx/conf.d/include/proxy.conf.fwd.include ;
++        proxy_next_upstream http_500 http_502 http_503 http_504 http_404 timeout invalid_header error;
++        proxy_pass http://realcallbackebetlisboa;
++       }	
+ }
+ 
+ server {
+

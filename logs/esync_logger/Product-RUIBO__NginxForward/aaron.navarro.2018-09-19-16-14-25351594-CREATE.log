@@ -1,0 +1,54 @@
+FILENAME: 80-443/klb8.net.conf
+-  server {
+-      listen 80;
+-      server_name mkq.klb8.net;
+-      rewrite ^(.*)$ https://mkq.klb8.net$1 permanent;
+-  }
+-  
+-  server {
+-      listen 443;
+-      server_name mkq.klb8.net;
+-      ssl on;
+-      ssl_certificate /usr/local/nginx/conf.d/ssl/klb8.net/fullchain.pem;
+-      ssl_certificate_key /usr/local/nginx/conf.d/ssl/klb8.net/privkey.pem;
+-      include /usr/local/nginx/conf.d/include/ruibo_official_masterconfig.include;
+-  }
+-  
+-  
++  server {
++      listen 80;
++      server_name mkq.klb8.net;
++      rewrite ^(.*)$ https://mkq.klb8.net$1 permanent;
++  }
++  
++  server {
++      listen 443;
++      server_name mkq.klb8.net;
++      ssl on;
++      ssl_certificate /usr/local/nginx/conf.d/ssl/klb8.net/fullchain.pem;
++      ssl_certificate_key /usr/local/nginx/conf.d/ssl/klb8.net/privkey.pem;
++      include /usr/local/nginx/conf.d/include/ruibo_spzhao_masterconfig.include;
++  }
++  
++  
+server {
+    listen 80;
+    server_name klb8.net www.klb8.net;
+    rewrite ^(.*)$ https://www.klb8.net$1 permanent;
+}
+
+server {
+    listen 443;
+    server_name klb8.net www.klb8.net;
+    ssl on;
+    ssl_certificate /usr/local/nginx/conf.d/ssl/klb8.net/fullchain.pem;
+    ssl_certificate_key /usr/local/nginx/conf.d/ssl/klb8.net/privkey.pem;
+
+    if ($http_host !~* 'www') {
+        rewrite ^(.*)$ https://www.$http_host$1 permanent;
+    }
+
+    include /usr/local/nginx/conf.d/include/ruibo_official_masterconfig.include;
+}
+
+

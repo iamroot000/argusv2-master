@@ -1,0 +1,107 @@
+{% extends "base.html" %}
+
+{% block js %}
+    {{ block.super }} {# includes previous content in block #}
+    <script src="/static/js/plugins/staps/jquery.steps.min.js"></script>
+
+    <script src="/static/js/select2/select2.full.min.js"></script>
+
+    <script src="/static/js/domains/eye.js"></script>
+
+    {% if 'MIDPAY' in BU %}
+    <script>
+        function findString(){
+        var q = document.getElementById('findstring').value
+        var resultPanel = document.getElementById('searchResults')
+        var resultDiv = document.getElementById('searchDiv')
+        resultPanel.innerHTML=''
+        $.ajax({
+                type: "GET",
+                url: '/domains/eye/MIDPAY?getMidpayLog='+q,
+                cache: false,
+                success: function (data) {
+                    if (data['result'].length > 0){
+                        for(var i = 0; i < data['result'].length; i++) {
+                            a=document.createElement('li')
+                                b = document.createElement('p')
+                                b.innerHTML=data['result'][i]['time'] + ' - ' + data['result'][i]['server_host']
+                                b.innerHTML= b.innerHTML + ' - ' + data['result'][i]['http_host'] + ' - ' + data['result'][i]['request_method']
+                                b.innerHTML= b.innerHTML + ' - ' + data['result'][i]['request_body'] + ' - ' + data['result'][i]['request']
+                            a.appendChild(b)
+
+                            resultPanel.appendChild(a)
+                        }
+                        document.getElementById('searchrow').style.display='block'
+                    }
+
+
+                },
+                error: function(err) {
+                    console.log(err)
+                    alert('Search Failed');
+                }
+            });
+    }
+
+    </script>
+    {% endif %}
+
+{% endblock %}
+
+{% block title %}
+{% block header %}
+Eye
+{% endblock %}
+{% endblock %}
+
+{% block details %}
+{{ count }} Domains per IP
+{% endblock %}
+
+{% block action %}
+<div class="col-sm-3 pull-right">
+    <select class="select2 form-control" id="business_units" onchange="changeBU(this)">
+        {% for i in BU %}
+        <option value="{{ i }}">{{ i }}</option>
+        {% endfor %}
+    </select>
+</div>
+<div class="col-sm-3 pull-right">
+    <div class="input-group"><input type="text" placeholder="Global Table Search..." class="input-sm form-control"  onkeyup="filterTables(this.value)"> <span class="input-group-btn"><button type="button" class="btn btn-sm btn-primary"><i class="fa fa-search"></i> </button> </span></div>
+</div>
+{% endblock %}
+
+{% block content %}
+
+{% if 'MIDPAY' in BU %}
+<div id="midpay" style="display:none">
+    <div class="row  white-bg dashboard-header">
+        <div class="col-lg-3 pull-right"style="padding-top:15px">
+            <div class="input-group">
+                <input type="text" id="findstring" placeholder="Log Search..." class="form-control"> <span class="input-group-btn"> <button type="button" class="btn btn-primary" onclick="findString();"><i class="fa fa-search"></i> Search</button></span>
+            </div>
+        </div>
+    </div>
+
+    <div class="row border-bottom white-bg dashboard-header" id="searchrow" >
+        <div class="col-lg-12" id="searchDiv">
+            <div class="panel panel-success">
+                <div class="panel-body" style="overflow-y: scroll; height: 300px;word-wrap: break-word;">
+                    <div class="mid-width wrapItems" style="height:200px">
+                        <ul id="searchResults">
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+<div class="row border-bottom white-bg dashboard-header">
+    <div class="col-lg-12" id="content">
+
+    </div>
+</div>
+
+{% endblock %}

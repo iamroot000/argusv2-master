@@ -1,0 +1,67 @@
+--- /ansible/nginx/hostgroups/callmeboss-nginx/nginx/conf.d/include/xpj_xjw2.0_masterconfig.include	2019-11-25 12:00:20.031453337 +0800
++++ /tmp/xpj_xjw2.0_masterconfig.include	2019-11-25 17:48:18.190253657 +0800
+@@ -1,21 +1,21 @@
+ index   index.jsp index.html index.htm;
+-access_log  logs/xpj.access.log main;
+-access_log  logs/xpj.logstash.access.log logstash;
++access_log  logs/newpujing.access.log main;
++access_log  logs/newpujing.logstash.access.log logstash;
+ if ($http_user_agent ~* "(iPhone|iPad|iPod|Linux|android|Android|bb\d+|meego).+mobile|Android|MobileSafari|iPhone|iPad|iPod|Linux|android|avantgo|bada\/|blackberry|blazer|compal|elaine|fennec|hiptop|iemobile|ip(hone|od)|iris|kindle|lge |maemo|midp|mmp|netfront|opera m(ob|in)i|palm( os)?|phone|p(ixi|re)\/|plucker|pocket|psp|series(4|6)0|symbian|treo|up\.(browser|link)|vodafone|wap|windows (ce|phone)|xda|xiino|android 3.0") {
+ set $mobile_rewrite perform;
+ }
+ 
+ if ( $mobile_rewrite = perform )
+-{ set $upstream pro_xjw2.0_xpj_mobile; }
++{ set $upstream mobile_newpujing; }
+ 
+ if ($http_user_agent ~* "(X11)")
+ { set $mobile_rewrite per;  }
+ 
+ if ( $mobile_rewrite != perform )
+-{ set $upstream pro_xjw2.0_xpj_web; }
++{ set $upstream desktop_newpujing; }
+ 
+ if ($host ~* pc\.(.*))
+-{ set $upstream pro_xjw2.0_xpj_web; }
++{ set $upstream desktop_newpujing; }
+ 
+ if ($http_user_agent ~* "qihoobot|Yahoo! Slurp|Yahoo! Slurp China|YoudaoBot|Sosospider|Sogou spider|Sogou web spider|MSNBot|ia_archiver|Tomato Bot")
+ {
+@@ -41,14 +41,23 @@
+ 	rewrite ^(.*)$ /red-map.jpg break; 
+ }
+ 
+-if ($allowed_country ~ "yes" ){ 
+-  set $test ALLOW; 
+-}
+ 
+ if ($allowed_country ~ "no" ){
+   set $test BLOCK; 
+ }
+ 
++if ($geoip_country_code = SG) {
++   set $test ALLOW;
++}
++
++if ($allowed_country ~ "yes" ){ 
++  set $test ALLOW; 
++}
++
++#if ($allowed_country ~ "no" ){
++#  set $test BLOCK; 
++#}
++
+ if ($allowed_ip ~ "yes" ){ 
+   set $test ALLOW; 
+ }
+@@ -78,9 +87,3 @@
+ 
+ 
+ 
+-
+-
+-
+-
+-
+-
+

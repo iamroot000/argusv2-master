@@ -1,0 +1,32 @@
+server {
+    listen       80;
+    server_name  wpc89.com;
+    rewrite  ^(.*)$  https://wpc89.com$1 permanent;
+    access_log  logs/wpc89.com.access.log main;
+}
+
+server {
+        listen       443;#HTTP Port
+        server_name wpc89.com;
+        ssl on;
+        ssl_certificate /usr/local/nginx/conf.d/ssl/wpc89.com/fullchain.pem;
+        ssl_certificate_key /usr/local/nginx/conf.d/ssl/wpc89.com/privkey.pem;
+
+        location / {
+            root /douji_choujiang/douji_choujiang_zhuanpan/douji_choujiang_pc/;
+        index index.html index.html;
+    
+            if ( $http_user_agent ~* "(Android|iPhone|Windows Phone|UC|Kindle)") {
+                        root /douji_choujiang/douji_choujiang_zhuanpan/douji_choujiang_h5/;
+                }
+
+        index index.html index.html;
+        error_page 404 /index.html;
+
+       }
+}
+
+
+
+
+

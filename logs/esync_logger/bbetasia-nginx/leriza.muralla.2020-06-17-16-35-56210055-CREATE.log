@@ -1,0 +1,24 @@
+FILENAME: 80-443/jinshihao.news.conf
+-  
++  server {
++      listen 80;
++      server_name jinshihao.news www.jinshihao.news;
++      rewrite ^(.*)$ https://www.jinshihao.news$1 permanent;
++  }
++  
++  server {
++      listen 443;
++      server_name jinshihao.news www.jinshihao.news;
++      ssl on;
++      ssl_certificate /usr/local/nginx/conf.d/ssl/jinshihao.news/fullchain.pem;
++      ssl_certificate_key /usr/local/nginx/conf.d/ssl/jinshihao.news/privkey.pem;
++  
++      if ($http_host !~* 'www') {
++          rewrite ^(.*)$ https://www.$http_host$1 permanent;
++      }
++  
++      include /usr/local/nginx/conf.d/include/bbetasia_official_masterconfig.include;
++  }
++  
++  
+

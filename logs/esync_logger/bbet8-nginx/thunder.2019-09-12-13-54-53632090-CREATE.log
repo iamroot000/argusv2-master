@@ -1,0 +1,24 @@
+FILENAME: 80-443/agent68.net.conf
+-  
++  server {
++      listen 80;
++      server_name agent68.net www.agent68.net;
++      rewrite ^(.*)$ https://www.agent68.net$1 permanent;
++  }
++  
++  server {
++      listen 443;
++      server_name agent68.net www.agent68.net;
++      ssl on;
++      ssl_certificate /usr/local/nginx/conf.d/ssl/agent68.net/fullchain.pem;
++      ssl_certificate_key /usr/local/nginx/conf.d/ssl/agent68.net/privkey.pem;
++  
++      if ($http_host !~* 'www') {
++          rewrite ^(.*)$ https://www.$http_host$1 permanent;
++      }
++  
++      include /usr/local/nginx/conf.d/include/xdl_proxy_official_masterconfig.include;
++  }
++  
++  
+

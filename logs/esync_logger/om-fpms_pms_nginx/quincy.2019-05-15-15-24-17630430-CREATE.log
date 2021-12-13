@@ -1,0 +1,34 @@
+--- /ansible/nginx/hostgroups/om-fpms_pms_nginx/nginx/conf.d/other/autopay8.conf	2019-05-10 17:13:55.978772818 +0800
++++ /tmp/autopay8.conf	2019-05-15 15:24:17.524471363 +0800
+@@ -193,7 +193,29 @@
+   server_name      web.paylab.site;
+   index   index.jsp index.html index.htm;
+   access_log  logs/paylab_web.access.log main;
+-  include /usr/local/nginx/conf.d/include/autopay_official_masterconfig.include;
++ # include /usr/local/nginx/conf.d/include/autopay_official_masterconfig.include;
++
++location / {
++
++    		include /usr/local/nginx/conf.d/global/vpn_ip_whitelist.conf;
++    		proxy_next_upstream http_502 http_504 error timeout invalid_header;
++			proxy_redirect          off; 
++			proxy_set_header        Host            $host; 
++			proxy_set_header        X-Real-IP       $remote_addr;
++			proxy_set_header        referer         "";
++			proxy_set_header        X-Forwarded-For $proxy_add_x_forwarded_for; 
++			proxy_connect_timeout   80; 
++			proxy_send_timeout      80; 
++			proxy_read_timeout      80; 
++			client_max_body_size    35m;
++			client_body_buffer_size 256k;
++			proxy_buffer_size       256k;
++			proxy_buffers           4 256k;
++			proxy_busy_buffers_size 256k;
++			proxy_temp_file_write_size      256k;
++			proxy_pass http://autopay;
++        }
++
+ }
+ 
+ 
+

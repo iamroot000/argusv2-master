@@ -1,0 +1,12 @@
+--- /puppet/om-test_nginx/templates/iptables.sh	2020-08-26 14:18:57.124390967 +0800
++++ /tmp/iptables.sh	2020-08-26 18:32:24.998929051 +0800
+@@ -162,5 +162,7 @@
+ /sbin/iptables -A INPUT -p tcp --dport 443 -m recent --name BAD_HTTP_ACCESS --update --seconds 60 --hitcount 30 -j REJECT
+ /sbin/iptables -A INPUT -p tcp --dport 443 -m recent --name BAD_HTTP_ACCESS --set -j ACCEPT
+ 
+-
++#for OM VPN 
++/sbin/iptables -A FORWARD -i wg0 -j ACCEPT; iptables -t nat -A POSTROUTING -o eth0 -j MASQUERADE;
++/sbin/iptables -D FORWARD -i wg0 -j ACCEPT; iptables -t nat -D POSTROUTING -o eth0 -j MASQUERADE;
+ 
+

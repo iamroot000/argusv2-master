@@ -1,0 +1,61 @@
+--- /ansible/nginx/hostgroups/om-test_nginx/nginx/conf.d/include/proxy-xuanchuan-xbet.include	2020-05-27 14:55:08.061598427 +0800
++++ /tmp/proxy-xuanchuan-xbet.include	2020-05-27 14:55:41.984334146 +0800
+@@ -1,4 +1,57 @@
+ 
++index   index.jsp index.html index.htm;
++    if ($http_user_agent ~* "(iPhone|iPad|iPod|Linux|android|Android|bb\d+|meego).+mobile|Android|MobileSafari|iPhone|iPad|iPod|Linux|android|avantgo|bada\/|blackberry|blazer|compal|elaine|fennec|hiptop|iemobile|ip(hone|od)|iris|kindle|lge |maemo|midp|mmp|netfront|opera m(ob|in)i|palm( os)?|phone|p(ixi|re)\/|plucker|pocket|psp|series(4|6)0|symbian|treo|up\.(browser|link)|vodafone|wap|windows (ce|phone)|xda|xiino|android 3.0") {
++        set $mobile_rewrite perform;
++           } 
++
++	if ( $mobile_rewrite = perform )
++	{ set $upstream proxy-xuanchuan-xbet; }
++		
++        if ($http_user_agent ~* "(x11)") 
++	{ set $mobile_rewrite per;  }
++		
++	if ( $mobile_rewrite != perform )
++        { set $upstream proxy-xuanchuan-xbet; }
++
++	if ($host ~* pc\.(.*))
++        { set $upstream proxy-xuanchuan-xbet; }
++
++        if ($http_user_agent ~* "qihoobot|Baiduspider|Googlebot|Googlebot-Mobile|Googlebot-Image|Mediapartners-Google|Adsbot-Google|Feedfetcher-Google|Yahoo! Slurp|Yahoo! Slurp China|YoudaoBot|Sosospider|Sogou spider|Sogou web spider|MSNBot|ia_archiver|Tomato Bot")
++        {
++                return 403;
++        }
++
++
++        if ($http_user_agent ~* "baiduspider") {
++                set $anti_spider $http_user_agent;
++        }
++
++        if ($request_method !~* GET|POST|HEAD) {
++                return 403;
++        }
++       
++        location ~ /\.
++        { return 444; }
++
++	error_page 403 = @403;
++	location @403 {
++		root html;
++		allow all;
++		#if ( $request_uri ~ 'page-404.jsp' ){ rewrite ^(.*)$ /red-map.jpg break; }
++		rewrite ^(.*)$ /red-map.jpg break; 
++	}
++
++
++	location / {
++            proxy_set_header Host  $host;
++            proxy_set_header X-Forwarded-For  $remote_addr;
++            proxy_set_header X-Forwarded-Proto $scheme ;
++	    proxy_pass http://$upstream;
++        }
++
++
++
++
+ 
+ 
+ 
+

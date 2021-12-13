@@ -1,0 +1,103 @@
+CHOICES_PROJECTS = (
+    ('BBET8','BBET8'),
+    ('BBETASIA','BBETASIA'),
+    ('JINSHENG/TIANHE','JINSHENG/TIANHE'),
+    ('EU','EU'),
+    ('HAOMEN','HAOMEN'),
+    ('RUIBO','RUIBO'),
+    ('XBET','XBET'),
+)
+
+CHOICES_FWDSERVER_SCHEMES=(
+    ('HTTPS','HTTPS'),
+    ('HTTP','HTTP')
+)
+
+CHOICES_FWDSERVER_TYPES=(
+    ('STANDARD','STANDARD'),
+    ('MARKETING','MARKETING'),
+    ('OTHER','OTHER')
+)
+
+CHOICES_DOMAIN_TYPES = (
+    ('PRODUCTION', 'PRODUCTION'),
+    ('MARKETING', 'MARKETING'),
+    ('GAME SPECIFIC', 'GAME SPECIFIC'),
+    ('FUNCTION DOMAIN', 'FUNCTION DOMAIN'),
+    ('OTHER', 'OTHER'),
+    ('PROD_MKTG', 'PROD_MKTG')
+)
+
+CHOICES_DOMAINSCHEME_TYPES = (
+    ('HTTP', 'HTTP'),
+    ('HTTPS', 'HTTPS'),
+    ('BOTH', 'BOTH'),
+)
+
+CHOICES_API_PROVIDER = (
+    ('NAME.COM','NAME.COM'),
+    ('DNSPOD.CN','DNSPOD.CN'),
+    ('GODADDY.COM','GODADDY.COM'),
+    ('ENAME.NET','ENAME.NET'),
+)
+
+CHOICES_DNS_RECORD_TYPES = (
+    ('A','A'),
+    ('MX','MX'),
+    ('CNAME','CNAME'),
+    ('NS','NS')
+)
+
+CHOICES_TAG_TYPES = (
+    ('PROJECT','PROJECT'),
+    ('ANSIBLE','ANSIBLE'),
+    ('REGISTRAR','REGISTRAR'),
+    ('ACCOUNT','ACCOUNT'),
+    ('FWD','FWD'),
+    ('HOST SCHEME','HOST SCHEME'),
+    ('BU','BU'),
+    ('DTYPE','DTYPE'),
+)
+
+CHOICES_ACTIVITY_TYPE = (
+    ('CREATE','CREATE'),
+    ('BULK_CREATE','BULK_CREATE'),
+    ('RENEW','RENEW'),
+    ('UPDATE','UPDATE')
+)
+CHOICES_ACTIVITY_STATUS = (
+    ('PENDING','PENDING'),
+    ('FAILED', 'FAILED'),
+    ('SUCCESS','SUCCESS')
+)
+CHOICES_MIRROR_SERVER_LOCATION={
+    ('INTERNAL', 'INTERNAL'),
+    ('CLOUD', 'CLOUD'),
+}
+
+CHOICES_ESYNC_ACCESS_LEVEL = (
+    ('SIMPLE', 'SIMPLE'),
+    ('SPECIFIC', 'SPECIFIC'),
+    ('OPEN', 'OPEN'),
+
+)
+
+CHOICES_NGINX_ACCESS_LEVEL = (
+    ('SIMPLE', 'SIMPLE'),
+    ('SPECIFIC', 'SPECIFIC'),
+    ('OPEN', 'OPEN'),
+
+)
+
+
+CHOICES_MIRROR_SERVER_TYPE={
+    ('HAPROXY', 'HAPROXY'),
+    ('NGINX', 'NGINX'),
+}
+
+CHOICES_PUPPET_HOSTVARS=(
+    (1, 'NONE'),
+    (0, 'GLOBAL'),
+    (3, 'LOCAL'),
+)
+

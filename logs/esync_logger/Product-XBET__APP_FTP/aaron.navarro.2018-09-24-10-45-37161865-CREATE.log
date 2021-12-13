@@ -1,0 +1,44 @@
+--- /srv/Product-XBET__APP_FTP/nginx/conf.d/other/xdianwan.com.conf	2018-09-24 10:43:57.087188371 +0800
++++ /tmp/xdianwan.com.conf	2018-09-24 10:45:37.066816980 +0800
+@@ -15,7 +15,39 @@
+         rewrite ^(.*)$ https://www.$http_host$1 permanent;
+     }
+ 
+-    include /usr/local/nginx/conf.d/include/xbet_official_masterconfig.include;
++    index   index.html;
++    access_log  logs/xdianwan.com.access.log main;
++
++    if ($request_method !~* GET|POST|HEAD) {
++        return 403;
++    }
++
++    error_page 403 /ip.html;
++    location = /ip.html {
++    root   /usr/local/nginx/html/;
++    allow all;
++    }
++
++    if ($allowed_country ~ "no" ){
++        set $test BLOCK;
++    }
++
++    if ($allowed_country ~ "yes" ){
++        set $test ALLOW;
++    }
++
++    if ($allowed_ip ~ "yes" ){
++        set $test ALLOW;
++    }
++
++
++
++    location / {
++        if ( $test = "BLOCK" ) { return 403;  }
++        proxy_set_header Host  $host;
++        proxy_set_header X-Forwarded-For  $remote_addr;
++        proxy_pass http://47.75.146.52/live/pc/
++    }
+ }
+ 
+ 
+

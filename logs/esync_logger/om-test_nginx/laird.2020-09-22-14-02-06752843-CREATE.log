@@ -1,0 +1,16 @@
+--- /ansible/nginx/hostgroups/om-test_nginx/nginx/conf.d/other/cstest-21bjk.conf	2020-09-11 10:57:41.306221627 +0800
++++ /tmp/cstest-21bjk.conf	2020-09-22 14:02:06.883038860 +0800
+@@ -71,8 +71,11 @@
+     location / {
+             proxy_set_header        X-Forwarded-For $proxy_add_x_forwarded_for;
+             proxy_set_header        X-Real-IP       $remote_addr;
++    		proxy_set_header Host $host:$server_port;
++    		proxy_http_version 1.1;
++            proxy_set_header Upgrade $http_upgrade;
++    		proxy_set_header Connection $connection_upgrade;
+             proxy_next_upstream http_502 http_504 http_404 error timeout invalid_header;
+-            proxy_set_header Host $host:$server_port;
+             proxy_pass http://8.210.230.202:19501;
+         }
+ }
+

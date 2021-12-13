@@ -1,0 +1,184 @@
+{% extends "base.html" %}
+
+{% block js %}
+    {{ block.super }} {# includes previous content in block #}
+
+    <script src="/static/js/select2/select2.full.min.js"></script>
+
+    <script src="/static/js/plugins/codemirror/codemirror.js"></script>
+    <script src="/static/js/esync/nginx-format.js" type="text/javascript"></script>
+    <script src="/static/js/plugins/codemirror/mode/javascript/javascript.js"></script>
+    <script src="/static/js/plugins/toastr/toastr.min.js"></script>
+
+    <script type="text/javascript" src="/static/multiselect/js/multiselect.min.js"></script>
+    <script src="/static/js/esync/index.js" type="text/javascript"></script>
+    <script>
+    function textFunction() {
+      var x = document.getElementById("file").value;
+      document.getElementById("filehandler").innerHTML = "You selected: " + x;
+    }
+    </script>
+
+{% endblock %}
+
+{% block style %}
+    {{ block.super }} {# includes previous content in block #}
+
+    <link href="/static/css/plugins/codemirror/codemirror.css" rel="stylesheet">
+    <link href="/static/css/plugins/codemirror/monokai.css" rel="stylesheet">
+
+
+<style>
+
+#myBar {
+  width: 1%;
+  height: 30px;
+  background-color: #4CAF50;
+}
+
+    .CodeMirror {
+  border: 1px solid #eee;
+  height: auto;
+
+}
+.cm-s-monokai .CodeMirror-cursor {border-left: 5px solid #f8f8f0 !important;}
+
+.filename-btn {
+    margin-bottom:5px;
+}
+
+pre{
+    white-space: pre-wrap;
+}
+</style>
+{% endblock %}
+
+
+{% block title %}
+{{ HOSTGROUP }}
+{% endblock %}
+{% block header %}
+<span id="hostgroup">SSR-Manager</span>
+{% endblock %}
+
+
+{% block details %}
+<span id="config_src">SSR File Config</span>
+{% endblock %}
+
+
+
+
+{% block action %}
+
+
+    <div class="col-lg-3 pull-right">
+        <div class="input-group">
+            <input type="text" id="findstring" class="form-control"> <span class="input-group-btn"> <button type="button" class="btn btn-primary" onclick="findString();"><i class="fa fa-search"></i> Search</button></span>
+        </div>
+    </div>
+
+    <button id="test" class="btn btn-success" onclick="checkConfig();"><i class="fa fa-check"></i> Test Configuration</button>&nbsp;
+    <button id="testSync" class="btn btn-success" onclick="testSync();"><i class="fa fa-question"></i> Test Sync</button>&nbsp;
+    <button id="sync" class="btn btn-primary" onclick="sync();"><i class="fa fa-sync"></i> Sync</button>
+    <button id="clearCache" class="btn btn-info" onclick="clearCache();"><i class="fa fa-sync"></i> Clear Nginx Cache</button>&nbsp;
+    <!--<button href="#" id="find" class="btn btn-default " onclick="findString();"><i class="fa fa-search"></i> Find</button>-->
+    <button id="createFile" class="btn btn-default " onclick="createFileInvoke();"><i class="fa fa-edit"></i> Create New Config</button>
+
+
+
+
+{% endblock %}
+{% block content %}
+
+<div onkeyup="resetCounter()" onclick="resetCounter()">
+    {% if request.path == '/ssr-manager/SSRfileedit/' %}
+        <form method="POST" action="{% url 'SSR_filesave'  %}">
+    {% else %}
+        <form method="POST" action="{% url 'SSR_fileedit' %}">
+    {% endif %}
+                                    {% csrf_token %}
+        <div class="row border-bottom white-bg dashboard-header">
+                        <div class="col-lg-6 pull-right" >
+                                <div class="col-lg-6 pull-right" >
+                                    <div class="col-lg-9 " >
+                                    {{ myform.FILE.label_tag }} {{ myform.FILE }}
+                                    </div>
+                                     <div class="col-lg-3 pull-right" id="filediv">
+                                     <h1></h1>
+                                    {% if logs_recap is not True %}
+                                        <p ><button type="submit" class="btn btn-success" disabled><span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>Syncing...</button></p>
+                                    {% else %}
+                                         {% if request.path == '/ssr-manager/SSRfileedit/' %}
+                                            <p > <a href="{% url 'SSR_fileconfig' %}"><button type="button" class="btn btn-danger"><span class="glyphicon glyphicon-edit"></span>Cancel</button></a></p>
+                                         {% else %}
+                                            <p ><button type="submit" class="btn btn-info"><span class="glyphicon glyphicon-edit"></span>Edit</button></p>
+                                         {% endif %}
+                                    {% endif %}
+                                    </div>
+
+                                </div>
+                        </div>
+                        <h1></h1>
+                        <div class="col-lg-6 pull-left" >
+                                {% if messages %}
+                                    <ul class="messages">
+                                        {% for message in messages %}
+                                            {% if message.tags == 'error' %}
+                                                <div {% if message.tags %} class="alert alert-danger" {% endif %} align="left"><h4 align="center">{{ message }}</h4></div>
+                                            {% else %}
+                                                <div {% if message.tags %} class="alert alert-{{ message.tags }}" {% endif %} align="left"><h4 align="center">{{ message }}</h4></div>
+                                            {% endif %}
+                                        {% endfor %}
+                                    </ul>
+                                {% endif %}
+
+                        </div>
+        </div>
+
+
+        <div class="row border-bottom white-bg dashboard-header">
+                    <div class="row" id="textrow">
+                    {{ myform.PREVIOUS.label_tag }} {{ myform.PREVIOUS }}
+                    <hr>
+                    <div class="col-lg-3 pull-right" >
+                        <div class="col-lg-3 pull-right" >
+
+                        {% if logs_recap is not True %}
+                            <p align="right"><button type="submit" class="btn btn-success btn-lg" disabled><span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>Syncing...</button>&emsp;</p>
+                        {% else %}
+                             {% if request.path == '/ssr-manager/SSRfileedit/' or request.path == '/ssr-manager/file-configuration/' %}
+                                {% if messages %}
+                                    {% for message in messages %}
+                                        {% if message.tags == 'error' or message.tags == 'warning' %}
+                                        <p align="right"><a href='#'><button type="button" class="btn btn-success btn-lg" disabled><i class="fa fa-sync"></i><span>Sync</span></button></a>&emsp;</p>
+                                        {% endif %}
+                                    {% endfor %}
+                                {% else %}
+                                    <p align="right"><a href='#'><button type="button" class="btn btn-success btn-lg" disabled><i class="fa fa-sync"></i><span>Sync</span></button></a>&emsp;</p>
+                                {% endif %}
+                             {% else %}
+                                <p align="right"><a href='#'><button type="submit" class="btn btn-success btn-lg "><i class="fa fa-sync"></i><span>Sync</span></button></a>&emsp;</p>
+                            {% endif %}
+                        {% endif %}
+                        </div>
+                         <div class="col-lg-3 pull-right" id="filediv">
+
+                        {% if logs_recap is not True %}
+                            <p ><button type="submit" class="btn btn-primary" disabled><span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>Syncing...</button></p>
+                        {% else %}
+                             {% if request.path == '/ssr-manager/SSRfileedit/' %}
+                                <p > <button type="submit" class="btn btn-primary" ><span class="glyphicon glyphicon-ok"></span>Save</button></p>
+                             {% else %}
+                                <p > <button type="submit" class="btn btn-primary" disabled><span class="glyphicon glyphicon-ok"></span>Save</button></p>
+                             {% endif %}
+                        {% endif %}
+                         </div>
+
+                    </div>
+        </div>
+    </form>
+
+</div>
+
+{% endblock %}

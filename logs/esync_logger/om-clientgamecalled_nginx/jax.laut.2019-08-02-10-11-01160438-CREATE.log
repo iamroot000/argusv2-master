@@ -1,0 +1,71 @@
+--- /ansible/nginx/hostgroups/om-clientgamecalled_nginx/nginx/conf.d/other/ebet-wapi.conf	2019-08-02 09:36:38.691831889 +0800
++++ /tmp/ebet-wapi.conf	2019-08-02 10:11:01.071963882 +0800
+@@ -1,7 +1,4 @@
+-#NGINX-LOGS-EBET-WAPI
+-
+-
+-
++#EBET-WAPI-EU
+ upstream ebet-wapi-eu-prod {
+     server 127.0.0.1:7765 max_fails=2  fail_timeout=30s weight=10;
+     server 127.0.0.1:7766 max_fails=2  fail_timeout=30s weight=5 ;
+@@ -51,6 +48,58 @@
+         }
+ }
+ 
++#EBET-WAPI-LISBOA
++upstream ebet-wapi-lisboa-prod {
++    server 127.0.0.1:8484 max_fails=2  fail_timeout=30s weight=10;
++    server 127.0.0.1:8484 max_fails=2  fail_timeout=30s weight=5 ;
++    server 127.0.0.1:8484 max_fails=2  fail_timeout=30s weight=5 backup;
++    server 127.0.0.1:8484 max_fails=2  fail_timeout=30s weight=5 backup;
++
++}
++
++server {
++          listen 80;
++          server_name ebet.lisboa.wapi.cpms8.me;
++#          rewrite ^(.*)$ https://ebet.lisboa.wapi.cpms8.me$1 permanent;
++          index   index.html ;
++
++          charset utf-8;
++          access_log logs/ebet/ebet.lisboa.wapi.cpms8.me.access.log main;
++          access_log logs/ebet/ebet.lisboa.wapi.cpms8.me.logstash.access.log logstash;
++          error_log  logs/ebet/ebet.lisboa.wapi.cpms8.me.error.log;
++          
++          location / {
++          include /usr/local/nginx/conf.d/include/whitelistIPewallet.conf.include;
++    	  include /usr/local/nginx/conf.d/include/proxy.conf.fwd.include;
++          proxy_pass http://ebet-wapi-lisboa-prod;
++
++        }
++}
++
++server {
++          listen 443;
++          server_name ebet.lisboa.wapi.cpms8.me;
++          index   index.html ;
++
++          charset utf-8;
++          access_log logs/ebet/ebet.lisboa.wapi.cpms8.me.access.log main;
++          access_log logs/ebet/ebet.lisboa.wapi.cpms8.me.logstash.access.log logstash;
++          error_log  logs/ebet/ebet.lisboa.wapi.cpms8.me.error.log;
++
++          ssl on;
++          ssl_certificate    /usr/local/nginx/conf.d/ssl/cpms8.me/fullchain.pem;
++          ssl_certificate_key  /usr/local/nginx/conf.d/ssl/cpms8.me/privkey.pem;
++
++          location / {
++          include /usr/local/nginx/conf.d/include/whitelistIPewallet.conf.include;
++    	  include /usr/local/nginx/conf.d/include/proxy.conf.fwd.include;
++          proxy_pass http://ebet-wapi-lisboa-prod;
++
++        }
++}
++
++#NGINX-LOGS-EBET-WAPI
++
+ #server {
+ 
+ #        listen 80;
+

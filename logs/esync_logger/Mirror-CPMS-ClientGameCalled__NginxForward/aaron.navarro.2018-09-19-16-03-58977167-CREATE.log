@@ -1,0 +1,77 @@
+#BetSoft-API-callback
+upstream betsofapi-callback {
+#       ip_hash;
+        #server 203.192.151.12:9181 max_fails=2  fail_timeout=30s weight=5;
+        server 203.177.198.116:9181 max_fails=2  fail_timeout=30s weight=10;
+        server 101.78.133.212:9181 max_fails=2  fail_timeout=30s weight=10;
+        server 205.177.199.12:9181 max_fails=2  fail_timeout=30s weight=10;
+}
+
+server {
+        #listen       80;#HTTP ~Z~D端~O�
+        listen       443;#HTTP ~Z~D端~O�
+        server_name betsoftapi.back2pay.me;
+    #    root    /web/core/WebRoot;
+        index   index.jsp index.html index.htm;
+
+        charset utf-8;
+
+        access_log  logs/betsoft_api-callback.access.log main;
+        error_log  logs/betsoft_api-callback.error.log ;
+
+
+	ssl on;
+	ssl_certificate /usr/local/nginx/conf/ssl/betsoftapi.back2pay.me/fullchain.pem ;
+	ssl_certificate_key /usr/local/nginx/conf/ssl/betsoftapi.back2pay.me/privkey.pem ;
+
+
+      location ~ ^/(WEB-INF)/ {
+            deny all;
+         }
+
+        location / {
+            #proxy_ignore_client_abort on;
+            include whitelistIP.conf;
+            include proxy.conf.neweb;
+            proxy_pass http://betsofapi-callback;# ~O~M~P~Q代~P~F
+        }
+
+        error_page 404 404.jsp;
+        error_page 500 502 503 500.jsp;
+    }#end betsoft_api-callback
+
+server {
+        listen       80; #HTTP ~Z~D端~O�
+        server_name betsoftapi.back2pay.me;
+
+        index   index.jsp index.html index.htm;
+ 
+        charset utf-8;
+
+        access_log  logs/betsoft_api-callback.access.log main;
+        error_log  logs/betsoft_api-callback.error.log ;
+
+        location ^~ /.well-known/ {
+                allow                   66.133.109.36/32;
+                allow                   64.78.149.164/32;
+                deny                    all;
+                proxy_set_header        Host    1e565e273c8cf704ee9fce920c39a19f;
+                proxy_set_header        "User-Agent" "VZVZ 3.0";
+                proxy_pass              http://119.9.93.146/.well-known/;
+        }
+
+
+      location ~ ^/(WEB-INF)/ {
+            deny all;
+         }
+
+        location / {
+            include whitelistIP.conf;
+            include proxy.conf.neweb;
+            proxy_pass http://betsofapi-callback; #~O~M~P~Q代~P~F
+        }
+
+        error_page 404 404.jsp;
+        error_page 500 502 503 500.jsp;
+    }#end betsoft_api-callback
+

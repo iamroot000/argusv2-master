@@ -1,0 +1,42 @@
+--- /ansible/nginx/hostgroups/euqp-online_game/nginx/conf.d/other/eu602.com.conf	2021-03-22 15:48:08.974059641 +0800
++++ /tmp/eu602.com.conf	2021-03-23 09:50:34.645077679 +0800
+@@ -1,23 +1,30 @@
+ server {
+     listen 80;
+-    server_name eu602.com;
+-    rewrite ^(.*)$ https://eu602.com$1 permanent;
++    server_name .eu602.com www.eu602.com;
++    #rewrite ^(.*)$ https://eu602.com$1 permanent;
++    return      301 https://$http_host$1;
+ }
+ 
+-server {
+-    listen 80;
+-    server_name www.eu602.com;
+-    rewrite ^(.*)$ https://www.eu602.com$1 permanent;
+-}
++#server {
++ #   listen 80;
++ #   server_name www.eu602.com;
++ #   rewrite ^(.*)$ https://www.eu602.com$1 permanent;
++#}
+ 
+ 
+ server {
+     listen 443;listen 8808;
+-    server_name eu602.com www.eu602.com;
++    server_name .eu602.com www.eu602.com;
+     ssl on;
+     ssl_certificate /usr/local/nginx/conf.d/ssl/eu602.com/fullchain.pem;
+     ssl_certificate_key /usr/local/nginx/conf.d/ssl/eu602.com/privkey.pem;
+ 
++  	if ($http_host !~* 'www') { set $pp yes; }
++ 	if ( $pp ~* 'yes' ) {
++        rewrite ^(.*)$ https://www.$http_host$1 permanent;
++    }
++
++  	
+     include /usr/local/nginx/conf.d/include/euqp_masterconf.include;
+ }
+ 
+

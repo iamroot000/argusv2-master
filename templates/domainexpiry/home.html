@@ -1,0 +1,170 @@
+{% extends "base.html" %}
+{% block title %}Domain Expiration Checker{% endblock %}
+{% block header %}
+Domain Expiration
+{% endblock %}
+{% block details %}
+Check Domain Expiration Date
+{% endblock %}
+{% block action %}
+
+
+
+<div class="form-inline">
+    <!-- for bulkaddition -->
+        <button type="button" class="btn btn-info" data-toggle="modal" data-target="#bulkModal" data-whatever="@Bulk">Add Domain</button>
+        <div class="modal fade" id="bulkModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+          <div class="modal-dialog" role="document">
+            <div class="modal-content">
+              <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+                </button>
+                <h5 class="modal-title" id="exampleModalLabel">Add Domains</h5>
+              </div>
+              <form method="POST" action="{% url 'bulkAddDomain' %}">
+              {% csrf_token %}
+              <div class="modal-body">  
+                  <div class="form-group">
+                    <textarea class="form-control" id="message-text" name="get_bulk"></textarea>
+                  </div>
+              </div>
+              <form method="POST">
+                {% csrf_token %}
+                <div class="modal-footer">  
+                    <div class="form-group">
+                        <button type="submit" class="btn btn-info" name="get_tag" value="B2B">B2B</button>
+                        <button type="submit" class="btn btn-info" name="get_tag" value="B2C">B2C</button>
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    </div>
+                    
+              </div>
+              </form>
+            </div>
+          </div>
+        </div>
+</div>
+<!-- end bulkaddition -->
+{% endblock %}
+{% block content %}
+<!-- CSS -->
+<style>
+    div.ex1 {
+        background-color: white;
+        width: 1100px;
+        height: 220px;
+        overflow: scroll;
+    }
+</style>
+<!-- ENDCSS -->
+<div class="container mb-1 mt-1">
+
+    <div class="row">
+        <div class="col-1">
+        </div>
+        <div class="col-9">
+            <form class="form-group">
+                <h1></h1>
+                {% if messages %}
+                <ul class="messages">
+                    {% for message in messages %}
+                    <div {% if message.tags %} class="alert alert-{{ message.tags }}" {% endif %} >{{ message }}</div>
+                    {% endfor %}
+                </ul>
+                {% endif %}
+            </form>
+            <table class="table table-sm table-striped table-bordered" id="domainTable" style="width: 100%">
+                <thead>
+                    <tr>
+                        <th scope="col">Domain</th>
+                        <th scope="col">Expiration</th>
+                        <th scope="col">Day(s) Left</th>
+                        <th scope="col">Renewal</th>
+                        <th scope="col">Tag</th>
+                        <th scope="col">Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for ins in object_list %}
+                    <tr>
+                        <td scope="row">
+                            {%if ins.status == 0%}<span class="badge badge-pill badge-success">!</span>
+                            {%elif ins.status == 1%}<span class="badge badge-pill badge-warning">!</span>
+                            {%elif ins.status == 2%}<span class="badge badge-pill badge-danger">!</span>
+                            {%endif%}
+                            <a href="https://{{ ins.domain }}">  {{ ins.domain }}</a></td>
+                            <td scope="row">{{ ins.expiration }}</td>
+                            <td scope="row">{{ ins.daysleft }}</td>
+                            {%if ins.renewal == 1%}
+                            <td scope="row" align="center">
+                                <form class="form-group mb-0 mt-0" method="POST" action="{% url 'toRenew' %}">
+                                    {% csrf_token %}
+                                    <button class="btn btn-success" role="renewal" type="submit" aria-pressed="true" value="{{ ins.id }}"
+                                    name="get_id">
+                                    Yes
+                                </button>
+                            </form>
+                            {%elif ins.renewal == 0%}
+                            <td scope="row" align="center">
+                                <form class="form-group mb-0 mt-0" method="POST" action="{% url 'toRenew' %}">
+                                    {% csrf_token %}
+                                    <button class="btn btn-danger" role="renewal" type="submit" aria-pressed="true" value="{{ ins.id }}"
+                                    name="get_id">
+                                    No
+                                </button>
+                            </form>
+                            {%endif%}
+                            <td scope="row" align="center">{{ ins.tag }}</td>
+                            <td scope="row" align="center">
+                                <form class="form-group mb-0 mt-0" method="POST" action="{% url 'toDeleteDomain' %}">
+                                    {% csrf_token %}
+                                    <button class="btn btn-info" type="submit" aria-pressed="true" value="{{ ins.id }}"
+                                    name="get_id">
+                                    Delete
+                                </button>
+                            </form>
+                            
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            <div class="col">
+            </div>
+        </div>
+
+
+    </div>
+    <div class="container mb-3 mt-3">
+        <span>Logs:</span>
+        <div class="ex1" id="log-scroll">
+            <ul>
+                {% for log in query_log %}
+                    <li>{{ log.logs_field }}
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+
+    <!-- JS -->
+    <script src="https://code.jquery.com/jquery-3.3.1.js"></script>
+    <script src="https://cdn.datatables.net/1.10.20/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.10.20/js/dataTables.bootstrap4.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            var table = $('#domainTable').DataTable({
+                            "order": [[ 1, "asc" ]], //or desc (for descending) 
+                            "columnDefs" : [{"targets":1, "type":"date"}],
+                        });
+        } );
+    </script>
+    <script>
+        $(document).ready(function() { 
+            $('#log-scroll').animate({ 
+                scrollTop: $('#log-scroll').get(0).scrollHeight 
+            }, 100); });
+    </script>
+    <!-- ENDJS -->
+    {% endblock %}

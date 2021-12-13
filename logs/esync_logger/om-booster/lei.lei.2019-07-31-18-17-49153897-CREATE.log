@@ -1,0 +1,43 @@
+--- /ansible/nginx/hostgroups/om-booster/nginx/conf.d/other/mmexy.com.conf	2019-07-31 18:16:49.943317811 +0800
++++ /tmp/mmexy.com.conf	2019-07-31 18:17:48.990317811 +0800
+@@ -208,3 +208,39 @@
+ }
+ 
+ 
++
++
++    server {
++        listen       80;
++        server_name  mmbooster.com www.mmbooster.com;
++        rewrite ^(.*)$ https://mmbooster.com$1 permanent;
++    }
++
++    server {
++        listen       443;
++        server_name  mmbooster.com www.mmbooster.com;
++
++        #charset koi8-r;
++        ssl on;
++        ssl_certificate /usr/local/nginx/conf.d/ssl/mmbooster.com/fullchain.pem;
++        ssl_certificate_key /usr/local/nginx/conf.d/ssl/mmbooster.com/privkey.pem;
++
++        access_log  logs/access.log  main;
++        #if ($http_host !~* 'www') {
++        #    rewrite ^(.*)$ https://www.$http_host$1 permanent;
++        #}
++
++        location / {
++            #root   html/booster/;
++            root   /var/ftp/booster/mmbooster/;
++            index  index.html index.htm;
++        }
++
++        error_page   500 502 503 504  /50x.html;
++        location = /50x.html {
++            root   html;
++        }
++
++    }
++
++
+

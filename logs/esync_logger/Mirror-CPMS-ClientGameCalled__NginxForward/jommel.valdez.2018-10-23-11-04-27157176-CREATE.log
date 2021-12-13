@@ -1,0 +1,59 @@
+#####
+
+upstream realcallbackby  {
+#        server  203.192.151.12:7111 max_fails=2  fail_timeout=30s ;
+#        server  203.177.198.116:7111 max_fails=2  fail_timeout=30s;
+        server  101.78.133.212:7125 max_fails=2  fail_timeout=30s;
+        server  205.177.199.12:7125 max_fails=2  fail_timeout=30s backup;
+
+
+}
+
+#server {
+#    listen 80;
+#    server_name  callback.n2.authapi.net callbacktest.n2.authapi.net;
+#    rewrite     ^(.*)   https://$http_$host$1 permanent;
+#}
+
+server {
+        listen       443; #HTTP Port
+        server_name  callback.by.authapi.net;
+
+        charset utf-16;
+        access_log  logs/realcallbackby.access.log main;
+        error_log  logs/realcallbackby.error.log  ;
+
+        ssl on;
+        ssl_certificate /usr/local/nginx/conf.d/ssl/authapi.net/fullchain.pem;
+        ssl_certificate_key /usr/local/nginx/conf.d/ssl/authapi.net/privkey.pem;
+
+        location / {
+#		    include /usr/local/nginx/conf.d/include/whitelistIP.include;
+	        include /usr/local/nginx/conf.d/include/proxy.conf.fwd.include ;
+	        proxy_next_upstream http_500 http_502 http_503 http_504 http_404 timeout invalid_header error;
+		    proxy_pass http://realcallbackby;
+        }
+
+  }
+
+server {
+        listen       80; #HTTP Port
+        server_name  callback.by.authapi.net;
+
+        charset utf-16;
+        access_log  logs/realcallback80by.access.log main;
+        error_log  logs/realcallback80by.error.log  ;
+
+
+        location / {
+#		    include /usr/local/nginx/conf.d/include/whitelistIP.include;
+	        include /usr/local/nginx/conf.d/include/proxy.conf.fwd.include ;
+	        proxy_next_upstream http_500 http_502 http_503 http_504 http_404 timeout invalid_header error;
+		    proxy_pass http://realcallbackby;
+        }
+
+  }
+
+
+
+

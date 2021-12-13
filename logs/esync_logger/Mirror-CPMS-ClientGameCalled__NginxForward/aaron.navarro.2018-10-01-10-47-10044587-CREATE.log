@@ -1,0 +1,41 @@
+--- /srv/Mirror-CPMS-ClientGameCalled__NginxForward/nginx/conf.d/other/globalebet.conf	2018-09-19 16:43:12.649400183 +0800
++++ /tmp/globalebet.conf	2018-10-01 10:47:09.918480666 +0800
+@@ -187,5 +187,37 @@
+         }
+ 
+ 
++upstream 3000office {
++        #server 203.177.198.116:3100 max_fails=1  fail_timeout=2s ;
++        server 203.192.151.12:3100 max_fails=1  fail_timeout=2s ;
++        #server 101.78.133.212:3100 max_fails=1  fail_timeout=2s;
++        #server 205.177.199.12:3100 max_fails=1  fail_timeout=2s;
++}
+ 
++server {
++        #listen     443;
++	    listen 80;
++        server_name isb.gameapi.me;
++        index index.jsp index.html index.htm;
++        charset utf-8;
++        #ssl on;
++        #ssl_certificate /usr/local/nginx/conf/ssl/ebetapi888.com/fullchain.pem;
++        #ssl_certificate_key /usr/local/nginx/conf/ssl/ebetapi888.com/privkey.pem;
++
++        access_log  logs/isb.gameapi.me.access.log main;
++        location ~ ^/(WEB-INF)/ {
++        deny all;
++        }
++
++        location / {
++            include /usr/local/nginx/conf.d/include/proxy.conf.gm.include;
++	    proxy_http_version 1.1;
++            proxy_set_header Upgrade $http_upgrade;
++            proxy_set_header Connection "upgrade";
++            proxy_pass http://3000office;
++        }
++
++        error_page   404 404.jsp;
++        error_page   500 502 503 500.jsp;
++        }
+ 
+

@@ -1,0 +1,77 @@
+--- /ansible/nginx/hostgroups/om-test_nginx/nginx/conf.d/other/yifu-test-9004.conf	2021-03-01 17:38:19.119039865 +0800
++++ /tmp/yifu-test-9004.conf	2021-03-11 21:54:07.075877226 +0800
+@@ -65,3 +65,73 @@
+ 
+ }
+ 
++
++
++
++
++server {
++        listen         9004;
++        server_name    wwwdj.payhome.site dj-cstest2.payhome.site;
++        index   index.jsp index.html index.htm;
++
++        charset utf-8;
++
++        access_log  logs/dj-yifu-cstest-9004.access.log ;
++		error_log  logs/dj-yifu-cstest-9004.error.log ;
++         location ~ ^/(WEB-INF)/ {
++            deny all;
++         }
++
++        location / {
++			proxy_redirect          off; 
++			proxy_set_header        Host            $host; 
++			proxy_set_header        X-Forwarded-For $proxy_add_x_forwarded_for; 
++			proxy_connect_timeout   80; 
++			proxy_send_timeout      80; 
++			proxy_read_timeout      80; 
++			client_max_body_size    35m;
++			client_body_buffer_size 256k;
++			proxy_buffer_size       256k;
++			proxy_buffers           4 256k;
++			proxy_busy_buffers_size 256k;
++			proxy_temp_file_write_size      256k;
++            proxy_pass http://dj-test-yifu1-9004;
++        }
++
++}
++
++
++server {
++        listen         443;
++        server_name  wwwdj.payhome.site dj-cstest2.payhome.site dj-cstest3.payhome.site;
++        index   index.jsp index.html index.htm;
++
++        charset utf-8;
++  
++  		  ssl on;
++       ssl_certificate /usr/local/nginx/conf.d/ssl/payhome.site/fullchain.pem;
++       ssl_certificate_key /usr/local/nginx/conf.d/ssl/payhome.site/privkey.pem;
++
++        access_log  logs/dj-payhome.site.access.log ;
++		error_log  logs/dj-payhome.site.error.log ;
++         location ~ ^/(WEB-INF)/ {
++            deny all;
++         }
++
++        location / {
++			proxy_redirect          off; 
++			proxy_set_header        Host            $host; 
++			proxy_set_header        X-Forwarded-For $proxy_add_x_forwarded_for; 
++			proxy_connect_timeout   80; 
++			proxy_send_timeout      80; 
++			proxy_read_timeout      80; 
++			client_max_body_size    35m;
++			client_body_buffer_size 256k;
++			proxy_buffer_size       256k;
++			proxy_buffers           4 256k;
++			proxy_busy_buffers_size 256k;
++			proxy_temp_file_write_size      256k;
++            proxy_pass http://dj-test-yifu1-9004;
++        }
++
++}
+

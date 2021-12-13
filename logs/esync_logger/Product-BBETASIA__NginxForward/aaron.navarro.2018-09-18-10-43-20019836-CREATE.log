@@ -1,0 +1,105 @@
+--- /srv/Product-BBETASIA__NginxForward/nginx/conf.d/include/bbetasia_cpms_front_masterconfig.include	2018-08-15 16:21:47.445009372 +0800
++++ /tmp/bbetasia_cpms_front_masterconfig.include	2018-09-18 10:43:19.895493940 +0800
+@@ -1,64 +1,52 @@
+-        index   index.jsp index.html index.htm;
+-        access_log  logs/bbetasia_cpms_front.access.log main;
+-        access_log  logs/bbetasia_cpms_front.logstash.access.log logstash;
++index   index.jsp index.html index.htm;
++access_log  logs/bbetasia_cpms_front.access.log main;
++access_log  logs/bbetasia_cpms_front.logstash.access.log logstash;
+ 
+ 
+-        if ($http_user_agent ~* "qihu|360|360se|360ee|QIHU 360SE|qihoobot|Baiduspider|Googlebot|Googlebot-Mobile|Googlebot-Image|Mediapartners-Google|Adsbot-Google|Feedfetcher-Google|Yahoo! Slurp|Yahoo! Slurp China|YoudaoBot|Sosospider|Sogou spider|Sogou web spider|MSNBot|ia_archiver|Tomato Bot")
+-        {
+-                return 403;
+-        }
++if ($http_user_agent ~* "qihu|360|360se|360ee|QIHU 360SE|qihoobot|Baiduspider|Googlebot|Googlebot-Mobile|Googlebot-Image|Mediapartners-Google|Adsbot-Google|Feedfetcher-Google|Yahoo! Slurp|Yahoo! Slurp China|YoudaoBot|Sosospider|Sogou spider|Sogou web spider|MSNBot|ia_archiver|Tomato Bot")
++{
++return 403;
++}
+ 
+ 
+-        if ($request_method !~* GET|POST|HEAD) {
+-                return 403;
+-        }
++if ($request_method !~* GET|POST|HEAD) {
++return 403;
++}
+ 
+ 
+-        location ~ /\.
+-        { return 444; }
++location ~ /\.
++{ return 444; }
+ 
+ 
+-	error_page 403 = @403;
+-	location @403 {
+-		root html;
+-		allow all;
+-	#	if ( $request_uri ~ 'page-404.jsp' ){ rewrite ^(.*)$ /red-map.jpg break; }
+-		rewrite ^(.*)$ /red-map.jpg break; 
+-	}
++error_page 403 = @403;
++location @403 {
++	root html;
++	allow all;
++	rewrite ^(.*)$ /red-map.jpg break; 
++}
+ 
++if ($allowed_country ~ "no" ){ 
++	set $test BLOCK; 
++}
+ 
+-	location / {
+-	    if ($allowed_country ~ "no" )
+-		{ set $test BLOCK; }
++if ($allowed_country ~ "yes" ) { 
++	set $test ALLOW;
++ }
+ 
+-	    if ($allowed_country ~ "yes" ) 
+-		{ set $test ALLOW; }
++if ($allowed_ip ~ "yes" ){ 
++	set $test ALLOW; 
++}
+ 
+-	    if ( $remote_addr ~  '112.198.18.198|175.100.203.34|175.100.203.35|123.1.170.175|112.199.115.20|112.199.117.134|116.93.109.228|103.19.32.5|203.171.6.5|63.221.83.196|118.99.30.86|45.114.9.59|203.177.15.222|103.29.22.114|175.100.203.210|119.9.107.189|103.29.22.115|118.99.30.86|45.114.9.59|146.88.67.154|103.29.22.117|210.213.229.239|222.127.98.10|103.246.245.137|103.29.22.115|202.78.110.218|122.52.163.197|210.213.229.198|119.92.91.7|60.172.141.214|180.232.127.178|203.82.36.42|119.93.239.175|122.53.145.230|103.16.170.130|124.107.15.140|122.53.159.158|103.16.170.194|123.192.164.89|202.146.217.25|210.83.80.139|120.28.15.34|103.231.56.86|120.28.15.49|103.230.192.119|203.69.30.90|115.84.245.30|119.47.85.245|115.126.21.27|118.99.17.143|1.1.1.1|106.1.44.204|120.28.15.25|180.232.67.64|180.232.67.27|180.232.67.94|218.189.28.0/28|111.68.46.85|203.177.15.98|103.29.22.117|103.230.193.172|43.240.12.236|222.127.40.146|175.45.41.115|119.81.56.201|103.29.22.118|43.231.229.122|210.56.50.111|103.51.147.70|203.177.15.98|175.45.41.114|23.110.201.2|142.91.245.234|203.69.30.85|203.69.30.86|203.69.30.87|203.69.30.88|203.69.30.89|175.100.203.98|175.100.203.99|175.100.205.50|175.100.205.51|203.90.246.98|203.90.246.99|203.90.248.98|203.90.248.99|203.90.255.250|203.90.255.251|175.45.41.126|175.45.41.125|175.100.203.99|175.100.203.100|175.100.203.101|175.100.203.102|175.100.205.51|175.100.205.52|175.100.205.53|175.100.205.54|203.90.246.99|203.90.246.100|203.90.246.101|203.90.246.102|203.90.248.99|203.90.248.100|203.90.248.101|203.90.248.102|203.90.255.251|203.90.255.252|203.90.255.253|203.90.255.254|175.100.203.106|123.192.177.32|203.69.30.90|203.69.30.87|203.69.30.86|43.231.229.123|103.39.108.64|103.39.110.127|103.195.51.126|118.99.60.168|175.100.203.211|122.146.88.32|122.146.88.33|122.146.88.34|122.146.88.35|122.146.88.36|122.146.88.37|122.146.88.38|122.146.88.39|115.126.3.14|43.248.10.190|43.229.5.20|103.237.72.202|121.127.249.211|43.240.12.236|59.188.254.97|103.39.108.64|122.10.112.228|185.216.119.51|117.18.4.99|123.108.108.34|144.48.242.202|175.45.41.122|220.231.201.214|223.119.49.66|203.90.246.82|222.127.1.66' )
+-		{ set $test ALLOW; }
++location / {
++	if ( $test = "BLOCK" ) { return 403;  }
++	proxy_set_header Host  $host;
++	proxy_set_header X-Forwarded-For  $remote_addr;
++	proxy_set_header  X-Forwarded-Proto http;
++	proxy_pass http://cpms_front_bbetasia;
+ 
+-	    if ( $test = "BLOCK" ) { return 403;  }
+-            proxy_set_header Host  $host;
+-            proxy_set_header X-Forwarded-For  $remote_addr;
+-	    proxy_set_header  X-Forwarded-Proto http;
+-            proxy_pass http://cpms_front_bbetasia;
++}
+ 
+-        }
+-
+-	location ~* .*\.(png|jpg|gif|jpeg|bmp|ico|css|js|json|exe)?$ {
+-            proxy_next_upstream http_502 http_504 error timeout invalid_header;
+-            proxy_cache cache_after;
+-            proxy_cache_valid  200 304 12h;
+-            proxy_cache_key $uri$is_args$args;
+-            proxy_set_header Host  $host;
+-            proxy_set_header X-Forwarded-For  $remote_addr;
+-	    proxy_set_header  X-Forwarded-Proto http;
+-            proxy_pass http://cpms_front_bbetasia;
+-            expires      2h;
+-       }
+-
+- #   include /usr/local/nginx/conf.d/include/nginx_stats.cnf;
+- location ~* (conf|logs|lib|work|temp|bin)/{
+-        return 444;
+-        }
++location ~* (conf|logs|lib|work|temp|bin)/{
++	return 444;
++}
+ 
+

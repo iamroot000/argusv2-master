@@ -1,0 +1,86 @@
+---
+  - name: Checking multi-user                                                             #Checking multi-user
+    command: systemctl get-default
+    register: system
+    changed_when: false
+  - name: Setting multi-user                                                              #Setting multi-user
+    command: systemctl set-default multi-user.target
+    changed_when: 'system.stdout != "multi-user.target"'
+  - name: Disabling SELINUX                                                               #Disabling SELINUX
+    selinux:
+     state: disabled
+    ignore_errors: yes
+  - name: Configuring fstab                                                               #Configuring fstab
+    replace:
+     path: /etc/fstab
+     regexp: 'defaults'
+     replace: 'noatime'
+  - name: Configuring tmp                                                                 #Configuring tmp
+    file:
+     path: "{{ item }}"
+     state: absent
+     force: yes
+    with_items:
+     - /var/tmp
+     - /usr/tmp
+    ignore_errors: yes
+  - name: Configuring tmp2                                                                #Configuring tmp2
+    file:
+     src: /tmp/
+     dest: "{{ item }}"
+     state: link
+     force: yes
+    with_items:
+     - /var/tmp
+     - /usr/tmp
+    ignore_errors: yes
+  - name: Managing running services                                                       #Managing running services
+    shell: for i in {cpuspeed,crond,irqbalance,messagebus,smartd,sshd,syslog} ; do systemctl list-unit-files | grep $i | awk '{print $1}' | cut -d "." -f1 ; done
+    register: listfiles
+  - name: The following are the running or enabled services
+    debug:
+     var: listfiles.stdout_lines
+  - name: Disabling services (postfix and NetworkManager)                                 #Disabling services postfix
+    systemd:
+     name: "{{ item.name }}"
+     state: "{{ item.state }}"
+     enabled: no
+    with_items:
+     - { name: 'postfix', state: 'stopped' }
+    ignore_errors: yes
+  - name: Disabling avahi-daemon                                                          #Disabling avahi-daemon
+    command: "{{ item }}"
+    ignore_errors: yes
+    with_items:
+     - systemctl stop avahi-daemon.socket avahi-daemon.service
+     - systemctl disable avahi-daemon.socket avahi-daemon.service
+    failed_when: false
+  - name: Configuring ulimit                                                              #Configuring ulimit
+    lineinfile:
+     dest: /etc/rc.local
+     line: 'ulimit -SHn 102400'
+     state: present
+     insertafter: EOF
+  - name: Configuring ulimit2                                                              #Configuring ulimit2
+    pam_limits:
+     domain: '*'
+     limit_type: "{{ item.ltype }}"
+     limit_item: "{{ item.litem }}"
+     value: 102400
+    with_items:
+     - { ltype: 'soft', litem: 'nofile' }
+     - { ltype: 'hard', litem: 'nofile' }
+     - { ltype: 'soft', litem: 'nproc' }
+     - { ltype: 'hard', litem: 'nproc' }
+  - name: Creating backup for sysctl                                                      #Creating backup for sysctl
+    copy:
+     remote_src: yes
+     src: /etc/sysctl.conf
+     dest: /tmp/sysctl.conf.bak
+  - name: Configuring sysctl                                                              #Configuring sysctl
+    template:
+      src: sysctl.conf.j2
+      dest: /etc/sysctl.conf
+  - name: Reloading sysctl                                                                # Reloading sysctl
+    command: /sbin/sysctl -p
+

@@ -1,0 +1,24 @@
+############
+version: '2'
+services:
+ argus-celery-app-eye:
+  #build: .
+  image: omdockerhub.neweb.me:5000/argus-web
+  container_name: argus-celery-app-eye
+  volumes:
+    - /etc/localtime:/etc/localtime:ro
+    #- /opt/logs/argus/:/app/argus/logs
+    - /app/argus/mount/argus-celery-app-eye:/app/argus/misc/async_tasks/res/
+  hostname: argus-celery-app-eye
+  mem_limit: 2g
+  memswap_limit: 2g
+  #command: /bin/bash
+  command: bash /app/argus/exec/sync-start-celery_app_eye.sh
+  stdin_open: true
+  tty: true
+  user: root
+  dns:
+    - 8.8.8.8
+    - 8.8.4.4
+  user: root
+  network_mode: "bridge"

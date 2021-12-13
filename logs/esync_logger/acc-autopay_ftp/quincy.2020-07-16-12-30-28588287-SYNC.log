@@ -1,0 +1,137 @@
+ESYNC_WORKER1_COMMAND_START
+ [WARNING]: Invalid characters were found in group names but not replaced, use
+-vvvv to see details
+
+PLAY [acc-autopay_ftp] *********************************************************
+
+
+TASK [Gathering Facts] *********************************************************
+ [WARNING]: Unhandled error in Python interpreter discovery for host
+161.202.63.250: Failed to connect to the host via ssh: ssh: connect to host
+161.202.63.250 port 28032: Connection timed out
+ok: [119.9.106.122]
+
+fatal: [161.202.63.250]: UNREACHABLE! => {"changed": false, "msg": "Data could not be sent to remote host \"161.202.63.250\". Make sure this host can be reached over ssh: ssh: connect to host 161.202.63.250 port 28032: Connection timed out\r\n", "unreachable": true}
+
+TASK [nginx_sync : Change python interpreter] **********************************
+ok: [119.9.106.122]
+
+
+TASK [nginx_sync : change python interpreter] **********************************
+ok: [119.9.106.122]
+
+TASK [nginx_sync : Notify] *****************************************************
+ok: [119.9.106.122] => {
+
+    "msg": "Syncing acc-autopay_ftp"
+}
+
+TASK [nginx_sync : include_vars] ***********************************************
+ok: [119.9.106.122]
+
+
+TASK [nginx_sync : Synchronizing Nginx] ****************************************
+ok: [119.9.106.122] => (item=conf)
+changed: [119.9.106.122] => (item=conf.d)
+ok: [119.9.106.122] => (item=data)
+
+ok: [119.9.106.122] => (item=html)
+
+TASK [nginx_sync : Set HTML Dir to root] ***************************************
+ok: [119.9.106.122]
+
+
+TASK [all_servers : include_vars] **********************************************
+ok: [119.9.106.122]
+
+TASK [all_servers : Notify] ****************************************************
+ok: [119.9.106.122] => {
+
+    "msg": "Clearing Nginx Cache for acc-autopay_ftp"
+}
+
+TASK [all_servers : Copying clear_nginxcache.sh to remote hosts] ***************
+ok: [119.9.106.122]
+
+
+TASK [all_servers : Nginx Clear Cache] *****************************************
+changed: [119.9.106.122]
+
+TASK [all_servers : debug] *****************************************************
+
+ok: [119.9.106.122] => {
+    "script_result.stdout_lines": [
+        "-----------------------------------------------------------", 
+        "|                 Checking Nginx Config                   |", 
+        "-----------------------------------------------------------", 
+
+        "", 
+        " nginx -t ", 
+        "", 
+        "-----------------------------------------------------------", 
+        "|                 Stopping Nginx Process                  |", 
+
+        "-----------------------------------------------------------", 
+        "", 
+        " /usr/bin/killall -9 nginx ", 
+        "", 
+        "-----------------------------------------------------------", 
+
+        "|                 Clearing Proxy Cache                    |", 
+        "-----------------------------------------------------------", 
+        "", 
+        " /bin/rm -rf /tmp/nginx_cache ", 
+        "", 
+
+        "-----------------------------------------------------------", 
+        "|                Restarting Nginx Process                 |", 
+        "-----------------------------------------------------------", 
+        "root     25835  0.0  0.0 108128  1424 ?        S    12:30   0:00 /bin/bash /bak/bin/clear_nginxcache.sh", 
+        "root     25844  0.0  0.0 294596  2388 ?        Ss   12:30   0:00 nginx: master process /usr/local/nginx/sbin/nginx", 
+
+        "nobody   25846  0.0  0.1 298848  6812 ?        S    12:30   0:00 nginx: worker process      ", 
+        "nobody   25847  0.0  0.1 298848  6812 ?        S    12:30   0:00 nginx: worker process      ", 
+        "nobody   25848  0.0  0.1 298848  6812 ?        S    12:30   0:00 nginx: worker process      ", 
+        "nobody   25849  0.0  0.1 298848  6812 ?        S    12:30   0:00 nginx: worker process      ", 
+        "nobody   25850  0.0  0.0 294596  2792 ?        S    12:30   0:00 nginx: cache manager process", 
+
+        "nobody   25851  0.0  0.0 294596  2748 ?        S    12:30   0:00 nginx: cache loader process", 
+        "root     25854  0.0  0.0 105368   884 ?        S    12:30   0:00 grep nginx", 
+        "             total       used       free     shared    buffers     cached", 
+        "Mem:          3953       3737        216          1         68       3286", 
+        "-/+ buffers/cache:        382       3571", 
+
+        "Swap:            0          0          0", 
+        "-----------------------------------------------------------", 
+        "|                     Reload SUCCESS!                     |", 
+        "-----------------------------------------------------------"
+    ]
+
+}
+
+PLAY [127.0.0.1] ***************************************************************
+
+TASK [sync_to_git : Synchronizing Nginx To GIT] ********************************
+
+changed: [127.0.0.1]
+
+TASK [sync_to_git : debug] *****************************************************
+ok: [127.0.0.1] => {
+    "msg": " [u'[master c45efd0] quincy', u' 1 file changed, 3 insertions(+)', u'Branch master set up to track remote branch master from origin.']"
+
+}
+
+PLAY [acc-autopay_ftp] *********************************************************
+
+PLAY [127.0.0.1] ***************************************************************
+
+
+PLAY RECAP *********************************************************************
+119.9.106.122              : ok=12   changed=2    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0   
+127.0.0.1                  : ok=2    changed=1    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0   
+161.202.63.250             : ok=0    changed=0    unreachable=1    failed=0    skipped=0    rescued=0    ignored=0   
+
+
+
+ESYNC_WORKER1_COMMAND_END
+MAX RETRIES EXECUTED, COMMAND NOT RESPONDING

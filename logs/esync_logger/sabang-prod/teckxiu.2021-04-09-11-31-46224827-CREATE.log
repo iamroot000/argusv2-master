@@ -1,0 +1,47 @@
+--- /ansible/nginx/hostgroups/sabang-prod/nginx/conf.d/other/sms-ws.conf	2021-04-09 11:29:48.964551597 +0800
++++ /tmp/sms-ws.conf	2021-04-09 11:31:46.220946675 +0800
+@@ -1,3 +1,43 @@
++server {
++    listen 80;
++    server_name sms.luckysabong.com;
++    location / {
++        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
++	proxy_set_header X-Real-IP  $remote_addr;
++	proxy_next_upstream http_502 http_504 http_404 error timeout invalid_header;
++	proxy_set_header Host $host:$server_port;
++	proxy_http_version 1.1;
++	proxy_set_header Upgrade $http_upgrade;
++	proxy_set_header Connection $connection_upgrade;
++	proxy_connect_timeout   1800;
++	proxy_send_timeout      1800;
++	proxy_read_timeout      1800;
++
++	proxy_pass http://sms-ws;
++        }
++}
++
++
++
++
++server {
++    listen 80;
++    server_name sms-background.luckysabong.com;
++    location / {
++        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
++        proxy_set_header X-Real-IP  $remote_addr;
++        proxy_next_upstream http_502 http_504 http_404 error timeout invalid_header;
++        proxy_set_header Host $host:$server_port;
++        proxy_http_version 1.1;
++        proxy_set_header Upgrade $http_upgrade;
++        proxy_set_header Connection $connection_upgrade;
++        proxy_connect_timeout   1800;
++        proxy_send_timeout      1800;
++        proxy_read_timeout      1800;
++
++        proxy_pass http://18.167.139.195:8701;
++        }
++} 
+ 
+ 
+ 
+

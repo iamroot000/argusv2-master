@@ -1,0 +1,25 @@
+server {
+    listen 80;
+    server_name wpc88.com agent.wpc88.com;
+    rewrite ^(.*)$ https://agent.wpc88.com$1 permanent;
+}
+
+server {
+    listen 443;listen 8889;
+    server_name wpc88.com agent.wpc88.com;
+    ssl on;
+    ssl_certificate /usr/local/nginx/conf.d/ssl/wpc88.com/fullchain.pem;
+    ssl_certificate_key /usr/local/nginx/conf.d/ssl/wpc88.com/privkey.pem;
+
+    if ($http_host !~* 'www') {
+        rewrite ^(.*)$ https://www.$http_host$1 permanent;
+    }
+
+    include /usr/local/nginx/conf.d/include/douji-proxy.include;
+}
+
+
+
+
+
+

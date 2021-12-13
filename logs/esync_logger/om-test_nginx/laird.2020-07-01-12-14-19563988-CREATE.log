@@ -1,0 +1,27 @@
+--- /ansible/nginx/hostgroups/om-test_nginx/nginx/conf.d/include/mailserver-web-test.include	2020-07-01 12:12:21.547987825 +0800
++++ /tmp/mailserver-web-test.include	2020-07-01 12:14:19.403213764 +0800
+@@ -35,14 +35,17 @@
+ 	set $upstream2 mailserver-server;
+ 
+ 
+-
++	location /server {
++		proxy_pass http://$upstream2;
++  		 proxy_set_header Host  $host;
++   		 proxy_set_header X-Forwarded-For  $remote_addr;
++  		 proxy_set_header X-Forwarded-Proto $scheme ;
++	}
+ 
+ 	location / {
+-  if ($request_method = "POST"){
+-  		proxy_pass http://$upstream2;
+-  }else{
+-  		proxy_pass http://$upstream;
+-  }
++  
++  			proxy_pass http://$upstream;
++ 
+             proxy_set_header Host  $host;
+             proxy_set_header X-Forwarded-For  $remote_addr;
+             proxy_set_header X-Forwarded-Proto $scheme ;
+

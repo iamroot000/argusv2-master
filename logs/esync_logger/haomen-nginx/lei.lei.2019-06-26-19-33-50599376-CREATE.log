@@ -1,0 +1,103 @@
+--- /ansible/nginx/hostgroups/haomen-nginx/nginx/conf.d/include/haomen_weihu.include	2019-06-26 19:03:40.769706994 +0800
++++ /tmp/haomen_weihu.include	2019-06-26 19:33:50.494706994 +0800
+@@ -1,92 +1,7 @@
+ 
+-        proxy_intercept_errors  on;
+-        error_page      404     /404.jsp;
+-        error_page      500     /500.jsp;
+-
+-        index   index.jsp index.html index.htm;
+-        access_log  logs/haomen_proxy.access.log main;
+-        access_log  logs/haomen_proxy.logstash.access.log logstash;
+-        if ($http_user_agent ~* "qihu|360|360se|360ee|QIHU 360SE|q(iPhone|iPad|iPod|Linux|android|Android|bb\d+|meego).+mobile|Android|MobileSafari|iPhone|iPad|iPod|Linux|android|avantgo|bada\/|blackberry|blazer|compal|elaine|fennec|hiptop|iemobile|ip(hone|od)|iris|kindle|lge |maemo|midp|mmp|netfront|opera m(ob|in)i|palm( os)?|phone|p(ixi|re)\/|plucker|pocket|psp|series(4|6)0|symbian|treo|up\.(browser|link)|vodafone|wap|windows (ce|phone)|xda|xiino|android 3.0") {
+-        set $mobile_rewrite perform;
+-        set $path pc;   
+-        }
+-
+-        if ( $mobile_rewrite = perform )
+-        { set $upstream mobile_baowang_haomen;
+-        set $path h5; }
+-
+-        if ($http_user_agent ~* "(X11)")
+-        { set $mobile_rewrite per;  }
+-
+-        if ( $mobile_rewrite != perform )
+-        { set $upstream mobile_baowang_haomen;set $path h5; }
+-
+-        if ($host ~* pc\.(.*))
+-        { set $upstream mobile_baowang_haomen;set $path h5; }
+-
+-if ($http_user_agent ~* "qihoobot|Yahoo! Slurp|Yahoo! Slurp China|YoudaoBot|Sosospider|Sogou spider|Sogou web spider|MSNBot|ia_archiver|Tomato Bot")
+-{
+-	return 403;
+-}
+-
+-        limit_req zone=anti_spider burst=5 nodelay;
+-        if ($http_user_agent ~* "baiduspider") {
+-                set $anti_spider $http_user_agent;
+-        }
+-
+-        if ($request_method !~* GET|POST|HEAD) {
+-                return 403;
+-        }
+-
+-        location ~ /\.
+-        { return 444; }
+-
+-	error_page 403 = @403;
+-	location @403 {
+-		root html;
+-		allow all;
+-		rewrite ^(.*)$ /red-map.jpg break;
+-	}
+-
+-	location / {
+-	    if ($allowed_country ~ "no" )
+-		{ set $test BLOCK; }
+-
+-	    if ($allowed_country ~ "yes" ) 
+-		{ set $test ALLOW; }
+-
+-	    if ($allowed_ip ~ "yes" ){ 
+-        set $test ALLOW; 
+-        }
+-
+-	    if ( $test = "BLOCK" ) { return 403;  }
+-            #proxy_set_header Host  $host;
+-            #proxy_set_header X-Forwarded-For  $remote_addr;
+-            root /user/local/nginx/html/$path/;
+-
+-        }
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-       
+-
+-
+-
+-
+-
++location / {
++             index  index.html;
++             root  /usr/local/nginx/html/pc;
++            if ( $http_user_agent ~* "(Android|iPhone|Windows Phone|UC|Kindle)") {
++                       root /usr/local/nginx/html/h5;
++             }  }
+\ No newline at end of file
+

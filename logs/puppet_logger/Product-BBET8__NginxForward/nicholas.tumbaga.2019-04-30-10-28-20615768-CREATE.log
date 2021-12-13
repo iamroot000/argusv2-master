@@ -1,0 +1,17 @@
+--- /puppet/Product-BBET8__NginxForward/templates/iptables.sh	2018-09-12 13:24:45.576607803 +0800
++++ /tmp/iptables.sh	2019-04-30 10:28:20.546991339 +0800
+@@ -1,7 +1,12 @@
++/sbin/iptables -A INPUT -s 41.223.120.236 -p tcp -m tcp -m multiport --dports 443,80 -j ACCEPT ##MG IP for mgclient
++
++ipset destroy TSniperIPS
++ipset create TSniperIPS hash:ip timeout 3600
++/sbin/iptables -A INPUT -m set --match-set TSniperIPS src -j DROP
++
+ /sbin/iptables -A INPUT -m tcp -p tcp --dport 80  -j ACCEPT ##DEFAULT
+ /sbin/iptables -A INPUT -m tcp -p tcp --dport 909 -j ACCEPT
+ /sbin/iptables -A INPUT -m tcp -p tcp --dport 443 -j ACCEPT
+ /sbin/iptables -A INPUT -s 112.198.101.204 -j ACCEPT #Dev jay
+-/sbin/iptables -A INPUT -s 41.223.120.236 -p tcp -m tcp -m multiport --dports 443,80 -j ACCEPT ##MG IP for mgclient
+ 
+ /sbin/iptables -A INPUT -s 211.24.96.55 -j ACCEPT #Malaysia-officeIP
+

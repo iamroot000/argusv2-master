@@ -1,0 +1,45 @@
+--- /srv/Mirror-CPMS-ClientGameCalled__NginxForward/nginx/conf.d/other/callback-lb-baibo.conf	2018-12-13 14:44:53.195221953 +0800
++++ /tmp/callback-lb-baibo.conf	2018-12-13 14:49:43.129221953 +0800
+@@ -1,4 +1,41 @@
+ 
++#####
++
++upstream realcallbacklbbaibo  {
++#        server  203.192.151.12:7217 max_fails=2  fail_timeout=30s ;
++#        server  203.177.198.116:77217 max_fails=2  fail_timeout=30s;
++        server  101.78.133.212:7217 max_fails=2  fail_timeout=30s;
++        server  205.177.199.12:7217 max_fails=2  fail_timeout=30s backup;
++
++
++}
++
++server {
++    listen 80;
++    server_name  callback.lbbaibo.authapi.net;
++    rewrite     ^(.*)   https://$http_$host$1 permanent;
++}
++
++server {
++        listen       443; #HTTP Port
++        server_name  callback.lbbaibo.authapi.net;
++
++        charset utf-8;
++        access_log  logs/realcallbacklbbaibo.access.log main;
++        error_log  logs/realcallbacklbbaibo.error.log  ;
++
++        ssl on;
++        ssl_certificate /usr/local/nginx/conf.d/ssl/authapi.net/fullchain.pem;
++        ssl_certificate_key /usr/local/nginx/conf.d/ssl/authapi.net/privkey.pem;
++
++        location / {
++#		    include /usr/local/nginx/conf.d/include/whitelistIP.include;
++	        include /usr/local/nginx/conf.d/include/proxy.conf.fwd.include ;
++	        proxy_next_upstream http_500 http_502 http_503 http_504 http_404 timeout invalid_header error;
++		    proxy_pass http://realcallbacklbbaibo;
++        }
++
++  }
+ 
+ 
+ 
+

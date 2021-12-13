@@ -1,0 +1,61 @@
+--- /ansible/nginx/hostgroups/om-cdn_ws/nginx/conf.d/other/v68_fpms.conf	2020-03-03 11:39:00.872316668 +0800
++++ /tmp/v68_fpms.conf	2020-03-03 11:40:39.586387334 +0800
+@@ -15,12 +15,12 @@
+ 
+ server {
+     listen 80;
+-    server_name ip.appcoffee.cn ip.j01z.cn;
++    server_name ip.appcoffee.cn;
+ 
+   root html;
+ index   index.jsp index.html index.htm;
+-access_log  logs/v68fpms2.appcoffee.cn.access.log main;
+-access_log  logs/v68fpms2.appcoffee.cn.logstash.access.log logstash;
++access_log  logs/ip.appcoffee.cn.access.log main;
++access_log  logs/ip.appcoffee.cn.logstash.access.log logstash;
+       		add_header Access-Control-Allow-Origin *;
+     		add_header Access-Control-Allow-Methods 'GET, POST, OPTIONS';
+     		add_header Access-Control-Allow-Headers 'DNT,X-Mx-ReqToken,Keep-Alive,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Authorization';
+@@ -47,4 +47,41 @@
+ }
+ 
+ 
++server {
++    listen 80;
++    server_name ip.j01z.cn;
++
++  root html;
++index   index.jsp index.html index.htm;
++access_log  logs/ip.j01z.cn.access.log main;
++access_log  logs/ip.j01z.cn.logstash.access.log logstash;
++      		add_header Access-Control-Allow-Origin *;
++    		add_header Access-Control-Allow-Methods 'GET, POST, OPTIONS';
++    		add_header Access-Control-Allow-Headers 'DNT,X-Mx-ReqToken,Keep-Alive,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Authorization';
++#set $allowed_country yes;
++#set $allowed_ip  yes;
++
++if ($allowed_country ~ "no" ){
++       set $test BLOCK;
++}
++
++if ($allowed_country ~ "yes" ){
++       set $test ALLOW;
++}
++
++if ($allowed_ip ~ "yes" ){
++       set $test ALLOW;
++}
++
++  
++if ( $test = "BLOCK" ) { return 403;  }
++
++  
++  
++}
++
++
++
++
++
+ 
+

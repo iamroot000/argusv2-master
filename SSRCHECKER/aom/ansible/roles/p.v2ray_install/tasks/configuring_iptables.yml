@@ -1,0 +1,67 @@
+---
+
+- name: Configuring v2rayport
+
+  block:
+
+    - name: V2ray data
+
+      slurp:
+
+        path: '{{ v2ray_client_config }}'
+
+      register: v2ray_json
+
+    - name: Allowing v2ray port
+
+      replace:
+
+       path: /bak/bin/iptables.sh
+
+       regexp: "--dport {{ (v2ray_json.content|b64decode|from_json).outbounds.0.settings.vnext.0.port }}"
+
+       replace: "--dport {{ v2ray_port }}"
+
+    - include: getting_variables.yml
+
+    - include: configuring_v2ray.yml
+
+    - include: configuring_services.yml
+
+  when: 'v2ray_config.stat.path is defined and ssr_config.stat.path is defined and ssr_dir.stat.path is defined'
+
+
+
+
+
+- name: Allowing v2ray port2
+
+  lineinfile:
+
+    dest: /bak/bin/iptables.sh
+
+    regexp: '^/sbin/iptables -A INPUT -p tcp -m tcp --dport 23456'
+
+    line: '/sbin/iptables -A INPUT -p tcp -m tcp --dport {{ v2ray_port }} -j ACCEPT #V2RAY'
+
+    state: present
+
+  when: 'v2ray_config.stat.path is not defined and ssr_config.stat.path is defined and ssr_dir.stat.path is defined'
+
+
+
+
+
+- name: Run iptables.
+
+  command: '{{ item }}'
+
+  with_items:
+
+    - '/bak/bin/iptables.sh'
+
+    - '/etc/init.d/iptables save'
+
+  failed_when: false
+
+

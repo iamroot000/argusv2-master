@@ -1,0 +1,130 @@
+ESYNC_WORKER1_COMMAND_START
+ [WARNING]: Invalid characters were found in group names but not replaced, use
+-vvvv to see details
+
+PLAY [xbet-nginx] **************************************************************
+
+
+TASK [Gathering Facts] *********************************************************
+ok: [207.46.157.209]
+
+TASK [nginx_sync : Change python interpreter] **********************************
+ok: [207.46.157.209]
+
+
+TASK [nginx_sync : change python interpreter] **********************************
+ok: [207.46.157.209]
+
+TASK [nginx_sync : Notify] *****************************************************
+
+ok: [207.46.157.209] => {
+    "msg": "Syncing xbet-nginx"
+}
+
+TASK [nginx_sync : include_vars] ***********************************************
+
+ok: [207.46.157.209]
+
+TASK [nginx_sync : Synchronizing Nginx] ****************************************
+ok: [207.46.157.209] => (item=conf)
+changed: [207.46.157.209] => (item=conf.d)
+
+ok: [207.46.157.209] => (item=data)
+ok: [207.46.157.209] => (item=html)
+
+TASK [all_servers : include_vars] **********************************************
+ok: [207.46.157.209]
+
+
+TASK [all_servers : Notify] ****************************************************
+ok: [207.46.157.209] => {
+    "msg": "Clearing Nginx Cache for xbet-nginx"
+}
+
+
+TASK [all_servers : Copying clear_nginxcache.sh to remote hosts] ***************
+ok: [207.46.157.209]
+
+TASK [all_servers : Nginx Clear Cache] *****************************************
+
+changed: [207.46.157.209]
+
+TASK [all_servers : debug] *****************************************************
+ok: [207.46.157.209] => {
+    "script_result.stdout_lines": [
+
+        "-----------------------------------------------------------", 
+        "|                 Checking Nginx Config                   |", 
+        "-----------------------------------------------------------", 
+        "", 
+        " nginx -t ", 
+
+        "", 
+        "-----------------------------------------------------------", 
+        "|                 Stopping Nginx Process                  |", 
+        "-----------------------------------------------------------", 
+        "", 
+
+        " /usr/bin/killall -9 nginx ", 
+        "", 
+        "-----------------------------------------------------------", 
+        "|                 Clearing Proxy Cache                    |", 
+        "-----------------------------------------------------------", 
+
+        "", 
+        " /bin/rm -rf /tmp/nginx_cache ", 
+        "", 
+        "-----------------------------------------------------------", 
+        "|                Restarting Nginx Process                 |", 
+
+        "-----------------------------------------------------------", 
+        "root      14293  0.0  0.0 107552  1312 pts/0    S+   11:06   0:00 watch ps ax | grep nginx", 
+        "root      14300  0.0  0.0 106120  1280 ?        S    11:06   0:00 /bin/bash /bak/bin/clear_nginxcache.sh", 
+        "root      14318  2.0  3.2 583764 229132 ?       Ss   11:06   0:00 nginx: master process /usr/local/nginx/sbin/nginx", 
+        "nobody    14319  0.0  3.2 585692 232664 ?       S    11:06   0:00 nginx: worker process      ", 
+
+        "nobody    14320  0.0  3.2 585692 232664 ?       S    11:06   0:00 nginx: worker process      ", 
+        "nobody    14322  0.0  3.2 585692 232664 ?       S    11:06   0:00 nginx: worker process      ", 
+        "nobody    14323  0.0  3.2 585692 232664 ?       S    11:06   0:00 nginx: worker process      ", 
+        "nobody    14324  0.0  3.2 583764 229624 ?       S    11:06   0:00 nginx: cache manager process", 
+        "nobody    14325  0.0  3.2 583764 229516 ?       S    11:06   0:00 nginx: cache loader process", 
+
+        "root      14333  0.0  0.0 103328   856 ?        S    11:06   0:00 grep nginx", 
+        "root      80733  0.0  0.0   9120   648 ?        Ss    2018   0:00 /sbin/dhclient -H xbet-nginx1.hk.az.monaco1.me -1 -q -lf /var/lib/dhclient/dhclient-eth0.leases -pf /var/run/dhclient-eth0.pid eth0", 
+        "             total       used       free     shared    buffers     cached", 
+        "Mem:          6976       6344        631          2        350       3320", 
+        "-/+ buffers/cache:       2674       4302", 
+
+        "Swap:            0          0          0", 
+        "-----------------------------------------------------------", 
+        "|                     Reload SUCCESS!                     |", 
+        "-----------------------------------------------------------"
+    ]
+
+}
+
+PLAY [127.0.0.1] ***************************************************************
+
+TASK [sync_to_git : Synchronizing Nginx To GIT] ********************************
+
+changed: [127.0.0.1]
+
+TASK [sync_to_git : debug] *****************************************************
+ok: [127.0.0.1] => {
+    "msg": " [u'[master 0263bbd] aaron.navarro', u' 5 files changed, 311 insertions(+)', u' create mode 100644 nginx/conf.d/other/xbetapp.com.conf', u' create mode 100644 nginx/conf.d/other/xbetgirl.com.conf', u' create mode 100644 nginx/conf.d/other/xbetgirls.com.conf', u' create mode 100644 nginx/conf.d/other/xbtftp.conf', u' create mode 120000 nginx/conf.d/ssl/xbetapp.com', u'Branch master set up to track remote branch master from origin.']"
+
+}
+
+PLAY [xbet-nginx] **************************************************************
+
+PLAY [127.0.0.1] ***************************************************************
+
+
+PLAY RECAP *********************************************************************
+127.0.0.1                  : ok=2    changed=1    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0   
+207.46.157.209             : ok=11   changed=2    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0   
+
+
+
+ESYNC_WORKER1_COMMAND_END
+MAX RETRIES EXECUTED, COMMAND NOT RESPONDING

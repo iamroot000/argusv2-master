@@ -1,0 +1,25 @@
+--- /srv/Product-BBETASIA__NginxForward/nginx/conf.d/global/_default.conf	2018-09-04 16:34:19.313266981 +0800
++++ /tmp/_default.conf	2018-10-31 15:20:00.293853490 +0800
+@@ -3,7 +3,21 @@
+     server_name  _;
+ 
+     include /usr/local/nginx/conf.d/include/bbetasia_official_masterconfig.include;
++	
++  	location = /statuscheck {
++        set $test BLOCK;
+ 
++        if ($allowed_ip ~ "yes" ){
++          set $test ALLOW;
++        }
++
++        if ( $test = "BLOCK" ) {
++          return 403 '{"status":false}';
++          add_header Content-Type text/plain;
++        }
++        return 200 '{"status":true}';
++        add_header Content-Type text/plain;
++    }         
+     access_log  logs/default.access.log main;
+     access_log  logs/default.logstash.access.log logstash;
+ }
+

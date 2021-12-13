@@ -1,0 +1,24 @@
+FILENAME: 80-443/j93.me.conf
+-  
++  server {
++      listen 80;
++      server_name j93.me www.j93.me;
++      rewrite ^(.*)$ https://www.j93.me$1 permanent;
++  }
++  
++  server {
++      listen 443;
++      server_name j93.me www.j93.me;
++      ssl on;
++      ssl_certificate /usr/local/nginx/conf.d/ssl/j93.me/fullchain.pem;
++      ssl_certificate_key /usr/local/nginx/conf.d/ssl/j93.me/privkey.pem;
++  
++      if ($http_host !~* 'www') {
++          rewrite ^(.*)$ https://www.$http_host$1 permanent;
++      }
++  
++      include /usr/local/nginx/conf.d/include/bbetasia_proxy_masterconfig.include;
++  }
++  
++  
+

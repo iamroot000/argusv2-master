@@ -1,0 +1,448 @@
+#credit to: Ever Yan
+#created by: Yroll Jay-R Macalino
+---
+- hosts: 127.0.0.1
+  gather_facts: no
+
+  vars_prompt:
+  - name: "cent_username"
+    prompt: "Username"
+    private: no
+  - name: "cent_password"
+    prompt: "Password"
+    private: yes
+
+  tasks:
+  - name: "Setting up"
+    lineinfile:
+     dest: '{{ item.dest }}'
+     regexp: '^{{ item.regexp }}'
+     line: '{{ item.line }}'
+     state: present
+    with_items:
+     - { dest: './SSR-init-config', regexp: 'ansible_ssh_user=', line: 'ansible_ssh_user={{ cent_username  }}'  }
+     - { dest: './SSR-init-config.bak', regexp: 'ansible_ssh_user=', line: 'ansible_ssh_user={{ cent_username  }}'  }
+     - { dest: './SSR-init-config', regexp: 'ansible_ssh_pass=', line: 'ansible_ssh_pass={{ cent_password  }}'  }
+     - { dest: './SSR-init-config.bak', regexp: 'ansible_ssh_pass=', line: 'ansible_ssh_pass={{ cent_password  }}'  }
+    ignore_errors: yes
+  - name: Access the server
+    shell: for i in `cat ${location}SSR-init-config.list`; do xterm -title "$i" -hold -e "sshpass -p {{ cent_password  }} ssh {{ cent_username  }}@$i -o StrictHostKeyChecking=no" & done
+
+- hosts: init-SSR
+  gather_facts: no
+
+#  vars_prompt:
+#  - name: "cent_hostname"
+#    prompt: "Set server hostname by typing the last octet"
+#    private: no
+
+  vars:
+   IP_ALIAS: "/etc/sysconfig/network-scripts"
+   COMMON: "snadmin"
+   SSHPORT: "2556"
+
+  pre_tasks:
+  - name: Installing wget
+    yum:
+     name:
+     - wget
+     state: present
+  - name: Checking rpmforge if exist
+    command: ls /root/add-rpmforge_epel-repo.sh
+    ignore_errors: yes
+    register: checkfile
+  - name: Downloading rpmforge
+    get_url:
+     url: http://office.pc-setting.info/cyrus/add-rpmforge_epel-repo.sh
+     url_username: omadmin
+     url_password: S18B300
+     dest: /root/
+     mode: 0755
+  - name: Executing script
+    shell: /root/add-rpmforge_epel-repo.sh && yum clean all && yum makecache
+    when: 'checkfile.stdout != "/root/add-rpmforge_epel-repo.sh"'
+  - name: Configuring iptables
+    file:
+     path: /bak/bin
+     state: directory
+  - name: Configuring iptables2
+    file:
+     path: /bak/bin/iptables.sh
+     state: touch
+     mode: 0755
+  - name: Configuring iptables3
+    lineinfile:
+     dest: /bak/bin/iptables.sh
+     line: "{{ item }}"
+     state: present
+     insertafter: EOF
+    with_items:
+     - "#!/bin/sh"
+     - "/sbin/iptables -F"
+     - "/sbin/iptables -t nat -F"
+     - "/sbin/iptables -A INPUT -i lo -j ACCEPT"
+     - "#TECHZONE"
+     - "/sbin/iptables -A INPUT -s 103.29.22.112/29 -j ACCEPT #fccdci(techzone)"
+     - "/sbin/iptables -A INPUT -s 203.177.15.222/30 -j ACCEPT #globe(techzone)"
+     - "/sbin/iptables -A INPUT -s 203.177.198.112/28 -j ACCEPT #globe(GDC)"
+     - "/sbin/iptables -A INPUT -s 175.45.41.112/28 -j ACCEPT #WTT(techzone)"
+     - "#ANXEUZ"
+     - "/sbin/iptables -A INPUT -s 223.119.50.66/29 -j ACCEPT #China Mobile"
+     - "/sbin/iptables -A INPUT -s 175.100.203.106/29 -j ACCEPT #HGC"
+     - "/sbin/iptables -A INPUT -s 203.177.234.146/30 -j ACCEPT #HGC"
+     - "#IPEAK"
+     - "/sbin/iptables -A INPUT -s 175.100.203.211 -j ACCEPT #HGC IP"
+     - "/sbin/iptables -A INPUT -s 223.119.51.107/31 -j ACCEPT #China Mobile"
+     - "/sbin/iptables -A INPUT -s 103.16.170.195/30 -j ACCEPT #Radius"
+     - "#HASHTECH"
+     - "/sbin/iptables -A INPUT -s 203.90.246.80/29 -j ACCEPT #HGC"
+     - "/sbin/iptables -A INPUT -s 223.119.49.64/29 -j ACCEPT #CMI"
+     - "/sbin/iptables -A INPUT -s 203.90.246.82/29 -j ACCEPT #HGC"
+     - "/sbin/iptables -A INPUT -s 223.119.49.66/29 -j ACCEPT #CMI"
+     - "#SSR"
+     - "/sbin/iptables -A INPUT -p udp -m state --state NEW -m udp --dport 3389 -j ACCEPT"
+     - "/sbin/iptables -A INPUT -p tcp -m state --state NEW -m tcp --dport 3389 -j ACCEPT"
+     - "/sbin/iptables -A INPUT -p icmp -m limit --limit 1/s --limit-burst 10 -j ACCEPT"
+     - "/sbin/iptables -A INPUT -p tcp -m tcp --dport 80 -j ACCEPT #for http server,now allowed by default"
+     - "/sbin/iptables -A INPUT -p tcp -m tcp --dport 443 -j ACCEPT #for https server,allowed by default"
+     - "/sbin/iptables -A INPUT -m state --state RELATED,ESTABLISHED -j ACCEPT"
+     - "/sbin/iptables -A INPUT -m state --state INVALID,NEW -j DROP"
+     - "/sbin/iptables-save"
+     - "/sbin/iptables-save"
+  - name: Downloading netstat-statistics.sh
+    get_url:
+     url: '{{ item }}'
+     url_username: omadmin
+     url_password: S18B300
+     dest: /root/
+     mode: 0755
+    with_items:
+     - http://office.pc-setting.info/cyrus/aom/ssr-script/netstat-statistics.sh
+  - name: CentOS5 var1
+    shell: cat /etc/redhat-release | tr "." " " | awk '{print $1,$2,$3}'
+    register: centos5
+  - name: CentOS5 var2
+    shell: uname -p|grep x86_64
+    register: centos5bit
+  - name: Installing CentOS5 epel-release x86_64
+    command: rpm -Uvh http://dl.fedoraproject.org/pub/epel/5/x86_64/epel-release-5-4.noarch.rpm
+    when: 'centos5.stdout == "CentOS release 5" and centos5bit.stdout == "x86_64"'
+    ignore_errors: yes
+  - name: Installing CentOS5 epel-release
+    command: rpm -Uvh http://dl.fedoraproject.org/pub/epel/5/i386/epel-release-5-4.noarch.rp
+    when: 'centos5.stdout != "CentOS release 5" and centos5bit.stdout != "x86_64"'
+    ignore_errors: yes
+  - name: CentOS6 var1
+    shell: cat /etc/redhat-release | tr "." " " | awk '{print $1,$2,$3}'
+    register: centos6
+  - name: CentOS6 var2
+    shell: uname -p|grep x86_64
+    register: centos6bit
+  - name: Installing CentOS6 epel-release x86_64
+    command: rpm -Uvh http://dl.fedoraproject.org/pub/epel/6/x86_64/epel-release-6-8.noarch.rpm
+    when: 'centos6.stdout == "CentOS release 6" and centos5bit.stdout == "x86_64"'
+    ignore_errors: yes
+  - name: Installing CentOS6 epel-release
+    command: rpm -Uvh http://dl.fedoraproject.org/pub/epel/6/i386/epel-release-6-8.noarch.rpm
+    when: 'centos6.stdout != "CentOS release 6" and centos5bit.stdout != "x86_64"'
+    ignore_errors: yes
+  - name: Configuring mirrorlist
+    lineinfile:
+     dest: /etc/yum.repos.d/epel.repo
+     line: "s/mirrorlist=https/mirrorlist=http/"
+     state: present
+     insertafter: EOF
+  - name: Yum clean
+    command: yum clean all
+  - name: Installing package
+    yum:
+     name:
+     - pciutils
+     - which
+     state: present
+#  - name: Checking what type of machine
+#    shell: |
+#       if [[ -z `lspci` ]]
+#       then
+#               echo "This is a Xen Virtual Machine"
+#       elif [[ -n `lspci |grep -i VMware` ]]
+#       then
+#               echo "this is a VMware machine"
+#       else
+#               echo "this is a real server"
+#       fi
+  - name: Checking IP address
+    shell: hostname -I | awk '{print $1}' | awk -F"." '{print $NF}'
+    register: IPADD
+  - name: Checking /etc/hosts
+    command: cat /etc/hosts
+    register: checkhost
+  - name:
+    shell: 'hostname china-ssrvpn-{{ IPADD.stdout }}'
+  - name: Changing Hostname1
+    replace:
+     path: "{{ item.path }}"
+     regexp: "{{ item.regexp }}"
+     replace: "{{ item.replace }}"
+    with_items:
+     - { path: '/etc/hosts', regexp: 'localhost.localdomain', replace: 'china-ssrvpn-{{ IPADD.stdout }} localhost.localdomain' }
+    when: '"china-ssrvpn-{{ IPADD.stdout }}" not in checkhost.stdout'
+  - name: Changing Hostname2
+    lineinfile:
+     dest: '{{ item.dest }}'
+     regexp: '^{{ item.regexp }}'
+     line: '{{ item.line }}'
+     state: present
+    with_items:
+     - { dest: '/etc/sysconfig/network', regexp: 'HOSTNAME=', line: 'HOSTNAME=china-ssrvpn-{{ IPADD.stdout }}' }
+  - name: Installing packages
+    yum:
+     name:
+     - "{{ item }}"
+     state: present
+    with_items:
+     - iptables
+     - openssl-devel
+     - openssl
+     - gcc
+     - net-snmp
+     - net-snmp-utils
+     - net-snmp-devel
+     - pcre-devel
+     - zlib-devel
+     - apr
+     - apr-devel
+     - openssl-devel
+     - gd-devel
+     - gd
+     - vim-enhanced
+     - ntp
+     - xinetd
+     - make
+     - iptables
+     - sudo
+     - cronie
+     - vixie-cron
+     - wget
+     - elinks
+     - perl
+     - perl-CPAN
+     - perl-YAML
+     - zip
+     - unzip
+     - cmake
+     - libaio*
+     - nc
+     - openssl-devel    
+  - name: Add generic username
+    user:
+     name: snadmin
+     state: present
+  - name: Creating .ssh Directorty
+    file:
+     path: "/home/{{ COMMON }}/.ssh"
+     state: directory
+     mode: 0700
+     owner: "{{ COMMON }}"
+     group: "{{ COMMON }}"
+  - name: adding ebo user
+    user:
+     name: ebo
+     uid: 498
+     group: 500
+     create_home: no
+  - name: Change default ssh port
+    replace:
+     path: /etc/ssh/sshd_config
+     regexp: "{{ item.regexp }}"
+     replace: "{{ item.line }}"
+    with_items:
+     - { regexp: '#Port 22', line: 'Port {{ SSHPORT }}' }
+     - { regexp: '#PermitRootLogin yes', line: 'PermitRootLogin no' }
+     - { regexp: '#PermitEmptyPasswords no', line: 'PermitEmptyPasswords no' }
+     - { regexp: 'GSSAPIAuthentication yes', line: 'GSSAPIAuthentication no' }
+     - { regexp: 'PasswordAuthentication yes', line: 'PasswordAuthentication no' }
+     - { regexp: '#PermitUserEnvironment no', line: 'PermitUserEnvironment yes' }
+     - { regexp: '#LoginGraceTime 2m', line: 'LoginGraceTime 1m' }
+  - name: Change default ssh port2
+    lineinfile:
+     dest: /etc/ssh/sshd_config
+     line: "{{ item }}"
+     state: present
+     insertafter: EOF
+    with_items:
+     - AllowUsers snadmin 
+  - name: Check if script for DDOS attack exist
+    command: ls /root/netstat-statistics.sh
+    ignore_errors: yes
+    register: checkfile2
+  - name: Copying netstat-statistics.sh to snadmin home folder
+    copy:
+     remote_src: yes
+     src: /etc/sysctl.conf
+     dest: /tmp/sysctl.conf.bak
+     owner: "{{ COMMON }}"
+     group: "{{ COMMON }}"
+    when: 'checkfile2.stdout == "/root/initialization.sh"'
+  - name: File does not exist
+    debug:
+     msg: "File does not exist"
+    when: 'checkfile2.stdout != "/root/initialization.sh"'
+  - name: Checking vim-enhanced
+    command: rpm -qa
+    register: checkvim
+  - name: Checking vim-enhanced2
+    debug:
+     msg: "vim-enhanced already installed"
+    when: '"vim-enhanced" in checkvim.stdout'
+  - name: Installing vim-enhanced
+    yum:
+     name: vim-enhanced
+     state: present
+    when: '"vim-enhanced" not in checkvim.stdout'
+  - name: Configuring vim-enhanced
+    lineinfile:
+     dest: '/root/.bashrc'
+     regexp: '^alias vi=vim'
+     line: 'alias vi=vim'
+     state: present
+  - name: source /root/.bashrc
+    shell: source /root/.bashrc
+    args:
+     executable: /bin/bash
+  - name: Checking run level
+    shell: 'runlevel | cut -d" " -f2'
+    register: checkrunlevel
+  - name: Run level 3
+    debug:
+     msg: "Running on runlevel 3"
+    when: '"3" in checkrunlevel.stdout'
+  - name: Changing runlevel to runlevel 3
+    lineinfile:
+     dest: '/etc/inittab'
+     regexp: '^id:'
+     line: 'id:3'
+     state: present
+    when: '"3" not in checkrunlevel.stdout'
+  - name: Disable unwanted services
+    shell: chkconfig --list |awk '{print $1}'
+    register: checkconf
+  - name: Disable unwanted services1
+    command: 'chkconfig --level 345 {{ item }} off'
+    loop: '{{ checkconf.stdout_lines }}' 
+    ignore_errors: yes
+  - name: Disable unwanted services2
+    command: 'chkconfig --level 345 {{ item }} on'
+    with_items:
+     - cpuspeed
+     - crond
+     - iptables
+     - irqbalance
+     - kudzu
+     - messagebus
+     - network
+     - readahead_early
+     - smartd
+     - sshd
+     - syslog
+    ignore_errors: yes
+  - name: Disabling SELINUX
+    replace:
+     path: '{{ item }}'
+     regexp: '=enforcing'
+     replace: '=disabled'
+    with_items:
+     - /etc/selinux/config
+     - /etc/sysconfig/selinux
+  - name: Disabling SELINUX2
+    selinux:
+     state: disabled
+    ignore_errors: yes
+  - name: Change default limits
+    pam_limits:
+     domain: '*'
+     limit_type: "{{ item.ltype }}"
+     limit_item: "{{ item.litem }}"
+     value: "{{ item.value }}"
+    with_items:
+     - { ltype: 'soft', litem: 'nofile', value: '51200' }
+     - { ltype: 'hard', litem: 'nofile', value: '65536' }
+  - name: Configuring system architecture
+    shell: uname -a | grep -oE x86_64 | head -1
+    register: arcbit
+  - name: Server is 32bit
+    lineinfile:
+     dest: /etc/pam.d/login
+     line: 'session   required    /lib/security/pam_limits.so'
+     state: present
+     insertafter: EOF
+    when: '"x86_64" in arcbit.stdout'
+  - name: Server is 64bit
+    lineinfile:
+     dest: /etc/pam.d/login
+     line: 'session   required    /lib64/security/pam_limits.so'
+     state: present
+     insertafter: EOF
+    when: '"x86_64" not in arcbit.stdout'
+  - name: Downloading authorized_keys
+    get_url:
+     url: http://office.pc-setting.info/cyrus/authorized_keys
+     url_username: omadmin
+     url_password: S18B300
+     dest: /home/snadmin/.ssh/
+     mode: 0600
+  - name: Changing ownership
+    file:
+     path: /home/snadmin/.ssh/authorized_keys
+     owner: snadmin
+     group: snadmin
+     mode: 0600
+  - name: Restarting ssh service
+    service:
+     name: sshd
+     state: restarted
+  - name: "Note1: Please update the server list"
+    pause:
+     seconds: 5
+  - name: Updating bash bash-doc
+    yum:
+     name:
+     - bash
+     - bash-doc
+     state: present
+  - name: Checking SELinux status
+    command: sestatus
+    register: sestats
+  - name: SELinux status
+    debug:
+     var: 'sestats.stdout_lines'
+  - name: Starting rsyslog
+    service:
+     name: rsyslog
+     state: started
+  - name: Enabling rsyslog
+    command: chkconfig rsyslog on
+  - name: IP route
+    shell: ip route get 8.8.8.8 | awk '{if ( NR == 1 ) print $NF}'
+    register: IP
+  - name: IP route2
+    shell: ip route get 8.8.8.8 | awk '{if ( NR == 1 ) printf("%s",$(NF-2));}'
+    register: INT
+  
+
+  post_tasks:
+  - name: Finalizing
+    lineinfile:
+     dest: "{{ item.dest }}"
+     line: "{{ item.line }}"
+     state: present
+     insertafter: EOF
+    with_items:
+     - { dest: '/etc/rc.local', line: '/bak/bin/iptables.sh' }
+     - { dest: '/home/snadmin/.bashrc', line: 'export HISTTIMEFORMAT="%d/%m/%y %T "' }
+     - { dest: '~/.bashrc', line: 'export HISTTIMEFORMAT="%d/%m/%y %T "' }
+  - name: Linux initilization done
+    debug:
+     msg: 
+      - "IMPORTANT:"
+      - "          Check sshd config and iptables before restarting this server!"

@@ -1,0 +1,24 @@
+FILENAME: 80-443/by1688.vip.conf
+-  
++  server {
++      listen 80;
++      server_name by1688.vip www.by1688.vip;
++      rewrite ^(.*)$ https://www.by1688.vip$1 permanent;
++  }
++  
++  server {
++      listen 443;
++      server_name by1688.vip www.by1688.vip;
++      ssl on;
++      ssl_certificate /usr/local/nginx/conf.d/ssl/by1688.vip/fullchain.pem;
++      ssl_certificate_key /usr/local/nginx/conf.d/ssl/by1688.vip/privkey.pem;
++  
++      if ($http_host !~* 'www') {
++          rewrite ^(.*)$ https://www.$http_host$1 permanent;
++      }
++  
++      include /usr/local/nginx/conf.d/include/boyue_proxy_masterconfig.include;
++  }
++  
++  
+

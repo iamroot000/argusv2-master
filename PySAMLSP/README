@@ -1,0 +1,44 @@
+Readme:
+This is a simplified SAML SP Library to be used for python-based systems (samlsp.py).
+Included is one example of an implementation through django by Aaron
+
+
+Disclaimer:
+The current implementation may not conform with the SAML specification but is currently good enough to be used for authentication
+
+
+How to:
+1. We instantiate the samlSP processor object. You will need the public certificate to be retrieved from your iDP provider. (or the one included in this package for sso.monaco1.me's)
+You will also need the IDP endpoint url. This will be the url of the IDP to be used for sending the SAMLRequest variable.
+The provider and issuer name may or may not be needed depending on the needs of the IDP.
+
+    example:
+        sp = samlSP(certificate_pem_string,"https://testsso.monaco1.me/samlsso",provider,issuer)
+
+2. On your application, you generate a SAML Request to be passed on to the endpoint URL from the user's browser
+genAuthnRequest accepts the redirect URL back to your application that validates the response
+
+    example: (implements urllib)
+        params = {"SAMLRequest" : sp.genAuthnRequest("http://cmdb.omtools.me/acs")}
+        redirectURL = "{}{}".format("https://testsso.monaco1.me/samlsso?",urllib.urlencode(params))
+
+3. Once successfully authenticated on the IDP side, the IDP will redirect you back to the specified URL in the genAuthnRequest used in the previous step.
+The SAML Response is contained in the "SAMLResponse" POST variable. you will need to get the value and pass this to the decode_base64_and_validate function of the sp object.
+On a successful validation, this will return an lxml tree of the assertion portion of the AuthnResponse
+
+    example:
+        samlres = request.POST['SAMLResponse']
+        validated_xml = sp.decode_base64_and_validate(samlres)
+        if validated_xml:
+            print "Successful validation! time to read its attributes"
+            # do lxml reading here..
+        else:
+            print "Validation failed."
+
+4. On a successful validation, it is now up to you to read the attributes included in the IDP's assertion response.
+This is an lxml.etree object, you can use its .find function or iterate through every element. It's up to you now
+
+
+
+Any suggestions on the SP module, inform @Nico or @Aaron :D
+

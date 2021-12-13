@@ -1,0 +1,24 @@
+FILENAME: 80-443/bb5005.net.conf
+-  
++  server {
++      listen 80;
++      server_name bb5005.net www.bb5005.net;
++      rewrite ^(.*)$ https://www.bb5005.net$1 permanent;
++  }
++  
++  server {
++      listen 443;
++      server_name bb5005.net www.bb5005.net;
++      ssl on;
++      ssl_certificate /usr/local/nginx/conf.d/ssl/bb5005.net/fullchain.pem;
++      ssl_certificate_key /usr/local/nginx/conf.d/ssl/bb5005.net/privkey.pem;
++  
++      if ($http_host !~* 'www') {
++          rewrite ^(.*)$ https://www.$http_host$1 permanent;
++      }
++  
++      include /usr/local/nginx/conf.d/include/bbetasia_official_masterconfig.include;
++  }
++  
++  
+

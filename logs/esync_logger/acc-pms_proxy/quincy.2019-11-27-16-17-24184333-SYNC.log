@@ -1,0 +1,115 @@
+ESYNC_WORKER1_COMMAND_START
+ [WARNING]: Invalid characters were found in group names but not replaced, use
+-vvvv to see details
+
+PLAY [acc-pms_proxy] ***********************************************************
+
+
+TASK [Gathering Facts] *********************************************************
+ok: [13.94.29.0]
+
+TASK [nginx_sync : Change python interpreter] **********************************
+skipping: [13.94.29.0]
+
+
+TASK [nginx_sync : change python interpreter] **********************************
+skipping: [13.94.29.0]
+
+TASK [nginx_sync : Notify] *****************************************************
+
+ok: [13.94.29.0] => {
+    "msg": "Syncing acc-pms_proxy"
+}
+
+TASK [nginx_sync : include_vars] ***********************************************
+
+ok: [13.94.29.0]
+
+TASK [nginx_sync : Synchronizing Nginx] ****************************************
+ok: [13.94.29.0] => (item=conf)
+changed: [13.94.29.0] => (item=conf.d)
+
+ok: [13.94.29.0] => (item=data)
+ok: [13.94.29.0] => (item=html)
+
+TASK [all_servers : include_vars] **********************************************
+ok: [13.94.29.0]
+
+
+TASK [all_servers : Notify] ****************************************************
+ok: [13.94.29.0] => {
+    "msg": "Clearing Nginx Cache for acc-pms_proxy"
+}
+
+
+TASK [all_servers : Copying clear_nginxcache.sh to remote hosts] ***************
+ok: [13.94.29.0]
+
+TASK [all_servers : Nginx Clear Cache] *****************************************
+
+changed: [13.94.29.0]
+
+TASK [all_servers : debug] *****************************************************
+ok: [13.94.29.0] => {
+    "script_result.stdout_lines": [
+
+        "-----------------------------------------------------------", 
+        "|                 Checking Nginx Config                   |", 
+        "-----------------------------------------------------------", 
+        "", 
+        " nginx -t ", 
+
+        "", 
+        "-----------------------------------------------------------", 
+        "|                 Stopping Nginx Process                  |", 
+        "-----------------------------------------------------------", 
+        "", 
+
+        " /usr/bin/killall -9 nginx ", 
+        "", 
+        "-----------------------------------------------------------", 
+        "|                 Clearing Proxy Cache                    |", 
+        "-----------------------------------------------------------", 
+
+        "", 
+        " /bin/rm -rf /tmp/nginx_cache ", 
+        "", 
+        "-----------------------------------------------------------", 
+        "|                Restarting Nginx Process                 |", 
+
+        "-----------------------------------------------------------", 
+        "root     112230  0.4  0.0 113188  1484 ?        S    16:17   0:00 /bin/bash /bak/bin/clear_nginxcache.sh", 
+        "root     112241  0.0  0.1 299316  4564 ?        Ss   16:17   0:00 nginx: master process /usr/local/nginx/sbin/nginx", 
+        "nobody   112243  0.0  0.2 303328  8476 ?        S    16:17   0:00 nginx: worker process", 
+        "nobody   112244  0.0  0.2 303328  8476 ?        S    16:17   0:00 nginx: worker process", 
+
+        "nobody   112245  0.0  0.2 303328  8476 ?        S    16:17   0:00 nginx: worker process", 
+        "nobody   112246  0.0  0.2 303328  8476 ?        S    16:17   0:00 nginx: worker process", 
+        "nobody   112247  0.0  0.1 301400  5060 ?        S    16:17   0:00 nginx: cache manager process", 
+        "nobody   112248  0.0  0.1 301400  5060 ?        S    16:17   0:00 nginx: cache loader process", 
+        "root     112250  0.0  0.0 112712   936 ?        S    16:17   0:00 grep nginx", 
+
+        "              total        used        free      shared  buff/cache   available", 
+        "Mem:           3931         335         221          34        3375        3271", 
+        "Swap:             0           0           0", 
+        "-----------------------------------------------------------", 
+        "|                     Reload SUCCESS!                     |", 
+
+        "-----------------------------------------------------------"
+    ]
+}
+
+PLAY [127.0.0.1] ***************************************************************
+
+
+TASK [sync_to_git : Synchronizing Nginx To GIT] ********************************
+fatal: [127.0.0.1]: FAILED! => {"ansible_facts": {"discovered_interpreter_python": "/usr/bin/python"}, "changed": true, "cmd": "git add .\ngit commit -m \"quincy\"\ngit push  \ngit push -u origin master\n", "delta": "0:00:00.351364", "end": "2019-11-27 16:17:47.726929", "msg": "non-zero return code", "rc": 128, "start": "2019-11-27 16:17:47.375565", "stderr": "fatal: The current branch master has no upstream branch.\nTo push the current branch and set the remote as upstream, use\n\n    git push --set-upstream origin master\n\nfatal: repository 'http://om:sPCJ-015@git.neweb.me/nginx_cloud/acc-pms_proxy.git/' not found", "stderr_lines": ["fatal: The current branch master has no upstream branch.", "To push the current branch and set the remote as upstream, use", "", "    git push --set-upstream origin master", "", "fatal: repository 'http://om:sPCJ-015@git.neweb.me/nginx_cloud/acc-pms_proxy.git/' not found"], "stdout": "[master 5e28fd7] quincy\n 1 file changed, 2 insertions(+), 2 deletions(-)", "stdout_lines": ["[master 5e28fd7] quincy", " 1 file changed, 2 insertions(+), 2 deletions(-)"]}
+
+PLAY RECAP *********************************************************************
+
+127.0.0.1                  : ok=0    changed=0    unreachable=0    failed=1    skipped=0    rescued=0    ignored=0   
+13.94.29.0                 : ok=9    changed=2    unreachable=0    failed=0    skipped=2    rescued=0    ignored=0   
+
+
+ESYNC_WORKER1_COMMAND_END
+MAX RETRIES EXECUTED, COMMAND NOT RESPONDING

@@ -1,0 +1,16 @@
+---
+  - name: Question
+    pause:
+      prompt: "##############################\nIF HAVING PROBLEM WITH NAMING, ASK JAX/AARON\n##############################\nPlease enter the group and type: \nSample: bbet8-nginx, acc-midpay_ftp \n##############################\n"
+    register: LINUXGROUP
+  - name: Question1
+    pause:
+      prompt: "Server Count number:\nSample: {{ LINUXGROUP.user_input }}1, {{ LINUXGROUP.user_input }}7 \n##############################\n"
+    register: LINUXNUMBER
+  - name: Not-integers
+    shell: 'echo {1..99}'
+    register: notinteg
+  - name: Not-integers error
+    fail:
+      prompt: "Sorry integers only"
+    when: 'LINUXNUMBER.user_input not in notinteg.stdout'

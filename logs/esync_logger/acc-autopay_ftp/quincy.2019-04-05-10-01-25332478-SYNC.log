@@ -1,0 +1,172 @@
+ESYNC_WORKER1_COMMAND_START
+
+PLAY [acc-autopay_ftp] *********************************************************
+
+TASK [nginx_sync : Notify] *****************************************************
+ok: [119.9.106.122] => {
+
+    "msg": "Syncing acc-autopay_ftp"
+}
+ok: [161.202.63.250] => {
+    "msg": "Syncing acc-autopay_ftp"
+}
+
+
+TASK [nginx_sync : include_vars] ***********************************************
+ok: [119.9.106.122]
+ok: [161.202.63.250]
+
+
+TASK [nginx_sync : Synchronizing Nginx] ****************************************
+ok: [119.9.106.122] => (item=conf)
+ok: [161.202.63.250] => (item=conf)
+changed: [119.9.106.122] => (item=conf.d)
+ok: [119.9.106.122] => (item=data)
+
+changed: [161.202.63.250] => (item=conf.d)
+ok: [119.9.106.122] => (item=html)
+ok: [161.202.63.250] => (item=data)
+ok: [161.202.63.250] => (item=html)
+
+
+TASK [all_servers : include_vars] **********************************************
+ok: [119.9.106.122]
+ok: [161.202.63.250]
+
+TASK [all_servers : Notify] ****************************************************
+
+ok: [119.9.106.122] => {
+    "msg": "Clearing Nginx Cache for acc-autopay_ftp"
+}
+ok: [161.202.63.250] => {
+    "msg": "Clearing Nginx Cache for acc-autopay_ftp"
+
+}
+
+TASK [all_servers : Copying clear_nginxcache.sh to remote hosts] ***************
+ok: [119.9.106.122]
+ok: [161.202.63.250]
+
+
+TASK [all_servers : Nginx Clear Cache] *****************************************
+changed: [119.9.106.122]
+changed: [161.202.63.250]
+
+
+TASK [all_servers : debug] *****************************************************
+ok: [119.9.106.122] => {
+    "script_result.stdout_lines": [
+        "-----------------------------------------------------------", 
+        "|                 Checking Nginx Config                   |", 
+
+        "-----------------------------------------------------------", 
+        "", 
+        " nginx -t ", 
+        "", 
+        "-----------------------------------------------------------", 
+
+        "|                 Stopping Nginx Process                  |", 
+        "-----------------------------------------------------------", 
+        "", 
+        " /usr/bin/killall -9 nginx ", 
+        "", 
+
+        "-----------------------------------------------------------", 
+        "|                 Clearing Proxy Cache                    |", 
+        "-----------------------------------------------------------", 
+        "", 
+        " /bin/rm -rf /tmp/nginx_cache ", 
+
+        "", 
+        "-----------------------------------------------------------", 
+        "|                Restarting Nginx Process                 |", 
+        "-----------------------------------------------------------", 
+        "root     14515  0.0  0.0 108128  1424 ?        S    10:01   0:00 /bin/bash /bak/bin/clear_nginxcache.sh", 
+
+        "root     14521  0.0  0.0 293676  1468 ?        Ss   10:01   0:00 nginx: master process /usr/local/nginx/sbin/nginx", 
+        "nobody   14523  0.0  0.1 297928  5904 ?        S    10:01   0:00 nginx: worker process      ", 
+        "nobody   14524  0.0  0.1 297928  5960 ?        S    10:01   0:00 nginx: worker process      ", 
+        "nobody   14525  0.0  0.1 297928  5904 ?        S    10:01   0:00 nginx: worker process      ", 
+        "nobody   14526  0.0  0.1 297928  5976 ?        S    10:01   0:00 nginx: worker process      ", 
+
+        "nobody   14527  0.0  0.0 293676  1880 ?        S    10:01   0:00 nginx: cache manager process", 
+        "nobody   14528  0.0  0.0 293676  1836 ?        S    10:01   0:00 nginx: cache loader process", 
+        "root     14530  0.0  0.0 105368   888 ?        S    10:01   0:00 grep nginx", 
+        "             total       used       free     shared    buffers     cached", 
+        "Mem:          3953       3830        123          1         56       3452", 
+
+        "-/+ buffers/cache:        321       3632", 
+        "Swap:            0          0          0", 
+        "-----------------------------------------------------------", 
+        "|                     Reload SUCCESS!                     |", 
+        "-----------------------------------------------------------"
+
+    ]
+}
+ok: [161.202.63.250] => {
+    "script_result.stdout_lines": [
+        "-----------------------------------------------------------", 
+
+        "|                 Checking Nginx Config                   |", 
+        "-----------------------------------------------------------", 
+        "", 
+        " nginx -t ", 
+        "", 
+
+        "-----------------------------------------------------------", 
+        "|                 Stopping Nginx Process                  |", 
+        "-----------------------------------------------------------", 
+        "", 
+        " /usr/bin/killall -9 nginx ", 
+
+        "", 
+        "-----------------------------------------------------------", 
+        "|                 Clearing Proxy Cache                    |", 
+        "-----------------------------------------------------------", 
+        "", 
+
+        " /bin/rm -rf /tmp/nginx_cache ", 
+        "", 
+        "-----------------------------------------------------------", 
+        "|                Restarting Nginx Process                 |", 
+        "-----------------------------------------------------------", 
+
+        "root      7479  3.6  0.0 106112  1280 ?        S    10:01   0:00 /bin/bash /bak/bin/clear_nginxcache.sh", 
+        "root      7486  0.3  0.0 293924  1464 ?        Ss   10:01   0:00 nginx: master process /usr/local/nginx/sbin/nginx", 
+        "nobody    7488  0.0  0.3 298176  5884 ?        S    10:01   0:00 nginx: worker process      ", 
+        "nobody    7489  0.3  0.3 298176  5884 ?        S    10:01   0:00 nginx: worker process      ", 
+        "nobody    7490  0.0  0.3 298176  5884 ?        S    10:01   0:00 nginx: worker process      ", 
+
+        "nobody    7491  0.0  0.3 298176  5884 ?        S    10:01   0:00 nginx: worker process      ", 
+        "nobody    7492  0.0  0.0 293924  1868 ?        S    10:01   0:00 nginx: cache manager process", 
+        "nobody    7493  0.0  0.0 293924  1828 ?        S    10:01   0:00 nginx: cache loader process", 
+        "root      7498  0.0  0.0 103316   840 ?        S    10:01   0:00 grep nginx", 
+        "             total       used       free     shared    buffers     cached", 
+
+        "Mem:          1869       1616        252          1        241       1154", 
+        "-/+ buffers/cache:        220       1648", 
+        "Swap:         2047          6       2040", 
+        "-----------------------------------------------------------", 
+        "|                     Reload SUCCESS!                     |", 
+
+        "-----------------------------------------------------------"
+    ]
+}
+
+PLAY [127.0.0.1] ***************************************************************
+
+
+TASK [sync_to_git : Synchronizing Nginx To GIT] ********************************
+fatal: [127.0.0.1]: FAILED! => {"changed": true, "cmd": "git add .\n git commit -m \"quincy\"\n git push\n git push -u origin master", "delta": "0:00:00.867089", "end": "2019-04-05 10:01:45.673268", "msg": "non-zero return code", "rc": 128, "start": "2019-04-05 10:01:44.806179", "stderr": "warning: You ran 'git add' with neither '-A (--all)' or '--ignore-removal',\nwhose behaviour will change in Git 2.0 with respect to paths you removed.\nPaths like 'nginx/conf.d/global/geoip.conf' that are\nremoved from your working tree are ignored with this version of Git.\n\n* 'git add --ignore-removal <pathspec>', which is the current default,\n  ignores paths you removed from your working tree.\n\n* 'git add --all <pathspec>' will let you also record the removals.\n\nRun 'git status' to check the paths you removed from your working tree.\n\nfatal: Authentication failed for 'http://om:VA1913wm@git.neweb.me/nginx_cloud/acc-autopay_ftp.git/'\nfatal: Authentication failed for 'http://om:VA1913wm@git.neweb.me/nginx_cloud/acc-autopay_ftp.git/'", "stderr_lines": ["warning: You ran 'git add' with neither '-A (--all)' or '--ignore-removal',", "whose behaviour will change in Git 2.0 with respect to paths you removed.", "Paths like 'nginx/conf.d/global/geoip.conf' that are", "removed from your working tree are ignored with this version of Git.", "", "* 'git add --ignore-removal <pathspec>', which is the current default,", "  ignores paths you removed from your working tree.", "", "* 'git add --all <pathspec>' will let you also record the removals.", "", "Run 'git status' to check the paths you removed from your working tree.", "", "fatal: Authentication failed for 'http://om:VA1913wm@git.neweb.me/nginx_cloud/acc-autopay_ftp.git/'", "fatal: Authentication failed for 'http://om:VA1913wm@git.neweb.me/nginx_cloud/acc-autopay_ftp.git/'"], "stdout": "# On branch master\n# Changes not staged for commit:\n#   (use \"git add/rm <file>...\" to update what will be committed)\n#   (use \"git checkout -- <file>...\" to discard changes in working directory)\n#\n#\tdeleted:    nginx/conf.d/global/geoip.conf\n#\tdeleted:    nginx/conf.d/other/autokey.conf\n#\nno changes added to commit (use \"git add\" and/or \"git commit -a\")", "stdout_lines": ["# On branch master", "# Changes not staged for commit:", "#   (use \"git add/rm <file>...\" to update what will be committed)", "#   (use \"git checkout -- <file>...\" to discard changes in working directory)", "#", "#\tdeleted:    nginx/conf.d/global/geoip.conf", "#\tdeleted:    nginx/conf.d/other/autokey.conf", "#", "no changes added to commit (use \"git add\" and/or \"git commit -a\")"]}
+	to retry, use: --limit @/ansible/nginx/site.retry
+
+
+PLAY RECAP *********************************************************************
+119.9.106.122              : ok=8    changed=2    unreachable=0    failed=0   
+127.0.0.1                  : ok=0    changed=0    unreachable=0    failed=1   
+161.202.63.250             : ok=8    changed=2    unreachable=0    failed=0   
+
+
+
+ESYNC_WORKER1_COMMAND_END
+MAX RETRIES EXECUTED, COMMAND NOT RESPONDING

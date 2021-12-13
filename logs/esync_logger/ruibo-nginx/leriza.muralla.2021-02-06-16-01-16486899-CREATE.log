@@ -1,0 +1,27 @@
+server {
+    listen 80;
+    server_name .jbl174.com www.jbl174.com;
+    #rewrite ^(.*)$ https://$http_host$1 redirect;
+    return      301 https://$http_host$1;
+
+
+}
+
+server {
+    listen 443;listen 8088;
+    server_name .jbl174.com www.jbl174.com;
+    ssl on;
+    ssl_certificate /usr/local/nginx/conf.d/ssl/jbl174.com/fullchain.pem;
+    ssl_certificate_key /usr/local/nginx/conf.d/ssl/jbl174.com/privkey.pem;
+
+
+    if ($http_host !~* 'www') { set $pp yes; }
+    if ($http_host ~* 10580|10585|10595|10600|10606|10616|10605|10660|10680|10685|10686|10699|10700|10705|10711|10717|55333|55365|55522|55588|55622|55666|10755|10737|10727|10770|10786|10795|10787|55779) {set $pp 'no'; }
+
+    if ( $pp ~* 'yes' ) {
+        rewrite ^(.*)$ https://www.$http_host$1 permanent;
+    }
+
+    include /usr/local/nginx/conf.d/include/ruibo_official_masterconfig.include;
+}
+

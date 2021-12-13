@@ -1,0 +1,266 @@
+{% extends "base.html" %}
+
+{% block js %}
+    {{ block.super }} {# includes previous content in block #}
+
+    <script src="/static/js/select2/select2.full.min.js"></script>
+
+    <script src="/static/js/plugins/codemirror/codemirror.js"></script>
+    <script src="/static/js/esync/nginx-format.js" type="text/javascript"></script>
+    <script src="/static/js/plugins/codemirror/mode/javascript/javascript.js"></script>
+    <script src="/static/js/plugins/toastr/toastr.min.js"></script>
+    <script type="text/javascript" src="/static/multiselect/js/multiselect.min.js"></script>
+    <script src="/static/js/esync/index-NEW.js" type="text/javascript"></script>
+
+
+{% endblock %}
+
+{% block style %}
+    {{ block.super }} {# includes previous content in block #}
+
+    <link href="/static/css/plugins/codemirror/codemirror.css" rel="stylesheet">
+    <link href="/static/css/plugins/codemirror/monokai.css" rel="stylesheet">
+
+
+<style>
+
+
+    .CodeMirror {
+  border: 1px solid #eee;
+  height: auto;
+
+}
+.cm-s-monokai .CodeMirror-cursor {border-left: 5px solid #f8f8f0 !important;}
+
+.filename-btn {
+    margin-bottom:5px;
+}
+
+pre{
+    white-space: pre-wrap;
+}
+
+.row-eq-height {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display:         flex;
+}
+
+</style>
+{% endblock %}
+
+
+{% block title %}
+ESync
+{% endblock %}
+
+{% block header %}
+
+{% endblock %}
+
+
+{% block details %}
+Current Path: <span id="current_location"></span>
+{% endblock %}
+
+
+{% block action %}
+
+
+{% endblock %}
+
+{% block content %}
+<div class="modal fade" id="SSL_MODAL" role="dialog">
+    <div class="modal-dialog" style="width:1000px;">
+    <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal">&times;</button>
+          <h2 class="modal-title" style="font-weight:bold">SSL Linkages</h2>
+        </div>
+
+    <div class="modal-body" id='modal-body'>
+        <div class="row" id="sslrow">
+            <div class="col-sm-5">
+                <select name="from[]" id="certstore" class="form-control" size="25" multiple="multiple"></select>
+            </div>
+
+            <div class="col-sm-2">
+                <button type="button" id="certstore_rightSelected" class="btn btn-block"><i class="glyphicon glyphicon-chevron-right"></i></button>
+                <button type="button" id="certstore_leftSelected" class="btn btn-block"><i class="glyphicon glyphicon-chevron-left"></i></button>
+            </div>
+
+            <div class="col-sm-5">
+                <select name="to[]" id="certstore_to" class="form-control" size="25" multiple="multiple"></select>
+            </div>
+        </div>
+    </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        </div>
+
+    </div>
+    </div>
+</div>
+
+<div class="modal fade" id="CREATE_MODAL" role="dialog">
+    <div class="modal-dialog" style="width:1000px;">
+    <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal">&times;</button>
+          <h2 class="modal-title" style="font-weight:bold">Create New File</h2>
+        </div>
+
+    <div class="modal-body" id='modal-body'>
+        <div class="row">
+            <label for="create_path">Template: </label>
+            <select class="form-control select2" data-placeholder="Path" style="width:100%;" id="template_name" onchange="setTemplate()">
+                <option value="blank" selected>-</option>
+            </select>
+        </div>
+
+        <div class="row">
+            <label for="create_path">Directory: </label>
+            <select class="form-control select2" data-placeholder="Path" style="width:100%;" id="create_path">
+            </select>
+        </div>
+        <br/>
+        <div class="row">
+            <label for="create_filename">Filename: </label>
+            <input class="form-control" data-placeholder="Filename" style="width:100%;" maxlength=20 id="create_filename">
+            </input>
+        </div>
+        <div id="vars_row">
+
+        </div>
+        <br/>
+        <div class="row">
+            <pre id="create_content" style="padding-top:10px;"></pre>
+        </div>
+    </div>
+        <div class="modal-footer">
+            <button id="createButton" type="button" class="btn btn-success" onclick="createFile();">Create</button>
+            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        </div>
+
+    </div>
+    </div>
+</div>
+
+
+
+<div class="modal fade" id="COMMAND_MODAL" role="dialog">
+    <div class="modal-dialog" style="width:1000px;">
+    <div class="modal-content">
+    <div class="modal-body" id='modal-body'>
+        <div class="row">
+            <pre id="execute_content"></pre>
+        </div>
+    </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        </div>
+    </div>
+    </div>
+</div>
+
+<div class="row border-bottom white-bg dashboard-header row-eq-height ">
+
+    <div class="col-lg-3" style="border-right:1px solid">
+        <div class="col-lg-6">
+            <label for="host_control">Source:</label>
+            <select class="form-control select2"  data-placeholder="Select Ansible Host" style="width:100%;" id="host_control" onchange="getApplications()" required>
+            </select>
+        </div>
+        <div class="col-lg-6">
+            <label for="application_control">Application:</label>
+            <select class="form-control select2"  data-placeholder="Select Application" style="width:100%;" id="application_control" onchange="getHostGroups()" required>
+            </select>
+        </div>
+        <div class="col-lg-12" style="padding-top:5px">
+            <label for="ip_search">IP Search:</label>
+            <select class="form-control select2"  data-placeholder="Search IP" style="width:100%;" id="ip_search" onchange="changeHostgroupFocus()" required>
+            </select>
+        </div>
+        <div class="col-lg-12" style="padding-top:5px">
+            <label for="hosts">HOSTS:</label>
+                <div id="hosts" style="padding-top:5px"></div>
+        </div>
+    </div>
+    <div class="col-lg-4" >
+        <div class="col-lg-12">
+            <button id="sync" class="btn btn-primary col-lg-12" onclick="syncConfig();"><i class="fa fa-sync"></i> Sync</button>
+        </div>
+        <div class="col-lg-12" style="padding-top:5px" >
+            <button id="testConfig" class="btn btn-success col-lg-12 " onclick="testConfig();"><i class="fa fa-check"></i> Test Configuration</button>
+        </div>
+        <label for="hg" style="padding-top:5px">&nbsp;HOSTROUP:</label>
+        <div id="hg">
+            <div class="col-lg-12" >
+                <select class="form-control select2"  data-placeholder="Hostgroup" style="width:100%;" id="hostgroup_control" onchange="getDirectoryTree()" ></select>
+            </div>
+        </div>
+        <div class="col-lg-12" style="padding-top:5px">
+            <button id="editSSL" style="display:none" class="btn btn-primary col-lg-12" onclick="editSSL_MODAL();" ><i class="fa fa-edit"></i> Edit SSL Linkages</button>
+        </div>
+    </div>
+
+    <div class="col-lg-5" style="border-left:1px solid">
+        <div class="col-lg-12">
+            <label for="fs" >&nbsp;FILES:</label>
+            <div id="fs">
+                <div class="input-group col-lg-12" style="padding-bottom:10px;padding-left:15px;width:98%;">
+                    <input type="text" id="findstring" class="form-control" placeholder="Search String..."> <span class="input-group-btn"> <button type="button" class="btn btn-primary" onclick="findString();"><i class="fa fa-search"></i></button></span>
+                </div>
+                <div class="col-lg-12">
+                    <label for="main_directory">Path:</label>
+                    <select class="form-control select2 directory"  data-placeholder="Path" style="width:100%;" id="main_directory" onchange="getFile();" required>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-12" style="padding-top:5px">
+            <div class="col-lg-12" style="padding-bottom:5px">
+                <button id="createFile" style="display:inline" class="btn btn-default col-lg-12" onclick="createFile_MODAL();"><i class="fa fa-edit"></i> Create New File</button>
+                <button id="saveFile" style="display:none" class="btn btn-success col-lg-12 " onclick="saveFile();"><i class="fa fa-check"></i> Save</button>
+            </div>
+            <div class="col-lg-12">
+                <button id="editFile" class="btn btn-primary col-lg-12" onclick="editFile();" ><i class="fa fa-edit"></i> Edit</button>
+
+                <button id="deleteFile" style="display:none" class="btn btn-danger col-lg-6" onclick="deleteFile();">Delete File</button>
+                <button id="cancelEdit" style="display:none" class="btn btn-default col-lg-6" onclick="cancelEdit();">Cancel</button>
+            </div>
+
+            <div class="col-lg-6" id="saveEditDIV" style="display:none">
+                <button id="saveEdit" class="btn btn-success col-lg-12 " onclick="saveFile();"><i class="fa fa-check"></i> Save</button>
+            </div>
+            <div class="col-lg-6" id="deleteDIV" style="display:none">
+                <button id="delete" class="btn btn-danger col-lg-12" onclick="deleteFile();"><i class="fa fa-exclamation"></i> Delete File</button>
+            </div>
+        </div>
+
+        <div class="col-lg-12" id="searchDiv" style="padding-top:10px;display:none">
+            <div class="panel panel-success">
+                <div class="panel-body" style="overflow-y: scroll; height: 100px">
+                    <div class="mid-width wrapItems" style="height:200px">
+                        <ul id="searchResults">
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<div class="row border-bottom white-bg dashboard-header">
+    <div class="row" id="textrow">
+            <div class="col-lg-12" id="raw_grp" >
+                <label for="raw_grp">Code <i id="readonly">(READ ONLY)</i>: </label>
+                    <textarea id="filehandler"></textarea>
+            </div>
+    </div>
+</div>
+
+{% endblock %}

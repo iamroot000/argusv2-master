@@ -1,0 +1,48 @@
+--- /ansible/nginx/hostgroups/om-booster/nginx/conf.d/other/mmexy.com.conf	2019-07-04 17:37:05.935188929 +0800
++++ /tmp/mmexy.com.conf	2019-07-04 18:06:18.101188929 +0800
+@@ -6,6 +6,12 @@
+ 
+ server {
+     listen       80;
++    server_name vpn19.com www.vpn19.com;
++    rewrite  ^(.*)$  https://$http_host$1;
++}
++
++server {
++    listen       80;
+     server_name vpn19.co www.vpn19.co;
+     rewrite  ^(.*)$  https://$http_host$1;
+ }
+@@ -131,3 +137,31 @@
+ 
+ }
+ 
++server {
++	listen       443;
++	server_name  vpn19.com www.vpn19.com;
++
++        #charset koi8-r;
++	ssl on;
++	ssl_certificate /usr/local/nginx/conf.d/ssl/vpn19.com/fullchain.pem;
++	ssl_certificate_key /usr/local/nginx/conf.d/ssl/vpn19.com/privkey.pem;
++
++	access_log  logs/access.log  main;
++	if ($http_host !~* 'www') {
++		rewrite ^(.*)$ https://www.$http_host$1 permanent;
++	}
++
++	location / {
++            #root   html/booster/;
++		root   /var/ftp/booster/mmexy/;
++		index  index.html index.htm;
++	}
++
++	error_page   500 502 503 504  /50x.html;
++	location = /50x.html {
++		root   html;
++	}
++
++}
++
++
+

@@ -1,0 +1,26 @@
+--- /ansible/nginx/hostgroups/acc-autopay_ftp/nginx/conf.d/global/_default.conf	2019-03-19 13:49:10.757851049 +0800
++++ /tmp/_default.conf	2019-03-22 15:21:12.767156369 +0800
+@@ -1,5 +1,21 @@
+ server {
+     listen       80 default_server;#HTTP Port
+     server_name  _;
+-    return 444;
++  	location  / {
++        set $test BLOCK;
++
++        if ($allowed_ip ~ "yes" ){
++          set $test ALLOW;
++        }
++
++        if ( $test = "BLOCK" ) {
++          return 403 '{"status":false}';
++          add_header Content-Type text/plain;
++        }
++        return 200 '{"status":true}';
++        add_header Content-Type text/plain;
++    }
++
++    access_log  logs/default.access.log main;
++    access_log  logs/default.logstash.access.log logstash;
+ }
+

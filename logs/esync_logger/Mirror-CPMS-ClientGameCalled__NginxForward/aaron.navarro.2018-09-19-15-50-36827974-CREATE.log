@@ -1,0 +1,314 @@
+upstream mg_gameapi {
+        server  203.192.151.12:8086 max_fails=2  fail_timeout=30s backup;
+        server  203.177.198.116:8086 max_fails=2  fail_timeout=30s;
+}
+server{
+        listen       80;#HTTP 的端口
+        server_name api.gameapi.me ebetgameapi.neweb.me ;
+        #server_name api.gameapi.me ; deleted to access MG directly
+        index   index.jsp index.html index.htm;
+
+        charset utf-8;
+
+        access_log  logs/mg_api.access.log main ;
+        error_log  logs/mg_api.error.log ;
+
+        if ($request_method !~* GET|POST|HEAD) {
+                return 403;
+        }
+
+	location ~ ^/(WEB-INF)/ {
+            deny all;
+         }
+
+        location / {
+	include whitelistIP.conf;
+            #proxy_ignore_client_abort on;
+            include proxy.mg.conf;
+            proxy_pass http://mg_gameapi;# 反向代理
+        }
+
+location ~* (conf|logs|lib|work|temp|bin)/{
+        return 444;
+        }
+
+
+        error_page 404 404.jsp;
+        error_page 500 502 503 500.jsp;
+}#end mg_gameapi
+
+
+#mggameapi-eu
+upstream mggameapihm {
+        server 203.177.198.116:8230 max_fails=1  fail_timeout=2s;
+        server 203.192.151.12:8230 max_fails=1  fail_timeout=2s backup;
+        server 101.78.133.212:8230 max_fails=1  fail_timeout=2s backup;
+        server 205.177.199.12:8230 max_fails=1  fail_timeout=2s backup;
+}
+
+server {
+        listen     80;
+        server_name mgapi.bao1618.com;
+        root    /web/mggameapi/;
+        index index.jsp index.html index.htm;
+        charset utf-8;
+
+        access_log  logs/mggameapi-hm.access.log main; 
+        location ~ ^/(WEB-INF)/ {
+        deny all;
+        }
+
+	if ($request_method !~* GET|POST|HEAD) {
+                return 403;
+        }
+
+        location / {
+	include whitelistIP.conf;
+            include proxy.conf.gm;
+          #  proxy_pass http://10.168.11.58:8230;
+            proxy_pass http://mggameapihm;
+        }
+
+location ~* (conf|logs|lib|work|temp|bin)/{
+        return 444;
+        }
+
+
+
+        error_page   404 404.jsp;
+        error_page   500 502 503 500.jsp;
+        }
+
+#mggameapi-eu
+upstream mggameapieu {
+        server 203.192.151.12:8228 max_fails=2  fail_timeout=30s backup;
+        server 101.78.133.212:8228 max_fails=2  fail_timeout=30s backup;
+        server 205.177.199.12:8228 max_fails=2  fail_timeout=30s ;
+}
+
+server {
+        listen     80;
+        server_name mgapi.eu88.me;
+        root    /web/mggameapi-eu/;
+        index index.jsp index.html index.htm;
+        charset utf-8;
+
+        access_log  logs/mggameapi-eu.access.log main;
+        error_log  logs/mggameapi-eu.error.log ;
+
+        if ($request_method !~* GET|POST|HEAD) {
+                return 403;
+        }
+
+        location ~ ^/(WEB-INF)/ {
+        deny all;
+        }
+
+location ~* (conf|logs|lib|work|temp|bin)/{
+        return 444;
+        }
+
+
+        location / {
+	include whitelistIP.conf;
+            include proxy.conf.gm;
+            proxy_pass http://mggameapieu;
+#            proxy_pass http://10.168.11.58:80;
+        }
+
+
+        error_page   404 404.jsp;
+        error_page   500 502 503 500.jsp;
+        }
+
+#mggameapi-b8a
+upstream mggameapi-b8a {
+        ##server 203.192.151.12:8229 max_fails=2  fail_timeout=30s backup;
+        server 101.78.133.212:8229 max_fails=2  fail_timeout=30s backup;
+        server 205.177.199.12:8229 max_fails=2  fail_timeout=30s;
+}
+
+server {
+        listen     80;
+        server_name mgapi.ying88888.com mgapi.ying77777.com;
+        index index.jsp index.html index.htm;
+        charset utf-8;
+
+        access_log  logs/mggameapi-b8a.access.log main;
+        error_log  logs/mggameapi-b8a.error.log ;
+        location ~ ^/(WEB-INF)/ {
+        deny all;
+        }
+
+        if ($request_method !~* GET|POST|HEAD) {
+                return 403;
+        }
+
+        location / {
+	include whitelistIP.conf;
+            include proxy.conf.gm;
+            proxy_pass http://mggameapi-b8a;
+        }
+
+location ~* (conf|logs|lib|work|temp|bin)/{
+        return 444;
+        }
+
+        error_page   404 404.jsp;
+        error_page   500 502 503 500.jsp;
+        }
+
+#mggameapi-msgreen
+upstream mggameapi-msg {
+        ##server 203.192.151.12:8231 max_fails=2  fail_timeout=30s backup;
+        server 101.78.133.212:8231 max_fails=2  fail_timeout=30s backup;
+        server 205.177.199.12:8231 max_fails=2  fail_timeout=30s;
+}
+
+server {
+        listen     80;
+        server_name mgapi.ms567.net;
+        index index.jsp index.html index.htm;
+        charset utf-8;
+
+        access_log  logs/mggameapi-msgreen.access.log main;
+        error_log  logs/mggameapi-msgreen.error.log ;
+        location ~ ^/(WEB-INF)/ {
+        deny all;
+        }
+location ~* (conf|logs|lib|work|temp|bin)/{
+        return 444;
+        }
+
+        if ($request_method !~* GET|POST|HEAD) {
+                return 403;
+        }
+
+        location / {
+	include whitelistIP.conf;
+            include proxy.conf.gm;
+            proxy_pass http://mggameapi-msg;
+        }
+
+
+        error_page   404 404.jsp;
+        error_page   500 502 503 500.jsp;
+        }
+
+#mggameapi-jsh
+upstream mggameapi-jsh {
+        ##server 203.192.151.12:8243 max_fails=2  fail_timeout=30s backup;
+        server 101.78.133.212:8243 max_fails=2  fail_timeout=30s backup;
+        server 205.177.199.12:8243 max_fails=2  fail_timeout=30s;
+}
+
+server {
+        listen     80;
+        server_name mgapi.889jh.com;
+        index index.jsp index.html index.htm;
+        charset utf-8;
+
+        access_log  logs/mggameapi-jsh.access.log main;
+        error_log  logs/mggameapi-jsh.error.log ;
+        location ~ ^/(WEB-INF)/ {
+        deny all;
+        }
+
+        if ($request_method !~* GET|POST|HEAD) {
+                return 403;
+        }
+
+        location / {
+	include whitelistIP.conf;
+            include proxy.conf.gm;
+            proxy_pass http://mggameapi-jsh;
+        }
+
+location ~* (conf|logs|lib|work|temp|bin)/{
+        return 444;
+        }
+
+
+
+        error_page   404 404.jsp;
+        error_page   500 502 503 500.jsp;
+        }
+
+#mggameapi-blb
+upstream mggameapi-blb {
+        ##server 203.192.151.12:8234 max_fails=2  fail_timeout=30s backup;
+        server 101.78.133.212:8234 max_fails=2  fail_timeout=30s backup;
+        server 205.177.199.12:8234 max_fails=2  fail_timeout=30s;
+}
+
+server {
+        listen     80;
+        server_name mgapi.888blb.net;
+        index index.jsp index.html index.htm;
+        charset utf-8;
+
+        if ($request_method !~* GET|POST|HEAD) {
+                return 403;
+        }
+
+        access_log  logs/mggameapi-blb.access.log main;
+        error_log  logs/mggameapi-blb.error.log ;
+        location ~ ^/(WEB-INF)/ {
+        deny all;
+        }
+
+        location / {
+	include whitelistIP.conf;
+            include proxy.conf.gm;
+            proxy_pass http://mggameapi-blb;
+        }
+
+location ~* (conf|logs|lib|work|temp|bin)/{
+        return 444;
+        }
+
+
+
+        error_page   404 404.jsp;
+        error_page   500 502 503 500.jsp;
+        }
+
+#mggameapi-xbet
+upstream mggameapi-xbet {
+        ##server 203.192.151.12:8232 max_fails=2  fail_timeout=30s backup;
+        server 101.78.133.212:8232 max_fails=2  fail_timeout=30s backup;
+        server 205.177.199.12:8232 max_fails=2  fail_timeout=30s;
+}
+
+server {
+        listen     80;
+        server_name mg-xbet.gameapi.me;
+        index index.jsp index.html index.htm;
+        charset utf-8;
+
+        access_log  logs/mggameapi-xbet.access.log main;
+        error_log  logs/mggameapi-xbet.error.log ;
+        location ~ ^/(WEB-INF)/ {
+        deny all;
+        }
+
+        if ($request_method !~* GET|POST|HEAD) {
+                return 403;
+        }
+
+        location / {
+	include whitelistIP.conf;
+            include proxy.conf.gm;
+            proxy_pass http://mggameapi-xbet;
+        }
+
+location ~* (conf|logs|lib|work|temp|bin)/{
+        return 444;
+        }
+
+
+
+        error_page   404 404.jsp;
+        error_page   500 502 503 500.jsp;
+        }
+

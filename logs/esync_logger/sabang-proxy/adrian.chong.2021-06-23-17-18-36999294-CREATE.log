@@ -1,0 +1,41 @@
+
+server {
+        listen         80;
+        server_name    wwwdj.payhome.site;
+        index   index.jsp index.html index.htm;
+  		rewrite ^(.*)$ https://wwwdj.payhome.site$1 permanent;
+        charset utf-8;
+
+        access_log  logs/dj-pms2.access.log ;
+		error_log  logs/dj-pms2.error.log ;
+}
+
+
+server {
+        listen         443 ssl;
+        server_name    wwwdj.payhome.site;
+        index   index.jsp index.html index.htm;
+
+        charset utf-8;
+  
+  		ssl on;
+    	ssl_certificate /usr/local/nginx/conf.d/ssl/payhome.site/fullchain.pem;
+    	ssl_certificate_key /usr/local/nginx/conf.d/ssl/payhome.site/privkey.pem;
+
+        access_log  logs/dj-pms2.access.log ;
+  		error_log  logs/dj-pms2.error.log ;
+
+         location ~ ^/(WEB-INF)/ {
+            deny all;
+         }
+
+        location / {
+            include /usr/local/nginx/conf.d/include/proxy.include;
+    		proxy_pass http://16.162.7.242:8080;
+        }
+
+}
+
+
+
+

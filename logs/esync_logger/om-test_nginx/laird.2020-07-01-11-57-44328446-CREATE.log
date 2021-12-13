@@ -1,0 +1,57 @@
+--- /ansible/nginx/hostgroups/om-test_nginx/nginx/conf.d/include/mailserver-web-test.include	2020-07-01 11:55:12.361911545 +0800
++++ /tmp/mailserver-web-test.include	2020-07-01 11:57:44.181639891 +0800
+@@ -32,14 +32,12 @@
+         location ~ /\.
+         { return 444; }
+ 
+-	
+-
+-
+-	location / {
++	set $upstream2 mailserver-server;
++	location /server/ {
+             proxy_set_header Host  $host;
+             proxy_set_header X-Forwarded-For  $remote_addr;
+             proxy_set_header X-Forwarded-Proto $scheme ;
+-	    proxy_pass http://$upstream;
++	    proxy_pass http://$upstream2;
+         }
+ 
+ 	location ~* .*\.(png|jpg|gif|jpeg|bmp|ico|css|js|json|exe)?$ {
+@@ -50,15 +48,18 @@
+             proxy_set_header Host  $host;
+             proxy_set_header X-Forwarded-For  $remote_addr;
+             proxy_set_header X-Forwarded-Proto $scheme ;
+-	         proxy_pass http://$upstream;
++	         proxy_pass http://$upstream2;
+             #expires      2h;
+        }
+-	set $upstream2 mailserver-server;
+-	location /server/ {
++
++
++
++
++	location / {
+             proxy_set_header Host  $host;
+             proxy_set_header X-Forwarded-For  $remote_addr;
+             proxy_set_header X-Forwarded-Proto $scheme ;
+-	    proxy_pass http://$upstream2;
++	    proxy_pass http://$upstream;
+         }
+ 
+ 	location ~* .*\.(png|jpg|gif|jpeg|bmp|ico|css|js|json|exe)?$ {
+@@ -69,10 +70,9 @@
+             proxy_set_header Host  $host;
+             proxy_set_header X-Forwarded-For  $remote_addr;
+             proxy_set_header X-Forwarded-Proto $scheme ;
+-	         proxy_pass http://$upstream2;
++	         proxy_pass http://$upstream;
+             #expires      2h;
+        }
+-
+-
++	
+ 
+ 
+

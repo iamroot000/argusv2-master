@@ -1,0 +1,24 @@
+FILENAME: 80-443/ebet12.com.conf
+-  
++  server {
++      listen 80;
++      server_name ebet12.com www.ebet12.com;
++      rewrite ^(.*)$ https://www.ebet12.com$1 permanent;
++  }
++  
++  server {
++      listen 443;
++      server_name ebet12.com www.ebet12.com;
++      ssl on;
++      ssl_certificate /usr/local/nginx/conf.d/ssl/ebet12.com/fullchain.pem;
++      ssl_certificate_key /usr/local/nginx/conf.d/ssl/ebet12.com/privkey.pem;
++  
++      if ($http_host !~* 'www') {
++          rewrite ^(.*)$ https://www.$http_host$1 permanent;
++      }
++  
++      include /usr/local/nginx/conf.d/include/bbetasia_official_masterconfig.include;
++  }
++  
++  
+

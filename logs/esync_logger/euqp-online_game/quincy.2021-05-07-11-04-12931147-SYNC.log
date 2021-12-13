@@ -1,0 +1,154 @@
+ESYNC_WORKER1_COMMAND_START
+[WARNING]: Invalid characters were found in group names but not replaced, use
+-vvvv to see details
+
+PLAY [euqp-online_game] ********************************************************
+
+
+TASK [Gathering Facts] *********************************************************
+ok: [168.63.155.64]
+
+TASK [nginx_sync : Change python interpreter] **********************************
+skipping: [168.63.155.64]
+
+
+TASK [nginx_sync : change python interpreter] **********************************
+skipping: [168.63.155.64]
+
+TASK [nginx_sync : set_fact] ***************************************************
+
+ok: [168.63.155.64]
+
+TASK [nginx_sync : set_fact] ***************************************************
+ok: [168.63.155.64]
+
+
+TASK [nginx_sync : Notify] *****************************************************
+ok: [168.63.155.64] => {
+    "msg": "Syncing euqp-online_game"
+}
+
+
+TASK [nginx_sync : include_vars] ***********************************************
+ok: [168.63.155.64]
+
+TASK [nginx_sync : Synchronizing Nginx] ****************************************
+ok: [168.63.155.64] => (item=conf)
+
+changed: [168.63.155.64] => (item=conf.d)
+ok: [168.63.155.64] => (item=data)
+ok: [168.63.155.64] => (item=html)
+
+TASK [nginx_sync : Synchronizing Nginx Excluding HTML] *************************
+
+skipping: [168.63.155.64] => (item=conf) 
+skipping: [168.63.155.64] => (item=conf.d) 
+skipping: [168.63.155.64] => (item=data) 
+
+TASK [nginx_sync : Set HTML Dir to root] ***************************************
+
+ok: [168.63.155.64]
+
+TASK [all_servers : include_vars] **********************************************
+ok: [168.63.155.64]
+
+
+TASK [all_servers : Notify] ****************************************************
+ok: [168.63.155.64] => {
+    "msg": "Clearing Nginx Cache for euqp-online_game"
+}
+
+
+TASK [all_servers : Copying clear_nginxcache.sh to remote hosts] ***************
+ok: [168.63.155.64]
+
+TASK [all_servers : Nginx Clear Cache] *****************************************
+changed: [168.63.155.64]
+
+
+TASK [all_servers : debug] *****************************************************
+ok: [168.63.155.64] => {
+    "script_result.stdout_lines": [
+        "-----------------------------------------------------------", 
+
+        "|                 Checking Nginx Config                   |", 
+        "-----------------------------------------------------------", 
+        "", 
+        " nginx -t ", 
+        "", 
+
+        "-----------------------------------------------------------", 
+        "|                 Stopping Nginx Process                  |", 
+        "-----------------------------------------------------------", 
+        "", 
+        " /usr/bin/killall -9 nginx ", 
+
+        "", 
+        "-----------------------------------------------------------", 
+        "|                 Clearing Proxy Cache                    |", 
+        "-----------------------------------------------------------", 
+        "", 
+
+        " /bin/rm -rf /tmp/nginx_cache ", 
+        "", 
+        "-----------------------------------------------------------", 
+        "|                Restarting Nginx Process                 |", 
+        "-----------------------------------------------------------", 
+
+        "root     11853  0.0  0.0 410388  6504 ?        Sl    2020  13:02 /usr/bin/php -f /usr/share/nginx/html/v8/Jobs/GamelogImport.php", 
+        "root     12083  0.0  0.0 410388  6136 ?        Sl    2020  11:22 /usr/bin/php -f /usr/share/nginx/html/v8/Jobs/ipInfoUpdate.php", 
+        "root     12111  0.0  0.0 410388  6408 ?        Sl    2020  15:01 /usr/bin/php -f /usr/share/nginx/html/v8/Jobs/Updatemoneylog.php", 
+        "root     12147  0.0  0.1 410388 10232 ?        Sl    2020  12:31 /usr/bin/php -f /usr/share/nginx/html/v8/Jobs/accountCenterDataImport.php", 
+        "root     12244  0.0  0.1 410388 11584 ?        Sl    2020  12:57 /usr/bin/php -f /usr/share/nginx/html/v8/Jobs/UpdateJackpotstatus.php", 
+
+        "root     31352  0.8  0.0 113284  1472 ?        S    11:04   0:00 /bin/bash /bak/bin/clear_nginxcache.sh", 
+        "root     31357  0.0  0.0  45940  3428 ?        S    11:04   0:00 nginx: master process /usr/local/nginx/sbin/nginx", 
+        "ommgr    31359  0.0  0.0  46376  1952 ?        S    11:04   0:00 nginx: worker process", 
+        "root     31393  0.5  0.0  10624  3568 ?        Ss   11:04   0:00 nginx: master process /usr/sbin/nginx -g daemon off;", 
+        "101      31406  0.0  0.0  11020  1512 ?        S    11:04   0:00 nginx: worker process", 
+
+        "root     31411  0.0  0.0 298900  5644 ?        Ss   11:04   0:00 nginx: master process /usr/local/nginx/sbin/nginx", 
+        "nobody   31412  0.0  0.1 305236 10352 ?        S    11:04   0:00 nginx: worker process", 
+        "nobody   31414  0.0  0.1 305236 10580 ?        S    11:04   0:00 nginx: worker process", 
+        "nobody   31415  0.0  0.1 305236 10580 ?        S    11:04   0:00 nginx: worker process", 
+        "nobody   31416  0.0  0.1 305236 10352 ?        S    11:04   0:00 nginx: worker process", 
+
+        "nobody   31417  0.0  0.0 300984  6144 ?        S    11:04   0:00 nginx: cache manager process", 
+        "nobody   31418  0.0  0.0 300984  6144 ?        S    11:04   0:00 nginx: cache loader process", 
+        "root     31422  0.0  0.0 112812   948 ?        S    11:04   0:00 grep nginx", 
+        "              total        used        free      shared  buff/cache   available", 
+        "Mem:           7982        2227         149         199        5605        5249", 
+
+        "Swap:          2047         543        1504", 
+        "-----------------------------------------------------------", 
+        "|                     Reload SUCCESS!                     |", 
+        "-----------------------------------------------------------"
+    ]
+
+}
+
+PLAY [127.0.0.1] ***************************************************************
+
+TASK [sync_to_git : Synchronizing Nginx To GIT] ********************************
+
+changed: [127.0.0.1]
+
+TASK [sync_to_git : debug] *****************************************************
+ok: [127.0.0.1] => {
+    "msg": " [u'[master eb245bc] quincy', u' 1 file changed, 17 insertions(+)', u' create mode 100644 nginx/conf.d/other/config-hotupdate.conf', u'Branch master set up to track remote branch master from origin.']"
+
+}
+
+PLAY [euqp-online_game] ********************************************************
+
+PLAY [127.0.0.1] ***************************************************************
+
+
+PLAY RECAP *********************************************************************
+127.0.0.1                  : ok=2    changed=1    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0   
+168.63.155.64              : ok=12   changed=2    unreachable=0    failed=0    skipped=3    rescued=0    ignored=0   
+
+
+
+ESYNC_WORKER1_COMMAND_END
+MAX RETRIES EXECUTED, COMMAND NOT RESPONDING

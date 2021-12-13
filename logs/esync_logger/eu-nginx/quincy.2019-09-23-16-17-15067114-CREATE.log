@@ -1,0 +1,95 @@
+index   index.jsp index.html index.htm;
+access_log  logs/eu.access.log main;
+access_log  logs/eu.logstash.access.log logstash;
+
+if ($http_user_agent ~* "(iPhone|iPad|iPod|Linux|android|Android|bb\d+|meego).+mobile|Android|MobileSafari|iPhone|iPad|iPod|Linux|android|avantgo|bada\/|blackberry|blazer|compal|elaine|fennec|hiptop|iemobile|ip(hone|od)|iris|kindle|lge |maemo|midp|mmp|netfront|opera m(ob|in)i|palm( os)?|phone|p(ixi|re)\/|plucker|pocket|psp|series(4|6)0|symbian|treo|up\.(browser|link)|vodafone|wap|windows (ce|phone)|xda|xiino|android 3.0") {
+set $mobile_rewrite perform;
+} 
+
+
+if ( $mobile_rewrite = perform )
+{ set $upstream xjw-eu-h5; }
+
+if ($http_user_agent ~* "(x11)") 
+{ set $mobile_rewrite per;  }
+
+
+if ($http_user_agent ~* "yunjiankong") 
+{ return 444;  }
+
+if ( $mobile_rewrite != perform )
+{ set $upstream xjw-eu-pc; }
+
+if ($host ~* pc\.(.*))
+{ set $upstream xjw-eu-pc; }
+
+if ($http_user_agent ~* "qihoobot|Yahoo! Slurp|Yahoo! Slurp China|YoudaoBot|Sosospider|Sogou spider|Sogou web spider|MSNBot|ia_archiver|Tomato Bot")
+{
+	return 403;
+}
+
+limit_req zone=anti_spider burst=5 nodelay;
+if ($http_user_agent ~* "baiduspider") {
+set $anti_spider $http_user_agent;
+}
+
+if ($request_method !~* GET|POST|HEAD) {
+return 403;
+}
+
+location ~ /\.
+{ return 444; }
+
+error_page 403 = @403;
+	location @403 {
+	root html;
+	allow all;
+	#if ( $request_uri ~ 'page-404.jsp' ){ rewrite ^(.*)$ /red-map.jpg break; }
+	rewrite ^(.*)$ /red-map.jpg break; 
+}
+
+if ($allowed_country ~ "no" )
+{ set $test BLOCK; }
+
+if ($allowed_country ~ "yes" ) 
+{ set $test ALLOW; }
+
+if ($allowed_ip ~ "yes" ){ 
+  set $test ALLOW; 
+}
+
+
+
+
+
+
+location / {
+	if ( $test = "BLOCK" ) { return 403;  }
+
+	proxy_set_header Host  $host;
+	proxy_set_header X-Forwarded-For  $remote_addr;
+	proxy_set_header X-Forwarded-Proto $scheme ;
+	proxy_pass http://$upstream;
+
+}
+
+location /websocket {
+    if ( $test = "BLOCK" ) { return 444;  }
+	proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+	proxy_set_header X-Real-IP  $remote_addr;
+	proxy_next_upstream http_502 http_504 http_404 error timeout invalid_header;
+	proxy_set_header Host $host:$server_port;
+	proxy_http_version 1.1;
+	proxy_set_header Upgrade $http_upgrade;
+	proxy_set_header Connection $connection_upgrade;
+	proxy_connect_timeout   1800;
+	proxy_send_timeout      1800;
+	proxy_read_timeout      1800;
+
+	proxy_pass http://9280;
+}
+
+
+
+
+

@@ -1,0 +1,125 @@
+ESYNC_WORKER1_COMMAND_END
+MAX RETRIES EXECUTED, COMMAND NOT RESPONDINGESYNC_WORKER1_COMMAND_START
+
+PLAY [yipay-nginx] *************************************************************
+
+TASK [nginx_sync : Notify] *****************************************************
+ok: [47.75.181.59] => {
+
+    "msg": "Syncing yipay-nginx"
+}
+
+TASK [nginx_sync : include_vars] ***********************************************
+ok: [47.75.181.59]
+
+
+TASK [nginx_sync : Synchronizing Nginx] ****************************************
+changed: [47.75.181.59] => (item=conf)
+changed: [47.75.181.59] => (item=conf.d)
+changed: [47.75.181.59] => (item=data)
+
+changed: [47.75.181.59] => (item=html)
+
+TASK [all_servers : include_vars] **********************************************
+ok: [47.75.181.59]
+
+
+TASK [all_servers : Notify] ****************************************************
+ok: [47.75.181.59] => {
+    "msg": "Clearing Nginx Cache for yipay-nginx"
+}
+
+
+TASK [all_servers : Copying clear_nginxcache.sh to remote hosts] ***************
+changed: [47.75.181.59]
+
+TASK [all_servers : Nginx Clear Cache] *****************************************
+changed: [47.75.181.59]
+
+
+TASK [all_servers : debug] *****************************************************
+ok: [47.75.181.59] => {
+    "script_result.stdout_lines": [
+        "-----------------------------------------------------------", 
+
+        "|                 Checking Nginx Config                   |", 
+        "-----------------------------------------------------------", 
+        "", 
+        " nginx -t ", 
+        "", 
+
+        "-----------------------------------------------------------", 
+        "|                 Stopping Nginx Process                  |", 
+        "-----------------------------------------------------------", 
+        "", 
+        " /usr/bin/killall -9 nginx ", 
+
+        "", 
+        "-----------------------------------------------------------", 
+        "|                 Clearing Proxy Cache                    |", 
+        "-----------------------------------------------------------", 
+        "", 
+
+        " /bin/rm -rf /tmp/nginx_cache ", 
+        "", 
+        "-----------------------------------------------------------", 
+        "|                Restarting Nginx Process                 |", 
+        "-----------------------------------------------------------", 
+
+        "root     20073  0.0  0.0 106080  1424 ?        S    14:00   0:00 /bin/bash /bak/bin/clear_nginxcache.sh", 
+        "root     20079  0.0  0.0 297872  3360 ?        Ss   14:00   0:00 nginx: master process /usr/local/nginx/sbin/nginx", 
+        "nobody   20081  0.0  0.1 302124  7804 ?        S    14:00   0:00 nginx: worker process      ", 
+        "nobody   20082  0.0  0.1 302124  7804 ?        S    14:00   0:00 nginx: worker process      ", 
+        "nobody   20083  0.0  0.1 302124  7804 ?        S    14:00   0:00 nginx: worker process      ", 
+
+        "nobody   20084  0.0  0.1 302124  7804 ?        S    14:00   0:00 nginx: worker process      ", 
+        "nobody   20085  0.0  0.0 297872  3788 ?        S    14:00   0:00 nginx: cache manager process", 
+        "nobody   20086  0.0  0.0 297872  3736 ?        S    14:00   0:00 nginx: cache loader process", 
+        "root     20088  0.0  0.0 103320   888 ?        S    14:00   0:00 grep nginx", 
+        "             total       used       free     shared    buffers     cached", 
+
+        "Mem:          3961       3835        126          1        172        212", 
+        "-/+ buffers/cache:       3450        511", 
+        "Swap:            0          0          0", 
+        "-----------------------------------------------------------", 
+        "|                     Reload SUCCESS!                     |", 
+
+        "-----------------------------------------------------------"
+    ]
+}
+
+PLAY [127.0.0.1] ***************************************************************
+
+
+TASK [sync_to_git : Synchronizing Nginx To GIT] ********************************
+changed: [127.0.0.1]
+
+TASK [sync_to_git : debug] *****************************************************
+
+ok: [127.0.0.1] => {
+    "script_result.stdout_lines": [
+        "[master 6f3d3f7] quincy", 
+        " 8 files changed, 185 insertions(+), 1 deletion(-)", 
+        " create mode 100644 nginx/conf.d/other/pms1_pay.conf", 
+
+        " create mode 100644 nginx/conf.d/other/pms2_yifu.conf", 
+        " create mode 100644 nginx/conf.d/other/pms_pay-china_domain.conf", 
+        " create mode 120000 nginx/conf.d/ssl/ezezpay.com", 
+        " create mode 120000 nginx/conf.d/ssl/paymehome.co", 
+        " create mode 120000 nginx/conf.d/ssl/xn--ez-de3cx82g.com", 
+
+        "Branch master set up to track remote branch master from origin."
+    ]
+}
+
+PLAY [yipay-nginx] *************************************************************
+
+
+PLAY [127.0.0.1] ***************************************************************
+
+PLAY RECAP *********************************************************************
+127.0.0.1                  : ok=2    changed=1    unreachable=0    failed=0   
+
+47.75.181.59               : ok=8    changed=3    unreachable=0    failed=0   
+
+

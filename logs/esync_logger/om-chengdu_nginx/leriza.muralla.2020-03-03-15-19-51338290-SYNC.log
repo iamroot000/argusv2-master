@@ -1,0 +1,152 @@
+ESYNC_WORKER1_COMMAND_START
+ [WARNING]: Invalid characters were found in group names but not replaced, use
+-vvvv to see details
+
+PLAY [om-chengdu_nginx] ********************************************************
+
+
+TASK [Gathering Facts] *********************************************************
+ok: [40.83.79.117]
+ok: [47.112.127.70]
+
+TASK [nginx_sync : Change python interpreter] **********************************
+
+skipping: [47.112.127.70]
+skipping: [40.83.79.117]
+
+TASK [nginx_sync : change python interpreter] **********************************
+skipping: [47.112.127.70]
+
+skipping: [40.83.79.117]
+
+TASK [nginx_sync : Notify] *****************************************************
+ok: [47.112.127.70] => {
+    "msg": "Syncing om-chengdu_nginx"
+
+}
+ok: [40.83.79.117] => {
+    "msg": "Syncing om-chengdu_nginx"
+}
+
+
+TASK [nginx_sync : include_vars] ***********************************************
+ok: [47.112.127.70]
+ok: [40.83.79.117]
+
+TASK [nginx_sync : Synchronizing Nginx] ****************************************
+
+ok: [47.112.127.70] => (item=conf)
+ok: [40.83.79.117] => (item=conf)
+changed: [40.83.79.117] => (item=conf.d)
+changed: [47.112.127.70] => (item=conf.d)
+ok: [40.83.79.117] => (item=data)
+
+ok: [47.112.127.70] => (item=data)
+ok: [40.83.79.117] => (item=html)
+ok: [47.112.127.70] => (item=html)
+
+TASK [nginx_sync : Set HTML Dir to root] ***************************************
+
+ok: [40.83.79.117]
+ok: [47.112.127.70]
+
+TASK [all_servers : include_vars] **********************************************
+ok: [47.112.127.70]
+
+ok: [40.83.79.117]
+
+TASK [all_servers : Notify] ****************************************************
+ok: [47.112.127.70] => {
+    "msg": "Clearing Nginx Cache for om-chengdu_nginx"
+
+}
+ok: [40.83.79.117] => {
+    "msg": "Clearing Nginx Cache for om-chengdu_nginx"
+}
+
+
+TASK [all_servers : Copying clear_nginxcache.sh to remote hosts] ***************
+ok: [40.83.79.117]
+ok: [47.112.127.70]
+
+TASK [all_servers : Nginx Clear Cache] *****************************************
+
+changed: [40.83.79.117]
+fatal: [47.112.127.70]: FAILED! => {"changed": true, "cmd": ["/bak/bin/clear_nginxcache.sh"], "delta": "0:00:30.046908", "end": "2020-03-03 15:21:15.182960", "msg": "non-zero return code", "rc": 1, "start": "2020-03-03 15:20:45.136052", "stderr": "nginx: [emerg] host not found in upstream \"payapi99.fpms8.me\" in /usr/local/nginx/conf.d/other/9280.conf:19\nnginx: configuration file /usr/local/nginx/conf/nginx.conf test failed", "stderr_lines": ["nginx: [emerg] host not found in upstream \"payapi99.fpms8.me\" in /usr/local/nginx/conf.d/other/9280.conf:19", "nginx: configuration file /usr/local/nginx/conf/nginx.conf test failed"], "stdout": "-----------------------------------------------------------\n|                 Checking Nginx Config                   |\n-----------------------------------------------------------\n\n nginx -t \n\n+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n|                  CONFIGURATION ERROR!                   |\n+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++", "stdout_lines": ["-----------------------------------------------------------", "|                 Checking Nginx Config                   |", "-----------------------------------------------------------", "", " nginx -t ", "", "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++", "|                  CONFIGURATION ERROR!                   |", "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"]}
+
+TASK [all_servers : debug] *****************************************************
+ok: [40.83.79.117] => {
+
+    "script_result.stdout_lines": [
+        "-----------------------------------------------------------", 
+        "|                 Checking Nginx Config                   |", 
+        "-----------------------------------------------------------", 
+        "", 
+
+        " nginx -t ", 
+        "", 
+        "-----------------------------------------------------------", 
+        "|                 Stopping Nginx Process                  |", 
+        "-----------------------------------------------------------", 
+
+        "", 
+        " /usr/bin/killall -9 nginx ", 
+        "", 
+        "-----------------------------------------------------------", 
+        "|                 Clearing Proxy Cache                    |", 
+
+        "-----------------------------------------------------------", 
+        "", 
+        " /bin/rm -rf /tmp/nginx_cache ", 
+        "", 
+        "-----------------------------------------------------------", 
+
+        "|                Restarting Nginx Process                 |", 
+        "-----------------------------------------------------------", 
+        "root      46646  0.3  0.0 113180  1500 ?        S    15:20   0:00 /bin/bash /bak/bin/clear_nginxcache.sh", 
+        "root      46655  0.0  0.0 666668  2436 ?        Ss   15:20   0:00 nginx: master process /usr/local/nginx/sbin/nginx", 
+        "nobody    46656  0.0  0.1 673004  7132 ?        S    15:20   0:00 nginx: worker process", 
+
+        "nobody    46658  0.0  0.1 673004  7132 ?        S    15:20   0:00 nginx: worker process", 
+        "nobody    46659  0.0  0.1 673004  7132 ?        S    15:20   0:00 nginx: worker process", 
+        "nobody    46660  0.0  0.1 673004  7132 ?        S    15:20   0:00 nginx: worker process", 
+        "nobody    46661  0.0  0.0 668752  3184 ?        S    15:20   0:00 nginx: cache manager process", 
+        "nobody    46662  0.0  0.0 668752  2944 ?        S    15:20   0:00 nginx: cache loader process", 
+
+        "root      46665  0.0  0.0 112708   960 ?        S    15:20   0:00 grep nginx", 
+        "              total        used        free      shared  buff/cache   available", 
+        "Mem:           3932         212         225         204        3494        3172", 
+        "Swap:             0           0           0", 
+        "-----------------------------------------------------------", 
+
+        "|                     Reload SUCCESS!                     |", 
+        "-----------------------------------------------------------"
+    ]
+}
+
+
+PLAY [127.0.0.1] ***************************************************************
+
+TASK [sync_to_git : Synchronizing Nginx To GIT] ********************************
+changed: [127.0.0.1]
+
+
+TASK [sync_to_git : debug] *****************************************************
+ok: [127.0.0.1] => {
+    "msg": " [u'# On branch master', u'# Changes not staged for commit:', u'#   (use \"git add/rm <file>...\" to update what will be committed)', u'#   (use \"git checkout -- <file>...\" to discard changes in working directory)', u'#', u'#\\tdeleted:    nginx/conf.d/htpasswd', u'#\\tdeleted:    nginx/conf.d/other/prod_v68.conf', u'#\\tdeleted:    nginx/conf.d/other/test-xjw-proxy-v68.conf', u'#\\tdeleted:    nginx/conf/.nginx.conf.swp', u'#', u'no changes added to commit (use \"git add\" and/or \"git commit -a\")', u'Branch master set up to track remote branch master from origin.']"
+}
+
+
+PLAY [om-chengdu_nginx] ********************************************************
+
+PLAY [127.0.0.1] ***************************************************************
+
+PLAY RECAP *********************************************************************
+
+127.0.0.1                  : ok=2    changed=1    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0   
+40.83.79.117               : ok=10   changed=2    unreachable=0    failed=0    skipped=2    rescued=0    ignored=0   
+47.112.127.70              : ok=8    changed=1    unreachable=0    failed=1    skipped=2    rescued=0    ignored=0   
+
+
+ESYNC_WORKER1_COMMAND_END
+MAX RETRIES EXECUTED, COMMAND NOT RESPONDING

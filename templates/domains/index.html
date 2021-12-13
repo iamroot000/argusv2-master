@@ -1,0 +1,170 @@
+
+{% extends "base.html" %}
+
+{% block js %}
+    {{ block.super }} {# includes previous content in block #}
+
+    <script src="/static/js/select2/select2.full.min.js"></script>
+
+    <script type="text/javascript" src="/static/multiselect/js/multiselect.min.js"></script>
+    <script src="/static/js/domains/index.js"></script>
+
+
+
+{% endblock %}
+
+{% block style %}
+    {{ block.super }} {# includes previous content in block #}
+    <style>
+        .dataTables_filter { display: none; }
+        .domainname {
+            font-weight: bold;
+        }
+
+        .tag{
+            padding-top:30px;
+        }
+
+    </style>
+
+{% endblock %}
+
+
+{% block title %}
+DNS Manager
+{% endblock %}
+{% block header %}
+DNS Manager
+{% endblock %}
+
+
+{% block details %}
+name.com, dnspod.cn, godaddy.com
+{% endblock %}
+
+
+
+
+{% block action %}
+<div class="row">
+    <div class="col-sm-3 pull-right">
+        <div class="input-group"><input type="text" placeholder="Quick Search..." class="input-sm form-control"  onkeyup="filterTable(this.value)"> <span class="input-group-btn"><button type="button" class="btn btn-sm btn-primary"><i class="fa fa-search"></i> </button> </span></div>
+    </div>
+    <div class="col-sm-3 pull-right">
+        <a href="#" class="btn btn-primary" onclick="invokeSearchByIP()"><i class="fa fa-search"></i> Search By Host Value</a>
+    </div>
+
+
+</div>
+
+{% endblock %}
+
+{% block content %}
+<div class="modal fade" id="bulkChangeByIPModal" role="dialog">
+    <div class="modal-dialog" style="width:1000px;">
+    <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal">&times;</button>
+          <h2 class="modal-title" style="font-weight:bold">Bulk Change By Host Value</h2>
+        </div>
+
+    <div class="modal-body" id='modal-body'>
+        <div class="row">
+            <div class="col-lg-12 form-group">
+                  <label for="ip">Host Value From:</label>
+                  <input class="form-control" id="ipfrom">
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-lg-12">
+                <button type="button" class="btn btn-success"onclick="bulkSearchByIP()">Search</button>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-lg-12 form-group">
+                  <label for="recordVerify">Records with the Host Value:</label>
+                  <div class="panel panel-success">
+                    <div class="panel-body"  id="recordVerify" style="overflow-y: scroll; height: 400px" >
+
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-lg-12 form-group">
+                  <label for="ip">Host Value To:</label>
+                  <input class="form-control" id="ipto">
+            </div>
+        </div>
+
+
+    </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-primary"onclick="bulkUpdate()">Start</button>
+            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        </div>
+
+    </div>
+    </div>
+</div>
+
+<div class="modal fade" id="searchByIPModal" role="dialog">
+    <div class="modal-dialog" style="width:1000px;">
+    <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal">&times;</button>
+          <h2 class="modal-title" style="font-weight:bold">Search By Host Value</h2>
+        </div>
+
+    <div class="modal-body" id='modal-body'>
+
+        <div class="row">
+            <div class="col-lg-12 form-group">
+                  <label for="ip">Host Value:</label>
+                  <input class="form-control" id="ip">
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-lg-12 form-group">
+                  <label for="ipresults">Results:</label>
+                  <div class="panel panel-success">
+                    <div class="panel-body"   style="overflow-y: scroll; height: 400px" >
+                        <table>
+                            <tbody id="ipresults" ></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+    </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-success"onclick="searchByIP()">Search</button>
+            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        </div>
+
+    </div>
+    </div>
+</div>
+
+<div class="row border-bottom white-bg dashboard-header">
+    <div class="col-lg-8">
+        <table class="table table-bordered table-striped table-responsive" id="domainsTable" width="100%"></table>
+    </div>
+    <div class="col-lg-4">
+        <div class="row">
+            <h3>Tags: <span class="btn btn-default btn-xs" onclick="filterTable('')">x Clear Filters</span></h3>
+        </div>
+        <div class="row">
+            <p id="tags"></p>
+        </div>
+        <div class="row">
+            <a href="#" class="btn btn-warning" onclick="invokeBulkChangeByIP()"><i class="fa fa-exclamation-triangle"></i> Bulk Change by Host IP</a>
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}

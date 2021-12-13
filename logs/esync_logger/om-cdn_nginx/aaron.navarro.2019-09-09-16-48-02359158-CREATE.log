@@ -1,0 +1,29 @@
+--- /ansible/nginx/hostgroups/om-cdn_nginx/nginx/conf.d/other/196311.com.conf	2019-09-09 16:20:27.702571314 +0800
++++ /tmp/196311.com.conf	2019-09-09 16:48:02.260571314 +0800
+@@ -165,3 +165,25 @@
+         alias /var/ftp/allcdn/;
+ 	}
+ }
++
++
++server {
++    listen 443; 
++    server_name ssocdn.196311.com
++    charset utf-8;
++    access_log  logs/196311.com.access.log main;
++    error_log   logs/196311.com.error.log;
++    ssl on; 
++    ssl_certificate     /usr/local/nginx/conf.d/ssl/196311.com/fullchain.pem;
++    ssl_certificate_key /usr/local/nginx/conf.d/ssl/196311.com/privkey.pem;
++    location / {
++        proxy_pass https://www.inxedu.com/;
++    }
++    location ^~ /images/ {
++        alias /var/ftp/images/;
++    }
++  
++    location ^~ /cdn/ {
++        alias /var/ftp/allcdn/;
++	}
++}
+

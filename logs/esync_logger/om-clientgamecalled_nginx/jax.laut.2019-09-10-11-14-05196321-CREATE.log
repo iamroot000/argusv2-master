@@ -1,0 +1,39 @@
+--- /ansible/nginx/hostgroups/om-clientgamecalled_nginx/nginx/conf.d/other/cpms-callback-xj.conf	2019-09-09 16:41:51.792571314 +0800
++++ /tmp/cpms-callback-xj.conf	2019-09-10 11:14:05.094672311 +0800
+@@ -29,5 +29,35 @@
+ 	}
+ }
+ 
++upstream cpms-callback-xj-cstest {
++       server 101.78.133.212:7503 max_fails=2  fail_timeout=30s weight=5 backup;
++       server 205.177.199.12:7503 max_fails=2  fail_timeout=30s weight=10;
++	   server 58.64.207.211:7503 max_fails=2  fail_timeout=30s backup;
++	   server 59.148.22.111:7503 max_fails=2  fail_timeout=30s backup;
++
++}
++
++
++server {
++	listen       80;
++	server_name test.xj.779hm.com;
++	index   index.jsp index.html index.htm;
++
++	charset utf-8;
++
++	access_log  logs/test.xj.779hm.com.access.log main;
++  	access_log  logs/test.xj.779hm.com.logstash.access.log logstash;
++	error_log  logs/test.xj.779hm.com.error.log ;
++
++	location ~ ^/(WEB-INF)/ {
++		deny all;
++	}
++
++	location / {
++        include /usr/local/nginx/conf.d/include/whiteXJgame.include;
++		include /usr/local/nginx/conf.d/include/proxy.conf.fwd.include;
++		proxy_pass http://cpms-callback-xj-cstest;
++	}
++}
+ 
+ 
+

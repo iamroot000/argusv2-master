@@ -1,0 +1,31 @@
+--- /ansible/nginx/hostgroups/om-chengdu_nginx/nginx/conf.d/other/v68.conf	2019-10-18 11:48:45.951911187 +0800
++++ /tmp/v68.conf	2019-10-23 16:52:35.466632975 +0800
+@@ -330,6 +330,27 @@
+ }
+ 
+ 
++server {
++        listen 8033;
++        server_name   dev.v68pc.com;
++        access_log logs/8033.access.log main;
++        error_log logs/8033.error.log;
++        location / {
++                    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
++                proxy_set_header X-Real-IP  $remote_addr;
++                proxy_next_upstream http_502 http_504 http_404 error timeout invalid_header;
++                proxy_set_header Host $host:$server_port;
++                proxy_http_version 1.1;
++                proxy_set_header Upgrade $http_upgrade;
++                proxy_set_header Connection $connection_upgrade;
++                proxy_connect_timeout   1800;
++                proxy_send_timeout      1800;
++                proxy_read_timeout      1800;
++                #root html;
++                #index index.html index.htm index.jsp index.php;
++                proxy_pass http://47.90.36.126:8033;
++        }
++}
+ 
+ 
+ 
+

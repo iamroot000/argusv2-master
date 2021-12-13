@@ -1,0 +1,42 @@
+--- /ansible/nginx/hostgroups/sabang-test/nginx/conf.d/other/dj-payhomesite.conf	2021-03-30 12:48:41.817490477 +0800
++++ /tmp/dj-payhomesite.conf	2021-05-11 16:05:28.289633299 +0800
+@@ -65,7 +65,8 @@
+ 
+ 
+ 
+-##PMS-DJ 9007,9005,9003,9001
++##PMS-DJ 9007,9006,9005,9003,9001
++
+ 
+ 
+     server {
+@@ -90,6 +91,28 @@
+ 
+ 
+ 
++    server {
++        listen         443 ssl;
++        server_name    dj-app-cstest.payhome.site;
++        index   index.jsp index.html index.htm;
++
++        charset utf-8;
++  
++		ssl on;
++    	ssl_certificate /usr/local/nginx/conf.d/ssl/payhome.site/fullchain.pem;
++    	ssl_certificate_key /usr/local/nginx/conf.d/ssl/payhome.site/privkey.pem;
++        access_log  logs/pmsdj-9006.access.log ;
++
++         location ~ ^/(WEB-INF)/ {
++            deny all;
++         }
++
++        location / {
++            include /usr/local/nginx/conf.d/include/proxy.include;
++    		proxy_pass http://127.0.0.1:9006;
++        }
++
++}
+ 
+ 
+ 
+

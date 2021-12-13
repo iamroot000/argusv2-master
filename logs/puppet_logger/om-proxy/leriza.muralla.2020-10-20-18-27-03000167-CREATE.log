@@ -1,0 +1,22 @@
+--- /puppet/om-proxy/templates/iptables.sh	2020-10-20 18:05:09.680225243 +0800
++++ /tmp/iptables.sh	2020-10-20 18:27:03.093095665 +0800
+@@ -2,3 +2,18 @@
+ ##SSR
+ /sbin/iptables -A INPUT -p udp -m state --state NEW -m udp --dport 3389 -j ACCEPT
+ /sbin/iptables -A INPUT -p tcp -m state --state NEW -m tcp --dport 3389 -j ACCEPT
++
++#OPENVPN 
++/sbin/iptables -A INPUT -p tcp -m tcp --dport 1194 -j ACCEPT
++#check if ip and interfaces are set correctly. 
++IP=$(/sbin/ip route get 8.8.8.8 | awk '{if ( NR == 1 ) print $NF}')
++INT=$(/sbin/ip route get 8.8.8.8 | awk '{if ( NR == 1 ) printf("%s",$(NF-2));}')
++/sbin/iptables -t nat -A POSTROUTING -s 10.8.0.0/255.255.0.0 -o $INT -j SNAT --to-source $IP
++/sbin/iptables -A INPUT -i tun+ -j ACCEPT
++/sbin/iptables -A INPUT -i tap+ -j ACCEPT
++/sbin/iptables -A FORWARD -i tun0 -s 10.8.0.0/16 -p tcp --dport 443 -j ACCEPT
++/sbin/iptables -A FORWARD -i tun0 -s 10.8.0.0/16 -p tcp --dport 80 -j ACCEPT
++/sbin/iptables -A FORWARD -i tun0 -p tcp --dport 53 -j ACCEPT
++/sbin/iptables -A FORWARD -i tun0 -p udp --dport 53 -j ACCEPT
++/sbin/iptables -A FORWARD -i tun0 -s 10.8.0.0/16 -j DROP
++/sbin/iptables -A INPUT -i lo -j ACCEPT
+

@@ -1,0 +1,13 @@
+REDIS_HOST = '10.168.11.216'
+REDIS_PORT = 6379
+REDIS_DBINDEX = 0
+REDIS_PASSWORD = None
+REDIS_CONFIG_DBINDEX = 2
+
+PMSCREDENTIALS = {
+    'HOST':"10.168.11.153",
+    'USER':"omaaron",
+    'PASS':"ompassword",
+    "DB":"pms"
+}
+

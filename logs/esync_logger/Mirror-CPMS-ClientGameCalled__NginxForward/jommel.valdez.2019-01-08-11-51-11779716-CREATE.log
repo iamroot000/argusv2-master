@@ -1,0 +1,49 @@
+--- /srv/Mirror-CPMS-ClientGameCalled__NginxForward/nginx/conf.d/other/mg-gameapi.conf	2018-09-19 16:43:12.652400183 +0800
++++ /tmp/mg-gameapi.conf	2019-01-08 11:51:11.650077757 +0800
+@@ -311,3 +311,45 @@
+         error_page   404 404.jsp;
+         error_page   500 502 503 500.jsp;
+         }
++
++
++#mggameapi-xbet
++upstream mggameapi-lisboa {
++        ##server 203.192.151.12:7284 max_fails=2  fail_timeout=30s backup;
++        server 101.78.133.212:7284 max_fails=2  fail_timeout=30s backup;
++        server 205.177.199.12:7284 max_fails=2  fail_timeout=30s;
++}
++
++server {
++        listen     80;
++        server_name mg-lisboa.gameapi.me;
++        index index.jsp index.html index.htm;
++        charset utf-8;
++
++        access_log  logs/mggameapi-lisboa.access.log main;
++        error_log  logs/mggameapi-lisboa.error.log ;
++        location ~ ^/(WEB-INF)/ {
++        deny all;
++        }
++
++        if ($request_method !~* GET|POST|HEAD) {
++                return 403;
++        }
++
++        location / {
++	include /usr/local/nginx/conf.d/include/whitelistIP.include;
++            include /usr/local/nginx/conf.d/include/proxy.conf.gm.include;
++            proxy_pass http://mggameapi-lisboa;
++        }
++
++location ~* (conf|logs|lib|work|temp|bin)/{
++        return 444;
++        }
++
++
++
++        error_page   404 404.jsp;
++        error_page   500 502 503 500.jsp;
++        }
++
++
+

@@ -1,0 +1,143 @@
+server {
+	listen       80;
+	server_name xbtftp.xbet018.com xbtftp.xt2017.com;
+	gzip on;
+  
+  	error_page 403 /ip.html;
+    location = /ip.html {
+      root   /usr/local/nginx/html/;
+      allow all;
+    }
+    location /blocked {
+      root /usr/local/nginx/html/;
+      allow all;
+    }
+
+    if ($request_method !~* GET|POST|HEAD){
+      return 403;
+    }
+
+    limit_req zone=anti_spider burst=5 nodelay;
+    if ($http_user_agent ~* "baiduspider") {
+      set $anti_spider $http_user_agent;
+    }
+
+    if ($allowed_country ~ "yes" ){ 
+      set $test ALLOW; 
+    }
+    if ($allowed_country ~ "no" )
+    { set $test BLOCK; }
+
+    if ($allowed_ip ~ "yes" ){ 
+      set $test ALLOW; 
+    }
+  
+	location /upcode {
+    	if ( $test = "BLOCK" ) { return 403;  }
+		alias /var/ftp/xbet;
+	}
+
+	access_log  logs/xbet_ftp.access.log main;
+	error_log  logs/xbet_ftp.error.log ;
+
+}
+
+server {
+	listen       443;
+	server_name xbtftp.xbet018.com;
+	gzip on;
+	ssl on;
+	ssl_certificate /usr/local/nginx/conf.d/ssl/xbet018.com/fullchain.pem;
+	ssl_certificate_key /usr/local/nginx/conf.d/ssl/xbet018.com/privkey.pem;
+	
+  	error_page 403 /ip.html;
+    location = /ip.html {
+      root   /usr/local/nginx/html/;
+      allow all;
+    }
+    location /blocked {
+      root /usr/local/nginx/html/;
+      allow all;
+    }
+
+    if ($request_method !~* GET|POST|HEAD){
+      return 403;
+    }
+
+    limit_req zone=anti_spider burst=5 nodelay;
+    if ($http_user_agent ~* "baiduspider") {
+      set $anti_spider $http_user_agent;
+    }
+
+    if ($allowed_country ~ "yes" ){ 
+      set $test ALLOW; 
+    }
+    if ($allowed_country ~ "no" )
+    { set $test BLOCK; }
+
+    if ($allowed_ip ~ "yes" ){ 
+      set $test ALLOW; 
+    }
+  
+  
+	location /upcode {
+     	if ( $test = "BLOCK" ) { return 403;  }
+		alias /var/ftp/xbet;
+	}
+
+	access_log  logs/xbet_ftp.access.log main;
+	error_log  logs/xbet_ftp.error.log ;
+}
+
+server {
+        listen       443;
+        server_name xbtftp.xt2017.com;
+        gzip on;
+        ssl on;
+        ssl_certificate /usr/local/nginx/conf.d/ssl/xt2017.com/fullchain.pem;
+        ssl_certificate_key /usr/local/nginx/conf.d/ssl/xt2017.com/privkey.pem;
+
+        error_page 403 /ip.html;
+    location = /ip.html {
+      root   /usr/local/nginx/html/;
+      allow all;
+    }
+    location /blocked {
+      root /usr/local/nginx/html/;
+      allow all;
+    }
+    
+    if ($request_method !~* GET|POST|HEAD){
+      return 403; 
+    }
+
+    limit_req zone=anti_spider burst=5 nodelay;
+    if ($http_user_agent ~* "baiduspider") {
+      set $anti_spider $http_user_agent;
+    }
+
+    if ($allowed_country ~ "yes" ){
+      set $test ALLOW;
+    }
+    if ($allowed_country ~ "no" )
+    { set $test BLOCK; }
+
+    if ($allowed_ip ~ "yes" ){
+      set $test ALLOW;
+    }
+
+
+        location /upcode {
+        if ( $test = "BLOCK" ) { return 403;  }
+                alias /var/ftp/xbet;
+        }
+
+        access_log  logs/xbet_ftp.access.log main;
+        error_log  logs/xbet_ftp.error.log ;
+}
+
+
+
+
+
+

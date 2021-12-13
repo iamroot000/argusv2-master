@@ -1,0 +1,51 @@
+--- /ansible/nginx/hostgroups/acc-autopay_ftp/nginx/conf.d/other/sslserver.conf	2021-03-12 09:55:11.603007147 +0800
++++ /tmp/sslserver.conf	2021-04-12 14:19:45.619136190 +0800
+@@ -126,3 +126,47 @@
+     }
+ 
+ 
++
++server {
++    listen 80;
++    server_name  ssl-ftp.luckysabong.com;
++    rewrite ^(.*)$ https://ssl-ftp.luckysabong.com$1 permanent;
++}
++
++server {
++        listen       443 ssl;
++        server_name  ssl-ftp.luckysabong.com;
++		gzip on;
++        charset utf-8;
++  		ssl on;
++		ssl_certificate /usr/local/nginx/conf.d/ssl/luckysabong.com/fullchain.pem;
++		ssl_certificate_key /usr/local/nginx/conf.d/ssl/luckysabong.com/privkey.pem;
++
++        location / {
++    
++    	allow 58.64.207.208;
++    	allow 59.148.22.110;
++    	allow 205.177.199.2;
++    	allow 101.78.133.210;
++    	allow 58.71.201.65;
++    	allow 211.24.72.105;
++        allow 61.238.107.16;
++        allow 52.184.38.87;
++    	allow 18.166.243.116;
++    	
++   
++		deny all;
++   
++    	root /web/ssl/ssladmin-dj;
++	    autoindex on;
++		autoindex_localtime on;
++        }
++
++        access_log  logs/ssladmin-dj.access.log main;
++        access_log  logs/ssladmin-dj.logstash.access.log logstash;
++        error_log  logs/ssladmin-dj.error.log ;
++
++    }
++
++
++
+

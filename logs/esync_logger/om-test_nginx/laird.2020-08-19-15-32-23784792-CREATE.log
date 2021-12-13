@@ -1,0 +1,31 @@
+--- /ansible/nginx/hostgroups/om-test_nginx/nginx/conf.d/include/xjw3-jbl-test.include	2020-06-17 12:09:18.034887804 +0800
++++ /tmp/xjw3-jbl-test.include	2020-08-19 15:32:23.774300916 +0800
+@@ -39,6 +39,19 @@
+ 		#if ( $request_uri ~ 'page-404.jsp' ){ rewrite ^(.*)$ /red-map.jpg break; }
+ 		rewrite ^(.*)$ /red-map.jpg break; 
+ 	}
++if ($allowed_country = no ){ 
++	set $test BLOCK; 
++}
++
++if ($allowed_country = yes ){
++	set $test ALLOW; 
++}
++
++
++if ($allowed_ip = yes ){ 
++	set $test ALLOW; 
++}
++
+ 
+ 
+ 	location / {
+@@ -49,6 +62,7 @@
+         }
+ 
+        location /websocket {
++  			if ( $test = BLOCK ) { return 403;  }
+             proxy_set_header            X-Forwarded-For $proxy_add_x_forwarded_for;
+             #proxy_set_header X-Forwarded-For  $remote_addr;
+             proxy_set_header        X-Real-IP       $remote_addr;
+

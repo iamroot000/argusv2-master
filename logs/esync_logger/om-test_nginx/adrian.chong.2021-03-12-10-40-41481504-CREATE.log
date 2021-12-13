@@ -1,0 +1,98 @@
+--- /ansible/nginx/hostgroups/om-test_nginx/nginx/conf.d/other/yifu-test-domain.conf	2020-12-03 17:33:33.852576675 +0800
++++ /tmp/yifu-test-domain.conf	2021-03-12 10:40:42.759799679 +0800
+@@ -85,3 +85,94 @@
+         }
+ 
+ }
++
++
++
++
++server {
++        listen         80;
++        server_name  dj-yifutest.paymehome.co  dj-yifutest2.paymehome.co dj-yifutest3.paymehome.co;
++        index   index.jsp index.html index.htm;
++
++        charset utf-8;
++  
++  		    add_header Access-Control-Allow-Origin *;
++    		add_header Access-Control-Allow-Methods 'GET, POST, OPTIONS';
++    		add_header Access-Control-Allow-Headers 'DNT,X-Mx-ReqToken,Keep-Alive,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Authorization';
++
++        access_log  logs/dj-yifu-cstest.access.log ;
++
++         location ~ ^/(WEB-INF)/ {
++            deny all;
++         }
++
++        location / {
++    		 add_header Access-Control-Allow-Origin *;
++    		add_header Access-Control-Allow-Methods 'GET, POST, OPTIONS';
++    		add_header Access-Control-Allow-Headers 'DNT,X-Mx-ReqToken,Keep-Alive,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Authorization';
++
++			proxy_redirect          off; 
++			proxy_set_header        Host            $host; 
++			proxy_set_header        X-Forwarded-For $proxy_add_x_forwarded_for; 
++			proxy_connect_timeout   80; 
++			proxy_send_timeout      80; 
++			proxy_read_timeout      80; 
++			client_max_body_size    35m;
++			client_body_buffer_size 256k;
++			proxy_buffer_size       256k;
++			proxy_buffers           4 256k;
++			proxy_busy_buffers_size 256k;
++			proxy_temp_file_write_size      256k;
++            proxy_pass http://dj-test-yifu1-domain;
++        }
++
++}
++
++server {
++        listen         443;
++  		listen		   8899;
++        server_name  dj-yifutest.paymehome.co dj-yifutest2.paymehome.co dj-yifutest3.paymehome.co ;
++        index   index.jsp index.html index.htm;
++  		            add_header Access-Control-Allow-Origin *;
++    		add_header Access-Control-Allow-Methods 'GET, POST, OPTIONS';
++    		add_header Access-Control-Allow-Headers 'DNT,X-Mx-ReqToken,Keep-Alive,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Authorization';
++
++        charset utf-8;
++  
++  		  ssl on;
++       ssl_certificate /usr/local/nginx/conf.d/ssl/paymehome.co/fullchain.pem;
++       ssl_certificate_key /usr/local/nginx/conf.d/ssl/paymehome.co/privkey.pem;
++
++        access_log  logs/dj-yifu-cstest.access.log ;
++
++         location ~ ^/(WEB-INF)/ {
++            deny all;
++         }
++
++        location / {
++            add_header Access-Control-Allow-Origin *;
++    		add_header Access-Control-Allow-Methods 'GET, POST, OPTIONS';
++    		add_header Access-Control-Allow-Headers 'DNT,X-Mx-ReqToken,Keep-Alive,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Authorization';
++			proxy_redirect          off; 
++			proxy_set_header        Host            $host; 
++			proxy_set_header        X-Forwarded-For $proxy_add_x_forwarded_for; 
++    		proxy_cache cache_after;
++         proxy_cache_key    $uri$is_args$args;
++         add_header X-Cache $upstream_cache_status;
++         proxy_cache_valid 200 10m;
++         proxy_cache_valid 301 302 5m;
++         proxy_cache_valid any 1m;
++         proxy_cache_use_stale error http_500 http_502 http_503 http_504;
++			proxy_connect_timeout   80; 
++			proxy_send_timeout      80; 
++			proxy_read_timeout      80; 
++			client_max_body_size    35m;
++			client_body_buffer_size 256k;
++			proxy_buffer_size       256k;
++			proxy_buffers           4 256k;
++			proxy_busy_buffers_size 256k;
++			proxy_temp_file_write_size      256k;
++            proxy_pass http://dj-test-yifu1-domain;
++        }
++
++}
+

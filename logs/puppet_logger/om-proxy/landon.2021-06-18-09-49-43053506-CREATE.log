@@ -1,0 +1,38 @@
+--- /puppet/om-proxy/templates/iptables.sh	2020-12-23 17:13:57.785446971 +0800
++++ /tmp/iptables.sh	2021-06-18 09:49:43.218878890 +0800
+@@ -4,23 +4,24 @@
+ /sbin/iptables -A INPUT -p tcp -m state --state NEW -m tcp --dport 3389 -j ACCEPT
+ 
+ #OPENVPN 
+-/sbin/iptables -A INPUT -p tcp -m tcp --dport 1194 -j ACCEPT
+-/sbin/iptables -A INPUT -p tcp -m tcp --dport 1195 -j ACCEPT
+-#check if ip and interfaces are set correctly. 
++/sbin/iptables -A INPUT -p tcp --dport 1194 -j ACCEPT
++/sbin/iptables -A INPUT -p udp --dport 1194 -j ACCEPT
++#check if ip and interfaces are set correctly.
+ IP=$(/sbin/ip route get 8.8.8.8 | awk '{if ( NR == 1 ) print $NF}')
+ INT=$(/sbin/ip route get 8.8.8.8 | awk '{if ( NR == 1 ) printf("%s",$(NF-2));}')
+-/sbin/iptables -t nat -A POSTROUTING -s 10.8.0.0/255.255.0.0 -o $INT -j SNAT --to-source $IP
+-/sbin/iptables -t nat -A POSTROUTING -s 10.8.2.0/255.255.255.0 -o $INT -j SNAT --to-source $IP
++/sbin/iptables -t nat -A POSTROUTING -s 10.8.0.0/255.255.255.0 -o $INT -j SNAT --to-source $IP
+ /sbin/iptables -A INPUT -i tun+ -j ACCEPT
+-/sbin/iptables -A FORWARD -i tun+ -j ACCEPT
+ /sbin/iptables -A INPUT -i tap+ -j ACCEPT
+-/sbin/iptables -A FORWARD -i tap+ -j ACCEPT
+-
+ /sbin/iptables -A FORWARD -i tun0 -s 10.8.0.0/16 -p tcp --dport 443 -j ACCEPT
+ /sbin/iptables -A FORWARD -i tun0 -s 10.8.0.0/16 -p tcp --dport 80 -j ACCEPT
+-/sbin/iptables -A FORWARD -i tun -s 10.8.0.0/16 -p tcp --dport 1195 -j ACCEPT
+-/sbin/iptables -A FORWARD -i tun -s 10.8.2.0/24 -p tcp --dport 1195 -j ACCEPT
+ /sbin/iptables -A FORWARD -i tun0 -p tcp --dport 53 -j ACCEPT
+ /sbin/iptables -A FORWARD -i tun0 -p udp --dport 53 -j ACCEPT
+ /sbin/iptables -A FORWARD -i tun0 -s 10.8.0.0/16 -j DROP
+ /sbin/iptables -A INPUT -i lo -j ACCEPT
++
++#wireguard
++/sbin/iptables -I INPUT -m udp -p udp --dport 46970 -j ACCEPT
++/sbin/iptables -A FORWARD -i wg0 -j ACCEPT
++/sbin/iptables -A FORWARD -o wg0 -j ACCEPT
++/sbin/iptables -A FORWARD -s 10.77.77.1/24 -d 10.77.77.1/24 -j DROP
++/sbin/iptables -t nat -A POSTROUTING -o eth0 -j MASQUERADE
+

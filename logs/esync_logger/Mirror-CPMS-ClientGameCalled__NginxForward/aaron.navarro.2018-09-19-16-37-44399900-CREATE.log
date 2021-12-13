@@ -1,0 +1,66 @@
+server {
+        listen     443;
+	
+        server_name kiosk.mightypanda88.com;
+
+        index index.jsp index.html index.htm;
+        charset utf-8;
+
+        access_log  logs/ptbackoffice.access.log main;
+        error_log  logs/ptbackoffice.error.log  ;
+	location ~ ^/(WEB-INF)/ {
+        deny all;
+        }
+	ssl on;
+	ssl_certificate /etc/nginx/ssl/nginx.crt;
+        ssl_certificate_key /etc/nginx/ssl/nginx.key;
+	
+        if ($request_method !~* GET|POST|HEAD) {
+                return 403;
+        }
+
+	location / {
+	include whitelistIP.conf;
+            include proxy.conf.gm.2;
+            proxy_pass https://kiosk.mightypanda88.com;
+        }
+
+
+        error_page   404 404.jsp;
+        error_page   500 502 503 500.jsp;
+        }
+
+
+server {
+        listen     80;
+
+        server_name kiosk.mightypanda88.com;
+
+        index index.jsp index.html index.htm;
+        charset utf-8;
+
+        access_log  logs/ptbackoffice.access.log main;
+        error_log  logs/ptbackoffice.error.log  ;
+        location ~ ^/(WEB-INF)/ {
+        deny all;
+        }
+
+        if ($request_method !~* GET|POST|HEAD) {
+                return 403;
+        }
+
+        location / {
+	include whitelistIP.conf;
+            include proxy.conf.gm.2;
+            proxy_pass http://kiosk.mightypanda88.com;
+        }
+
+
+        error_page   404 404.jsp;
+        error_page   500 502 503 500.jsp;
+        }
+
+
+
+
+

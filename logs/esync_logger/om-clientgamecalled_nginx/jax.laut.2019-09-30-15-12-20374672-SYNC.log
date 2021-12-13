@@ -1,0 +1,149 @@
+ESYNC_WORKER1_COMMAND_START
+ [WARNING]: Invalid characters were found in group names but not replaced, use
+-vvvv to see details
+
+PLAY [om-clientgamecalled_nginx] ***********************************************
+
+
+TASK [Gathering Facts] *********************************************************
+ok: [119.9.110.31]
+ok: [23.99.114.30]
+
+TASK [nginx_sync : Change python interpreter] **********************************
+
+ok: [119.9.110.31]
+ok: [23.99.114.30]
+
+TASK [nginx_sync : change python interpreter] **********************************
+ok: [119.9.110.31]
+
+ok: [23.99.114.30]
+
+TASK [nginx_sync : Notify] *****************************************************
+ok: [119.9.110.31] => {
+    "msg": "Syncing om-clientgamecalled_nginx"
+
+}
+ok: [23.99.114.30] => {
+    "msg": "Syncing om-clientgamecalled_nginx"
+}
+
+
+TASK [nginx_sync : include_vars] ***********************************************
+ok: [119.9.110.31]
+ok: [23.99.114.30]
+
+TASK [nginx_sync : Synchronizing Nginx] ****************************************
+
+ok: [119.9.110.31] => (item=conf)
+ok: [23.99.114.30] => (item=conf)
+changed: [23.99.114.30] => (item=conf.d)
+changed: [119.9.110.31] => (item=conf.d)
+ok: [119.9.110.31] => (item=data)
+
+ok: [23.99.114.30] => (item=data)
+ok: [119.9.110.31] => (item=html)
+ok: [23.99.114.30] => (item=html)
+
+TASK [all_servers : include_vars] **********************************************
+
+ok: [119.9.110.31]
+ok: [23.99.114.30]
+
+TASK [all_servers : Notify] ****************************************************
+ok: [119.9.110.31] => {
+
+    "msg": "Clearing Nginx Cache for om-clientgamecalled_nginx"
+}
+ok: [23.99.114.30] => {
+    "msg": "Clearing Nginx Cache for om-clientgamecalled_nginx"
+}
+
+
+TASK [all_servers : Copying clear_nginxcache.sh to remote hosts] ***************
+ok: [119.9.110.31]
+ok: [23.99.114.30]
+
+
+TASK [all_servers : Nginx Clear Cache] *****************************************
+fatal: [23.99.114.30]: FAILED! => {"changed": true, "cmd": ["/bak/bin/clear_nginxcache.sh"], "delta": "0:00:02.595780", "end": "2019-09-30 15:13:01.656124", "msg": "non-zero return code", "rc": 1, "start": "2019-09-30 15:12:59.060344", "stderr": "nginx: the configuration file /usr/local/nginx/conf/nginx.conf syntax is ok\nnginx: [emerg] open() \"/usr/local/nginx/logs/ebet.eu.wapi/ebet.eu.wapi.cpms8.me.access.log\" failed (2: No such file or directory)\nnginx: configuration file /usr/local/nginx/conf/nginx.conf test failed", "stderr_lines": ["nginx: the configuration file /usr/local/nginx/conf/nginx.conf syntax is ok", "nginx: [emerg] open() \"/usr/local/nginx/logs/ebet.eu.wapi/ebet.eu.wapi.cpms8.me.access.log\" failed (2: No such file or directory)", "nginx: configuration file /usr/local/nginx/conf/nginx.conf test failed"], "stdout": "-----------------------------------------------------------\n|                 Checking Nginx Config                   |\n-----------------------------------------------------------\n\n nginx -t \n\n+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n|                  CONFIGURATION ERROR!                   |\n+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++", "stdout_lines": ["-----------------------------------------------------------", "|                 Checking Nginx Config                   |", "-----------------------------------------------------------", "", " nginx -t ", "", "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++", "|                  CONFIGURATION ERROR!                   |", "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"]}
+changed: [119.9.110.31]
+
+TASK [all_servers : debug] *****************************************************
+
+ok: [119.9.110.31] => {
+    "script_result.stdout_lines": [
+        "-----------------------------------------------------------", 
+        "|                 Checking Nginx Config                   |", 
+        "-----------------------------------------------------------", 
+
+        "", 
+        " nginx -t ", 
+        "", 
+        "-----------------------------------------------------------", 
+        "|                 Stopping Nginx Process                  |", 
+
+        "-----------------------------------------------------------", 
+        "", 
+        " /usr/bin/killall -9 nginx ", 
+        "", 
+        "-----------------------------------------------------------", 
+
+        "|                 Clearing Proxy Cache                    |", 
+        "-----------------------------------------------------------", 
+        "", 
+        " /bin/rm -rf /tmp/nginx_cache ", 
+        "", 
+
+        "-----------------------------------------------------------", 
+        "|                Restarting Nginx Process                 |", 
+        "-----------------------------------------------------------", 
+        "root     10955  0.0  0.0 106064  1432 ?        S    15:12   0:00 /bin/bash /bak/bin/clear_nginxcache.sh", 
+        "root     10973  0.0  0.0 462304  4176 ?        Ss   15:13   0:00 nginx: master process /usr/local/nginx/sbin/nginx", 
+
+        "nobody   10974  0.0  0.1 470796 12928 ?        S    15:13   0:00 nginx: worker process      ", 
+        "nobody   10975  0.0  0.1 470796 12928 ?        S    15:13   0:00 nginx: worker process      ", 
+        "nobody   10977  0.0  0.1 470796 12928 ?        S    15:13   0:00 nginx: worker process      ", 
+        "nobody   10978  0.0  0.1 470796 12928 ?        S    15:13   0:00 nginx: worker process      ", 
+        "nobody   10979  0.0  0.0 462304  4684 ?        S    15:13   0:00 nginx: cache manager process", 
+
+        "nobody   10980  0.0  0.0 462304  4556 ?        S    15:13   0:00 nginx: cache loader process", 
+        "root     10983  0.0  0.0 103244   884 ?        S    15:13   0:00 grep nginx", 
+        "             total       used       free     shared    buffers     cached", 
+        "Mem:          7994       3886       4107          3        231        639", 
+        "-/+ buffers/cache:       3015       4978", 
+
+        "Swap:            0          0          0", 
+        "-----------------------------------------------------------", 
+        "|                     Reload SUCCESS!                     |", 
+        "-----------------------------------------------------------"
+    ]
+
+}
+
+PLAY [127.0.0.1] ***************************************************************
+
+TASK [sync_to_git : Synchronizing Nginx To GIT] ********************************
+
+changed: [127.0.0.1]
+
+TASK [sync_to_git : debug] *****************************************************
+ok: [127.0.0.1] => {
+    "msg": " [u'[master e48c163] jax.laut', u' 1 file changed, 33 insertions(+)', u' create mode 100644 nginx/conf.d/other/cpms-web-callback.conf', u'Branch master set up to track remote branch master from origin.']"
+
+}
+
+PLAY [om-clientgamecalled_nginx] ***********************************************
+
+PLAY [127.0.0.1] ***************************************************************
+
+
+PLAY RECAP *********************************************************************
+119.9.110.31               : ok=11   changed=2    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0   
+127.0.0.1                  : ok=2    changed=1    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0   
+23.99.114.30               : ok=9    changed=1    unreachable=0    failed=1    skipped=0    rescued=0    ignored=0   
+
+
+
+ESYNC_WORKER1_COMMAND_END
+MAX RETRIES EXECUTED, COMMAND NOT RESPONDING

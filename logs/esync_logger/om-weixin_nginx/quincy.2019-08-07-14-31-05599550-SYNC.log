@@ -1,0 +1,128 @@
+ESYNC_WORKER1_COMMAND_START
+ [WARNING]: Invalid characters were found in group names but not replaced, use
+-vvvv to see details
+
+PLAY [om-weixin_nginx] *********************************************************
+
+
+TASK [Gathering Facts] *********************************************************
+ok: [119.28.41.214]
+
+TASK [nginx_sync : Change python interpreter] **********************************
+skipping: [119.28.41.214]
+
+
+TASK [nginx_sync : change python interpreter] **********************************
+skipping: [119.28.41.214]
+
+TASK [nginx_sync : Notify] *****************************************************
+
+ok: [119.28.41.214] => {
+    "msg": "Syncing om-weixin_nginx"
+}
+
+TASK [nginx_sync : include_vars] ***********************************************
+
+ok: [119.28.41.214]
+
+TASK [nginx_sync : Synchronizing Nginx] ****************************************
+changed: [119.28.41.214] => (item=conf)
+changed: [119.28.41.214] => (item=conf.d)
+
+ok: [119.28.41.214] => (item=data)
+ok: [119.28.41.214] => (item=html)
+
+TASK [all_servers : include_vars] **********************************************
+ok: [119.28.41.214]
+
+
+TASK [all_servers : Notify] ****************************************************
+ok: [119.28.41.214] => {
+    "msg": "Clearing Nginx Cache for om-weixin_nginx"
+}
+
+
+TASK [all_servers : Copying clear_nginxcache.sh to remote hosts] ***************
+ok: [119.28.41.214]
+
+TASK [all_servers : Nginx Clear Cache] *****************************************
+
+changed: [119.28.41.214]
+
+TASK [all_servers : debug] *****************************************************
+ok: [119.28.41.214] => {
+    "script_result.stdout_lines": [
+
+        "-----------------------------------------------------------", 
+        "|                 Checking Nginx Config                   |", 
+        "-----------------------------------------------------------", 
+        "", 
+        " nginx -t ", 
+
+        "", 
+        "-----------------------------------------------------------", 
+        "|                 Stopping Nginx Process                  |", 
+        "-----------------------------------------------------------", 
+        "", 
+
+        " /usr/bin/killall -9 nginx ", 
+        "", 
+        "-----------------------------------------------------------", 
+        "|                 Clearing Proxy Cache                    |", 
+        "-----------------------------------------------------------", 
+
+        "", 
+        " /bin/rm -rf /tmp/nginx_cache ", 
+        "", 
+        "-----------------------------------------------------------", 
+        "|                Restarting Nginx Process                 |", 
+
+        "-----------------------------------------------------------", 
+        "root      9941  0.6  0.0 113180  1512 ?        S    14:31   0:00 /bin/bash /bak/bin/clear_nginxcache.sh", 
+        "root      9951  0.0  0.0 680132  1172 ?        Ss   14:31   0:00 nginx: master process /usr/local/nginx/sbin/nginx", 
+        "www       9952  0.0  0.1 686548  5920 ?        S    14:31   0:00 nginx: worker process", 
+        "www       9953  0.0  0.1 686548  5920 ?        S    14:31   0:00 nginx: worker process", 
+
+        "www       9954  0.0  0.1 686548  5920 ?        S    14:31   0:00 nginx: worker process", 
+        "www       9955  0.0  0.1 686548  5920 ?        S    14:31   0:00 nginx: worker process", 
+        "www       9957  0.0  0.0 682216  1704 ?        S    14:31   0:00 nginx: cache manager process", 
+        "www       9958  0.0  0.0 682216  1704 ?        S    14:31   0:00 nginx: cache loader process", 
+        "root      9962  0.0  0.0 112712   972 ?        S    14:31   0:00 grep nginx", 
+
+        "root     19149  0.0  0.0 113312  1628 pts/2    S    Aug06   0:00 /bin/sh /usr/local/mysql/bin/mysqld_safe --datadir=/usr/local/mysql/var --pid-file=/usr/local/mysql/var/om-weixin_nginx1.hk.ali.monaco1.me.pid", 
+        "mysql    19668  0.0  4.8 1330828 186352 pts/2  Sl   Aug06   0:39 /usr/local/mysql/bin/mysqld --basedir=/usr/local/mysql --datadir=/usr/local/mysql/var --plugin-dir=/usr/local/mysql/lib/plugin --user=mysql --log-error=om-weixin_nginx1.hk.ali.monaco1.me.err --open-files-limit=65535 --pid-file=/usr/local/mysql/var/om-weixin_nginx1.hk.ali.monaco1.me.pid --socket=/tmp/mysql.sock --port=3306", 
+        "              total        used        free      shared  buff/cache   available", 
+        "Mem:           3789         635         432           4        2722        2849", 
+        "Swap:          4095          24        4071", 
+
+        "-----------------------------------------------------------", 
+        "|                     Reload SUCCESS!                     |", 
+        "-----------------------------------------------------------"
+    ]
+}
+
+
+PLAY [127.0.0.1] ***************************************************************
+
+TASK [sync_to_git : Synchronizing Nginx To GIT] ********************************
+changed: [127.0.0.1]
+
+
+TASK [sync_to_git : debug] *****************************************************
+ok: [127.0.0.1] => {
+    "msg": " [u'[master 49a5515] quincy', u' 1 file changed, 13 insertions(+), 5 deletions(-)', u'Branch master set up to track remote branch master from origin.']"
+}
+
+
+PLAY [om-weixin_nginx] *********************************************************
+
+PLAY [127.0.0.1] ***************************************************************
+
+
+PLAY RECAP *********************************************************************
+119.28.41.214              : ok=9    changed=2    unreachable=0    failed=0    skipped=2    rescued=0    ignored=0   
+127.0.0.1                  : ok=2    changed=1    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0   
+
+
+ESYNC_WORKER1_COMMAND_END
+MAX RETRIES EXECUTED, COMMAND NOT RESPONDING

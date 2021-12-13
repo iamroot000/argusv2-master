@@ -1,0 +1,27 @@
+--- /ansible/nginx/hostgroups/om-cdn_nginx/nginx/conf.d/other/196311.com.conf	2019-09-09 16:20:01.581571314 +0800
++++ /tmp/196311.com.conf	2019-09-09 16:20:27.606571314 +0800
+@@ -145,3 +145,23 @@
+ 	}
+ }
+ 
++server {
++    listen 443; 
++    server_name ssocdn.taianhaokai.com;
++    charset utf-8;
++    access_log  logs/taianhaokai.com.access.log main;
++    error_log   logs/taianhaokai.com.error.log;
++    ssl on; 
++    ssl_certificate     /usr/local/nginx/conf.d/ssl/taianhaokai.com/fullchain.pem;
++    ssl_certificate_key /usr/local/nginx/conf.d/ssl/taianhaokai.com/privkey.pem;
++    location / {
++        proxy_pass https://www.inxedu.com/;
++    }
++    location ^~ /images/ {
++        alias /var/ftp/images/;
++    }
++  
++    location ^~ /cdn/ {
++        alias /var/ftp/allcdn/;
++	}
++}
+

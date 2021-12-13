@@ -1,0 +1,94 @@
+#credit to: Ever Yan
+#created by: Yroll Jay-R Macalino
+---
+- hosts: init-SSR
+  gather_facts: yes
+
+  vars:
+   sh_ver: "2.0.38"
+   ssr_folder: "/usr/local/shadowsocksr"
+   ssr_ss_file: "{{ ssr_folder }}/shadowsocks"
+   config_file: "{{ ssr_folder }}/config.json"
+   config_folder: "/etc/shadowsocksr"
+   config_user_file: "{{ config_folder }}/user-config.json"
+   ssr_log_file: "{{ ssr_ss_file }}/ssserver.log"
+   Libsodiumr_file: "/usr/local/lib/libsodium.so"
+   Libsodiumr_ver_backup: "1.0.13"
+   Server_Speeder_file: "/serverspeeder/bin/serverSpeeder.sh"
+   LotServer_file: "/appex/bin/serverSpeeder.sh"
+   jq_file: "{{ ssr_folder }}/jq"
+   Info: "[信息] Information"
+   Error: "[错误] Error"
+   Tip: "[注意] Note"
+   Separator: "——————————————————————————————"
+  
+#  handlers:
+  pre_tasks:
+  - name: check_root0
+    shell: echo $EUID
+    register: EUID
+  - name: check_root
+    debug: 
+     msg: "Error The current account is not ROOT (or no ROOT permission), and can't continue operation. Please use sudo su to get the temporary ROOT permission (you will be prompted to enter the password of the current account after execution)."
+    when: 'EUID.stdout != "0"'
+  - name: check_sys-cent0
+    command: ls /etc/redhat-release 
+    ignore_errors: yes
+    register: centos0
+  - name: check_sys-cent0a
+    command: echo centos
+    register: release
+    when: '"/etc/redhat-release" in centos0.stdout'
+  - name: check_sys-deb0
+    command: cat /etc/issue          
+    ignore_errors: yes
+    register: debian0
+  - name: check_sys-deb0a
+    command: cat /proc/version
+    ignore_errors: yes
+    register: debian0v
+  - name: check_sys-deb1
+    command: echo debian
+    register: release
+    when: 
+     - '"debian" in debian0.stdout|lower or "debian" in debian0v.stdout|lower'
+  - name: check_sys-ubun0
+    command: cat /etc/issue
+    ignore_errors: yes
+    register: ubuntu0
+  - name: check_sys-ubun0a
+    command: cat /proc/version
+    ignore_errors: yes
+    register: ubuntu0v
+  - name: check_sys-ubun1
+    command: echo ubuntu
+    register: release
+    when: '"ubuntu" in ubuntu0.stdout|lower or "ubuntu" in ubuntu0v.stdout|lower'
+  - name: check_sys-cent1
+    command: cat /etc/issue
+    ignore_errors: yes
+    register: centos1
+  - name: check_sys-cent1a
+    command: cat /proc/version
+    ignore_errors: yes
+    register: centos1v
+  - name: check_sys-cent2
+    command: echo centos
+    register: release
+    when: '"centos" in centos1.stdout|lower or "centos" in centos1v.stdout|lower or "redhat" in centos1.stdout|lower or "redhat" in centos1v.stdout|lower or "red hat" in centos1.stdout|lower or "red hat" in centos1v.stdout|lower'
+  
+  
+
+    
+
+
+
+  tasks:
+  - name: Variable
+    shell: "{{ item.shell }}"
+    register: "{{ item.register }}"
+    loop:
+     - { shell: 'cd "$(dirname "$0")"; pwd', register: 'filepath' }
+     - { shell: "echo -e '${filepath}'|awk -F '$0' '{print $1}'", register: 'file' }
+     - { shell: "ls $(echo -e '${filepath}'|awk -F '$0' '{print $1}')/bbr.sh", register: 'BBR_file' }
+

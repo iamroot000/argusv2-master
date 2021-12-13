@@ -1,0 +1,25 @@
+---
+
+- name: IP last octet
+
+  command: echo "{{ ansible_host.split('.')[-2] }}-{{ ansible_host.split('.')[-1] }}"
+
+  register: last_octet
+
+- include: check_requirements.yml
+
+- block:
+
+  - include: installing_nginx.yml
+
+  - include: configuring_nginx.yml
+
+  - include: configuring_nginx_template.yml
+
+  - include: configuring_services.yml
+
+  - include: v2ray_info.yml
+
+  when: 'v2ray_config.stat.path is defined and ssr_config.stat.path is defined and ssr_dir.stat.path is defined'
+
+

@@ -1,0 +1,100 @@
+        proxy_intercept_errors  on;
+        error_page      404     /404.jsp;
+        error_page      500     /500.jsp;
+
+        index   index.jsp index.html index.htm;
+        access_log  logs/xjw_xyh.access.log main;
+        access_log  logs/xjw_xyh.logstash.access.log logstash;
+        if ($http_user_agent ~* "qihu|360|360se|360ee|QIHU 360SE|q(iPhone|iPad|iPod|Linux|android|Android|bb\d+|meego).+mobile|Android|MobileSafari|iPhone|iPad|iPod|Linux|android|avantgo|bada\/|blackberry|blazer|compal|elaine|fennec|hiptop|iemobile|ip(hone|od)|iris|kindle|lge |maemo|midp|mmp|netfront|opera m(ob|in)i|palm( os)?|phone|p(ixi|re)\/|plucker|pocket|psp|series(4|6)0|symbian|treo|up\.(browser|link)|vodafone|wap|windows (ce|phone)|xda|xiino|android 3.0") {
+        set $mobile_rewrite perform;
+           }
+
+        if ( $mobile_rewrite = perform )
+        { set $upstream pro_xjw_proxy_xdl_h5; }
+
+        if ($http_user_agent ~* "(X11)")
+        { set $mobile_rewrite per;  }
+
+        if ( $mobile_rewrite != perform )
+        { set $upstream pro_xjw_proxy_xdl_pc; }
+
+        if ($host ~* pc\.(.*))
+        { set $upstream pro_xjw_proxy_xdl_pc; }
+
+if ($http_user_agent ~* "qihoobot|Yahoo! Slurp|Yahoo! Slurp China|YoudaoBot|Sosospider|Sogou spider|Sogou web spider|MSNBot|ia_archiver|Tomato Bot")
+{
+	return 403;
+}
+
+        limit_req zone=anti_spider burst=5 nodelay;
+        if ($http_user_agent ~* "baiduspider") {
+                set $anti_spider $http_user_agent;
+        }
+
+        if ($request_method !~* GET|POST|HEAD) {
+                return 403;
+        }
+
+        location ~ /\.
+        { return 444; }
+
+	error_page 403 = @403;
+	location @403 {
+		root html;
+		allow all;
+		rewrite ^(.*)$ /red-map.jpg break; 
+	}
+
+	location / {
+	    if ($allowed_country ~ "no" )
+		{ set $test BLOCK; }
+
+	    if ($allowed_country ~ "yes" ) 
+		{ set $test ALLOW; }
+
+        if ($allowed_ip ~ "yes" ){ 
+        set $test ALLOW; 
+        }
+
+	    if ( $test = "BLOCK" ) { return 403;  }
+            proxy_set_header Host  $host;
+            proxy_set_header X-Forwarded-For  $remote_addr;
+            proxy_pass http://$upstream;
+
+        }
+
+
+        location /websocket {
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            #proxy_set_header X-Real-IP  $remote_addr;
+            proxy_next_upstream http_502 http_504 http_404 error timeout invalid_header;
+            proxy_set_header Host $host:$server_port;
+            proxy_http_version 1.1;
+            proxy_set_header Upgrade $http_upgrade;
+            proxy_set_header Connection $connection_upgrade;
+            proxy_connect_timeout   1800;
+            proxy_send_timeout      1800;
+            proxy_read_timeout      1800;
+  		
+            proxy_pass http://9280;
+        }
+
+
+
+        location /version.txt {
+            proxy_pass http://$upstream;
+            allow 203.192.151.8/29; #pacnet-gdc
+            allow 203.177.198.112/29; #globe-gdc
+            allow 101.78.133.208/28; #wtt-hkidc
+            allow 205.177.199.0/28; #pccw-hkidc
+            allow 203.177.15.220/30; #globe-tz
+            allow 103.29.22.112/29; #fccdci-tz
+            allow 175.45.41.112/28; #wtt
+            deny  all;
+       }
+
+
+
+
+
+

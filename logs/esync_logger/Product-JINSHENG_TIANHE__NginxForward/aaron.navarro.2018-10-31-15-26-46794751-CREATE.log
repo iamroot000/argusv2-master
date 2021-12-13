@@ -1,0 +1,24 @@
+--- /srv/Product-JINSHENG_TIANHE__NginxForward/nginx/conf.d/global/_default.conf	2018-10-31 11:22:29.303876323 +0800
++++ /tmp/_default.conf	2018-10-31 15:26:46.684680118 +0800
+@@ -3,7 +3,20 @@
+     server_name  _;
+ 
+     include /usr/local/nginx/conf.d/include/jiabo_official_masterconfig.include;
++	location = /statuscheck {
++        set $test BLOCK;
+ 
++        if ($allowed_ip ~ "yes" ){
++          set $test ALLOW;
++        }
++
++        if ( $test = "BLOCK" ) {
++          return 403 '{"status":false}';
++          add_header Content-Type text/plain;
++        }
++        return 200 '{"status":true}';
++        add_header Content-Type text/plain;
++    }
+     access_log  logs/default.access.log main;
+     access_log  logs/default.logstash.access.log logstash;
+ }
+

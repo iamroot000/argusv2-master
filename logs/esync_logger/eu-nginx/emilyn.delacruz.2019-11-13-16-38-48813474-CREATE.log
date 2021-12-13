@@ -1,0 +1,24 @@
+FILENAME: 80-443/81235482.im.conf
+-  
++  server {
++      listen 80;
++      server_name 81235482.im www.81235482.im;
++      rewrite ^(.*)$ https://www.81235482.im$1 permanent;
++  }
++  
++  server {
++      listen 443;
++      server_name 81235482.im www.81235482.im;
++      ssl on;
++      ssl_certificate /usr/local/nginx/conf.d/ssl/81235482.im/fullchain.pem;
++      ssl_certificate_key /usr/local/nginx/conf.d/ssl/81235482.im/privkey.pem;
++  
++      if ($http_host !~* 'www') {
++          rewrite ^(.*)$ https://www.$http_host$1 permanent;
++      }
++  
++      include /usr/local/nginx/conf.d/include/eu_proxy_masterconfig.include;
++  }
++  
++  
+

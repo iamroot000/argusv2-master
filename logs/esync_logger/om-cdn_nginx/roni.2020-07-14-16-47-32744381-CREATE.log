@@ -1,0 +1,24 @@
+FILENAME: 80-443/nr5i.cn.conf
+-  
++  server {
++      listen 80;
++      server_name nr5i.cn www.nr5i.cn;
++      rewrite ^(.*)$ https://www.nr5i.cn$1 permanent;
++  }
++  
++  server {
++      listen 443;
++      server_name nr5i.cn www.nr5i.cn;
++      ssl on;
++      ssl_certificate /usr/local/nginx/conf.d/ssl/nr5i.cn/fullchain.pem;
++      ssl_certificate_key /usr/local/nginx/conf.d/ssl/nr5i.cn/privkey.pem;
++  
++      if ($http_host !~* 'www') {
++          rewrite ^(.*)$ https://www.$http_host$1 permanent;
++      }
++  
++      include /usr/local/nginx/conf.d/include/app_official_masterconfig.include;
++  }
++  
++  
+

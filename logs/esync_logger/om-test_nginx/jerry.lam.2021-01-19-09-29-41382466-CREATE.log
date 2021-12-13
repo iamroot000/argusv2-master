@@ -1,0 +1,27 @@
+--- /ansible/nginx/hostgroups/om-test_nginx/nginx/conf.d/other/test.neweb.me.conf	2021-01-16 10:34:49.917233585 +0800
++++ /tmp/test.neweb.me.conf	2021-01-19 09:29:41.504530919 +0800
+@@ -1,5 +1,23 @@
+ server {
+     listen 80;
++    server_name cdn-test.neweb.me;
++    rewrite ^(.*)$ https://cdn-test.neweb.me$1 permanent;
++}
++
++server {
++    listen 443;
++    server_name cdn-test.neweb.me;
++    ssl on;
++    ssl_certificate /usr/local/nginx/conf.d/ssl/neweb.me/fullchain.pem;
++    ssl_certificate_key /usr/local/nginx/conf.d/ssl/neweb.me/privkey.pem;
++    include /usr/local/nginx/conf.d/include/available-cdn.include;
++}
++
++
++
++
++server {
++    listen 80;
+     server_name pay-web-test.neweb.me;
+     rewrite ^(.*)$ https://pay-web-test.neweb.me$1 permanent;
+ }
+

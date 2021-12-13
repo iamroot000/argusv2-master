@@ -1,0 +1,294 @@
+{% extends "base.html" %}
+{% block title %}SSR-Manager{% endblock %}
+{% block header %}
+VPN-Manager
+{% endblock %}
+{% block details %}
+VPN Servers
+<!--DOWN = Port is down<br>-->
+<!--UNREACHABLE = Server is down<br>-->
+<!--TIMEOUT = Unable to connect to server<br>-->
+<!--OK = Normal-->
+{% endblock %}
+{% block action %}
+{% if logs_recap is not True %}
+    <p align="right"><button type="button" class="btn btn-success" disabled><span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>Initializing...</button></p>
+{% else %}
+    <p align="right"> <a href="{% url 'SSR_homehistory' %}"><button type="button" class="btn btn-success"><span class="glyphicon glyphicon-calendar"></span> History</button></a></p>
+{% endif %}
+{% endblock %}
+{% block content %}
+<div class="row border-bottom white-bg dashboard-header">
+            <div class="row-2 mb-3">
+                 <form class="form-group mx-sm-1" method="POST" action="{% url 'SSR_homeadd' %}">
+                    {% csrf_token %}
+                    <div class="row">
+                       <div class="col-lg-3">
+                           {{ form.IP.label_tag }}&emsp;{{ form.IP }}
+                           <br><br>
+
+                        </div>
+                        <div class="col-lg-3">
+                            <h4></h4>
+                            {{ form.IDC.label_tag }}&emsp;{{ form.IDC }}
+                        </div>
+                    </div>
+                    <hr/>
+                <div class="row-2 mb-3">
+                    &emsp;
+                    {% if logs_recap is not True %}
+                        <p align="right"><button type="submit" class="btn btn-primary" disabled><span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>Initializing...</button></p>
+                    {% else %}
+                        <p align="right"> <button type="submit" class="btn btn-primary"><span class="glyphicon glyphicon-ok"></span>Add/Edit</button></p>
+                    {% endif %}
+                </div>
+            </form>
+            {% if form.IP.errors %}
+                {% for error in form.IP.errors %}
+                <div align="center" class="alert alert-danger" ><h4>{{ error }}<h4></div>
+                {% endfor %}
+            {% endif %}
+            {% if form.PORT.errors %}
+                {% for error in form.PORT.errors %}
+                <div align="center" class="alert alert-danger" ><h4>{{ error }}<h4></div>
+                {% endfor %}
+            {% endif %}
+            {% if form.USER.errors %}
+                {% for error in form.USER.errors %}
+                <div align="center" class="alert alert-danger" ><h4>{{ error }}<h4></div>
+                {% endfor %}
+            {% endif %}
+            {% if form.PASSWORD.errors %}
+                {% for error in form.PASSWORD.errors %}
+                <div align="center" class="alert alert-danger" ><h4>{{ error }}<h4></div>
+                {% endfor %}
+            {% endif %}
+            {% if form.IDC.errors %}
+                {% for error in form.IDC.errors %}
+                <div align="center" class="alert alert-danger" ><h4>{{ error }}<h4></div>
+                {% endfor %}
+            {% endif %}
+            {% if messages %}
+                <ul class="messages">
+                    {% for message in messages %}
+                        {% if message.tags == 'warning' %}
+                            <div {% if message.tags %} class="alert alert-{{ message.tags }}" {% endif %} align="left"><h4 align="center">{{ message }}</h4></div>
+                        {% elif message.tags == 'error' %}
+                            <div {% if message.tags %} class="alert alert-danger" {% endif %} align="left"><h4 align="center">{{ message }}</h4></div>
+                        {% else %}
+                            <div {% if message.tags %} class="alert alert-{{ message.tags }}" {% endif %} align="left"><h4 align="center">{{ message }}</h4></div>
+                        {% endif %}
+                    {% endfor %}
+                </ul>
+            {% endif %}
+            <hr>
+            </div>
+            <div class="row-2 mb-3">
+            <h1 class="display-3">Problem Summary:</h1>
+              <div class="col-sm">
+                  <table class="table table-sm table-striped table-bordered" id="mydatatable" style="width: 100%">
+                        <col width="130">
+                        <col width="80">
+                    <thead>
+                        <tr class="thead-default">
+                            <th align="center" scope="col">IP ADDRESS</th>
+                            <th align="center" scope="col">STATUS</th>
+                            <th align="center" scope="col">IDC</th>
+                            <th align="center" scope="col">LAST CHECK</th>
+                            <th align="center" scope="col">ACTIONS</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    {% for ssrdata in ssr_datanotok %}
+                        <tr>
+                                <td align="center" width="8%">{{ ssrdata.IP }}</td>
+                                {% if '/v2ray-servers/' in request.path %}
+                                    {% if ssrdata.V2RAY_STATUS == "ERROR" or ssrdata.V2RAY_STATUS == "FAILED" or ssrdata.V2RAY_STATUS == "UNREACHABLE" or ssrdata.V2RAY_STATUS == "DOWN" %}
+                                    <td align="center" width="5%">
+                                        <span class="badge badge-danger">{{ ssrdata.V2RAY_STATUS }}</span>
+                                    </td>
+                                    {% elif ssrdata.V2RAY_STATUS == "TIMEOUT" %}
+                                    <td align="center" width="5%">
+                                        <span class="badge badge-warning">{{ ssrdata.V2RAY_STATUS }}</span>
+                                    </td>
+                                    {% else %}
+                                    <td align="center" width="5%">
+                                        <span class="badge badge-dark">{{ ssrdata.V2RAY_STATUS }}</span>
+                                    </td>
+                                    {% endif %}
+                                    <td align="center" width="5%">{{ ssrdata.IDC }}</td>
+                                    <td align="center" width="10%">{{ ssrdata.V2RAY_DATE }}</td>
+                                {% else %}
+                                    {% if ssrdata.STATUS == "ERROR" or ssrdata.STATUS == "FAILED" or ssrdata.STATUS == "UNREACHABLE" or ssrdata.STATUS == "DOWN" %}
+                                    <td align="center" width="5%">
+                                        <span class="badge badge-danger">{{ ssrdata.STATUS }}</span>
+                                    </td>
+                                    {% elif ssrdata.STATUS == "TIMEOUT" %}
+                                    <td align="center" width="5%">
+                                        <span class="badge badge-warning">{{ ssrdata.STATUS }}</span>
+                                    </td>
+                                    {% else %}
+                                    <td align="center" width="5%">
+                                        <span class="badge badge-dark">{{ ssrdata.STATUS }}</span>
+                                    </td>
+                                    {% endif %}
+                                    <td align="center" width="5%">{{ ssrdata.IDC }}</td>
+                                    <td align="center" width="10%">{{ ssrdata.LAST_CHECK }}</td>
+                                {% endif %}
+                                <td align="center" width="5%">
+                                    {% if '/v2ray-servers/' in request.path %}
+                                    <a href='{% url "V2ray_check" ssrdata.id %}'><button type="button" class="btn btn-success"><span class="glyphicon glyphicon-ok"></span>Check&Restart</button></a>
+                                    <h1></h1>
+                                    <a href='{% url "V2ray_homedelete" ssrdata.id %}'><button type="button" class="btn btn-danger"><span class="glyphicon glyphicon-trash"></span>Delete</button></a>
+                                    {% else %}
+                                    <a href='{% url "SSR_check" ssrdata.id %}'><button type="button" class="btn btn-success"><span class="glyphicon glyphicon-ok"></span>Check&Restart</button></a>
+                                    <h1></h1>
+                                    <a href='{% url "SSR_homedelete" ssrdata.id %}'><button type="button" class="btn btn-danger"><span class="glyphicon glyphicon-trash"></span>Delete</button></a>
+                                    {% endif %}
+                                </td>
+
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                    <tfoot>
+                    </tfoot>
+                </table>
+              </div>
+
+        </div>
+
+        <hr>
+<div class="dropdown">
+    <h1>Dropdown: </h1>
+  {% if '/v2ray-servers/' in request.path %}
+    <button class="btn btn-danger dropdown-toggle" type="button" id="dropdownMenu2" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+      V2RAY DATA
+  {% else %}
+    <button class="btn btn-info dropdown-toggle" type="button" id="dropdownMenu2" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+      SSR DATA
+  {% endif %}
+  </button>
+  <div class="dropdown-menu" aria-labelledby="dropdownMenu2">
+      <a href='{% url "SSR_home" %}'><button class="btn btn-info dropdown-item" type="button">SSR Data</button></a>
+      <a href='{% url "V2ray_home" %}'><button class="btn btn-danger dropdown-item" type="button">V2ray Data</button></a>
+  </div>
+</div>
+		<hr>
+        <div class="row-2 mb-3">
+            <h1 class="display-3">Data Summary:</h1>
+              <div class="col-sm">
+                  <table class="table table-sm table-striped table-bordered" id="mydatatable3" style="width: 100%">
+                        <col width="200">
+                        <col width="200">
+                    <thead>
+                        <tr class="thead-default">
+                            <th align="center" scope="col">IP ADDRESS</th>
+                            <th align="center" scope="col">PORT</th>
+                            <th align="center" scope="col">STATUS</th>
+                            {% if '/v2ray-servers/' in request.path %}
+                            <th align="center" scope="col">IDC</th>
+                            <th align="center" scope="col">LAST CHECK</th>
+                            <th align="center" scope="col">ACTION</th>
+                            <th align="center" scope="col">V2RAY URL/DOMAIN/PATH</th>
+<!--                            <th align="center" scope="col">V2RAY PATH</th>-->
+                            {% else %}
+                            <th align="center" scope="col">SSR LINK/CODE</th>
+                            <th align="center" scope="col">IDC</th>
+                            <th align="center" scope="col">LAST CHECK</th>
+                            <th align="center" scope="col">ACTION</th>
+                            {% endif %}
+<!--                            <th align="center" scope="col">SSR CODE</th>-->
+
+                        </tr>
+                    </thead>
+                    <tbody>
+                    {% for ssrdata in ssr_dataok %}
+                        <tr>
+                                <td align="center" width="10%">{{ ssrdata.IP }}</td>
+                                {% if '/v2ray-servers/' in request.path %}
+                                <td align="center" width="10%">{{ ssrdata.V2RAY_PORT }}</td>
+                                    {% if ssrdata.V2RAY_STATUS == "OK" %}
+                                    <td align="center" width="10%">
+                                        <span class="badge badge-info">{{ ssrdata.V2RAY_STATUS }}</span>
+                                    </td>
+                                    {% else %}
+                                    <td align="center" width="10%">
+                                        <span class="badge badge-dark">{{ ssrdata.V2RAY_STATUS }}</span>
+                                    </td>
+                                    {% endif %}
+                                <td align="center" width="10%">{{ ssrdata.IDC }}</td>
+                                <td align="center" width="10%">{{ ssrdata.V2RAY_DATE }}</td>
+                                <td align="center" width="5%"><a href='{% url "V2ray_check" ssrdata.id %}'><button type="button" class="btn btn-success"><span class="glyphicon glyphicon-ok"></span>Check&Restart(V2ray)</button></a></td>
+                                <td width="5%"><h5>URL:</h5>{{ ssrdata.V2RAY_URL }}<hr><h5>DOMAIN:</h5>{{ ssrdata.V2RAY_DOMAIN }}<hr><h5>URL PATH:</h5>{{ ssrdata.V2RAY_PATH }}</td>
+<!--                                <td align="center" width="10%">{{ ssrdata.V2RAY_PATH }}</td>-->
+
+                                {% else %}
+                                <td align="center" width="5%">{{ ssrdata.PORT }}</td>
+                                    {% if ssrdata.STATUS == "OK" %}
+                                    <td align="center" width="5%">
+                                        <span class="badge badge-info">{{ ssrdata.STATUS }}</span>
+                                    </td>
+                                    {% endif %}
+                                <td width="10%"><h5>LINK:</h5>{{ ssrdata.SSR_LINK }}<hr><h5>CODE:</h5>{{ ssrdata.SSR_CODE }}</td>
+                                <td align="center" width="5%">{{ ssrdata.IDC }}</td>
+                                <td align="center" width="10%">{{ ssrdata.LAST_CHECK }}</td>
+                                <td align="center" width="5%"><a href='{% url "SSR_check" ssrdata.id %}'><button type="button" class="btn btn-success"><span class="glyphicon glyphicon-ok"></span>Check&Restart</button></a></td>
+                                {% endif %}
+
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                    <tfoot>
+                    </tfoot>
+                </table>
+              </div>
+
+        </div>
+</div>
+<script src="https://code.jquery.com/jquery-3.3.1.js"></script>
+<script src="https://cdn.datatables.net/1.10.20/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.10.20/js/dataTables.bootstrap4.min.js"></script>
+
+{% if '/v2ray-servers/' in request.path %}
+<script>
+<!--        $(document).ready(function() {-->
+<!--            var table = $('#mydatatable3').DataTable({-->
+<!--                            "order": [[ 4, "desc" ]], //or desc (for descending)-->
+<!--                            "columnDefs" : [{"targets":1, "type":"date"}],-->
+<!--                        });-->
+<!--        } );-->
+
+        $(document).ready(function() {
+            var table = $('#mydatatable3').removeAttr('width').DataTable( {
+            "order": [[ 4, "desc" ]], //or desc (for descending)
+<!--            scrollY:        "300px",-->
+            scrollX:        true,
+<!--            scrollCollapse: true,-->
+<!--            paging:         false,-->
+        columnDefs: [
+            { width: 900, "targets":1, "type":"date" }
+        ],
+        fixedColumns: true
+    } );
+} );
+</script>
+{% else %}
+<script>
+        $(document).ready(function() {
+            var table = $('#mydatatable3').DataTable({
+                            "order": [[ 5, "desc" ]], //or desc (for descending)
+                            "columnDefs" : [{"targets":1, "type":"date"}],
+                        });
+        } );
+</script>
+{% endif %}
+<script>
+        $(document).ready(function() {
+            var table = $('#mydatatable').DataTable({
+                            "order": [[ 3, "desc" ]], //or desc (for descending)
+                            "columnDefs" : [{"targets":1, "type":"date"}],
+                        });
+        } );
+</script>
+{% endblock %}
+

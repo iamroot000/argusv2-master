@@ -1,0 +1,51 @@
+--- /ansible/nginx/hostgroups/eu-nginx/nginx/conf.d/other/euappsocket.conf	2019-06-28 14:59:21.147604059 +0800
++++ /tmp/euappsocket.conf	2019-06-28 15:10:34.436382972 +0800
+@@ -1,4 +1,47 @@
+ 
++server {
++    listen 9280;
++    
++  
++  location ~ /\.
++{ return 444; }
++
++error_page 403 = @403;
++	location @403 {
++	root html;
++	allow all;
++	#if ( $request_uri ~ 'page-404.jsp' ){ rewrite ^(.*)$ /red-map.jpg break; }
++	rewrite ^(.*)$ /red-map.jpg break; 
++}
++
++if ($allowed_country ~ "no" )
++{ set $test BLOCK; }
++
++if ($allowed_country ~ "yes" ) 
++{ set $test ALLOW; }
++
++if ($allowed_ip ~ "yes" ){ 
++  set $test ALLOW; 
++}
++    
++
++location / {
++   if ( $test = "BLOCK" ) { return 403;  }
++	proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
++	proxy_set_header X-Real-IP  $remote_addr;
++	proxy_next_upstream http_502 http_504 http_404 error timeout invalid_header;
++	proxy_set_header Host $host:$server_port;
++	proxy_http_version 1.1;
++	proxy_set_header Upgrade $http_upgrade;
++	proxy_set_header Connection $connection_upgrade;
++	proxy_connect_timeout   1800;
++	proxy_send_timeout      1800;
++	proxy_read_timeout      1800;
++
++	proxy_pass http://9280;
++   }
++
++}
+ 
+ 
+ 
+

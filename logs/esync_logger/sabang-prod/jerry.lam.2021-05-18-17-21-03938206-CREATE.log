@@ -1,0 +1,33 @@
+--- /ansible/nginx/hostgroups/sabang-prod/nginx/conf.d/other/douji-web.conf	2021-05-14 16:56:54.117441311 +0800
++++ /tmp/douji-web.conf	2021-05-18 17:21:03.980870282 +0800
+@@ -1,5 +1,11 @@
+ server  {
+     listen 80;
++    server_name cf391.com www.cf391.com;
++    rewrite ^(.*)$ https://www.cf391.com$1 permanent;
++}
++
++server  {
++    listen 80;
+     server_name cf392.com www.cf392.com;
+     rewrite ^(.*)$ https://www.cf392.com$1 permanent;
+ }
+@@ -234,4 +240,17 @@
+  
+ }
+ 
++server {
++    listen 443;
++    server_name  cf391.com www.cf391.com;
++          access_log  logs/fpms-web.access.log main;
++        access_log  logs/fpms-web.logstash.access.log logstash;
++  		error_log   logs/fpms-web.error.log;
++    ssl on;
++    ssl_certificate /usr/local/nginx/conf.d/ssl/cf391.com/fullchain.pem;
++    ssl_certificate_key /usr/local/nginx/conf.d/ssl/cf391.com/privkey.pem;
++    include /usr/local/nginx/conf.d/include/cf391.com.include;
++  
++ 
++}
+ 
+

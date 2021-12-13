@@ -1,0 +1,24 @@
+--- /ansible/nginx/hostgroups/om-clientgamecalled_nginx/nginx/conf.d/other/ebet-wapi.conf	2019-07-10 15:17:28.765206173 +0800
++++ /tmp/ebet-wapi.conf	2019-07-10 16:48:41.739774965 +0800
+@@ -8,7 +8,19 @@
+ server {
+           listen 80;
+           server_name ebet.eu.wapi.cpms8.me;
+-          rewrite ^(.*)$ https://ebet.eu.wapi.cpms8.me$1 permanent;
++#          rewrite ^(.*)$ https://ebet.eu.wapi.cpms8.me$1 permanent;
++          index   index.html ;
++
++          charset utf-8;
++          access_log logs/ebet/ebet.eu.wapi.cpms8.me.access.log main;
++          error_log  logs/ebet/ebet.eu.wapi.cpms8.me.error.log;
++          
++          location / {
++          include /usr/local/nginx/conf.d/include/whitelistIPewallet.conf.include;
++    	  include /usr/local/nginx/conf.d/include/proxy.conf.fwd.include;
++          proxy_pass http://ebet-wapi-eu-prod;
++
++        }
+ }
+ 
+ server {
+

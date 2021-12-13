@@ -1,0 +1,304 @@
+{% load tags %}
+
+<!DOCTYPE html>
+<html>
+
+<head>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>ARGUS |{% block title %}{% endblock %}</title>
+    {% block style %}
+    <link href="/static/css/bootstrap.min.css" rel="stylesheet">
+    <link href="/static/css/plugins/toastr/toastr.min.css" rel="stylesheet">
+    <link href="/static/font-awesome/css/font-awesome.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.5.0/css/all.css" integrity="sha384-B4dIYHKNBt8Bc12p+WXckhzcICo0wtJAoU8YZTY5qE0Id1GSseTk6S+L3BlXeVIU" crossorigin="anonymous">
+    <link href="/static/css/plugins/iCheck/custom.css" rel="stylesheet">
+    <link href="/static/css/animate.css" rel="stylesheet">
+    <link href="/static/css/style.css" rel="stylesheet">
+    <link href="/static/css/plugins/dataTables/dataTables.bootstrap.css" rel="stylesheet">
+    <link href="/static/css/plugins/dataTables/dataTables.responsive.css" rel="stylesheet">
+    <link href="/static/css/plugins/dataTables/dataTables.tableTools.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="/static/js/select2/select2.min.css">
+    <style>
+        .nav-header {
+          padding: 0px 0px 5px 0px;
+        }
+
+       
+
+    </style>
+    {% endblock %}
+
+</head>
+
+<body>
+
+    <div id="wrapper">
+
+    <nav class="navbar-default navbar-static-side" role="navigation">
+        <div class="sidebar-collapse">
+            <ul class="nav" id="side-menu">
+                <li class="nav-header">
+                    <div class="dropdown profile-element">
+                        <span>
+                            <a href="/"><img alt="image" src="/static/img/argus.jpg" height="100%" width="100%" /></a>
+                        </span>
+
+                    </div>
+                    <div class="logo-element">
+                        ARGUS
+                    </div>
+                </li>
+
+{% if "can_use_eye" in request.session.permissions or 'can_use_DNS_API' in request.session.permissions %}
+                <li class="{% if 'domains' in request.path %}active{% endif %}">
+                    <a href="#"><i class="fa fa-th-list"></i> <span class="nav-label">Domains</span><span class="fa fa-angle-down pull-right"></span></a>
+                    <ul class="nav nav-second-level">
+                        {% if "can_use_eye" in request.session.permissions %}
+                        <li class="{% if request.path == '/domains/eye/' %}active{% endif %}">
+                            <a href="{% url 'eye' %}">Eye</a>
+                        </li>
+                        {% endif %}
+                        {% if "can_use_DNS_API" in request.session.permissions %}
+                            <li class="{% if request.path == '/domains/' %}active{% endif %}">
+                                <a href="{% url 'index_domains' %}">DNS Manager</a>
+                            </li>
+                        {% endif %}
+                    </ul>
+                </li>
+{% endif %}
+
+
+{% if "can_use_NGINX_SYNC" in request.session.permissions %}
+                <li class="{% if 'fwdcontrol' in request.path or 'esync' in request.path %}active{% endif %}">
+                    <a href="#"><i class="fa fa-sync"></i> <span class="nav-label">ESync</span><span class="fa fa-angle-down pull-right"></span></a>
+                    <ul class="nav nav-second-level">
+
+                        <li >
+                            <a href="#"><i class="fa fa-server"></i> Internal Mirror Servers<span class="fa fa-angle-down pull-right"></span></a>
+                            <ul class="nav nav-third-level collapse" aria-expanded="true" style="height: 0px;">
+                            {% for i in NGINX_HOSTS %}
+                                <li class="{% if i.host_group.lower in request.path %}active{% endif %}">
+                                    <a href='/fwdcontrol/{{ i.host_group }}'>{{ i.host_group.upper }}</a>
+                                </li>
+                            {% endfor %}
+                            </ul>
+                        </li>
+                        {% if "can_use_ESYNC" in request.session.permissions %}
+                        <li class="{% if request.path == '/esync/' %}active{% endif %}">
+                            <a href="{% url 'index_esync' %}"><i class="fa fa-cloud"></i> <span class="nav-label"> Cloud Mirror Servers</span> </a>
+                        </li>
+                        {% endif %}
+                        {% if "can_esync_initialize" in request.session.permissions %}
+                            <li class="{% if request.path == '/esync/initiald/' %}active{% endif %}">
+                                <a href="{% url 'esync_initializer' %}"><i class="fa fa-sync"></i> <span class="nav-label"> Initialize Servers</span> </a>
+                            </li>
+                        {% endif %}
+
+                    </ul>
+                </li>
+{% endif %}
+
+{% if "can_use_PUPPET" in request.session.permissions %}
+                <li class="{% if request.path == '/puppet/' %}active{% endif %}">
+                    <a href="{% url 'index_puppet' %}"><i class="fa fa-play-circle"></i> <span class="nav-label">Puppet</span> </a>
+                </li>
+{% endif %}
+
+{% if "can_use_LEManager" in request.session.permissions %}
+                <li class="{% if request.path == '/LEManager/overview/' %}active{% endif %}">
+                    <a href="{% url 'LE_overview' %}"><i class="fa fa-certificate"></i> <span class="nav-label">LEManager</span> </a>
+                </li>
+{% endif %}
+
+
+{% if "can_use_NRMT" in request.session.permissions %}
+                <li class="{% if 'monitoring' in request.path %}active{% endif %}">
+                    <a href="#"><i class="fa fa-eye"></i> <span class="nav-label">Monitoring</span><span class="fa fa-angle-down pull-right"></span></a>
+                    <ul class="nav nav-second-level">
+
+                        <li class="{% if request.path == '/monitoring/dashboard/' %}active{% endif %}">
+                            <a href="{% url 'dashboard_monitoring' %}">Dashboard</a>
+                        </li>
+                        <li class="{% if request.path == '/monitoring/events/' %}active{% endif %}">
+                            <a href="{% url 'events_monitoring' %}">Events</a>
+                        </li>
+                        <li class="{% if request.path == '/monitoring/network/' %}active{% endif %}">
+                            <a href="{% url 'network_monitoring' %}">Network</a>
+                        </li>
+                        <li>
+                            <a href="{% url 'pageDisplay' %}">SSL-Checker</a>
+                        </li>
+                        <li>
+                            <a href="{% url 'pageDisplayCDN' %}">CDN-Checker</a>
+                        </li>
+                        <li>
+                            <a href="{% url 'pageDisplaydomainexp' %}">Domain Expiration</a>
+                        </li>
+                    </ul>
+                </li>
+
+{% endif %}
+
+{% if "can_use_LEManager" in request.session.permissions or "can_use_proxycontroller" in request.session.permissions %}
+                <li class="{% if '/vpn-manager/' in request.path %}active{% endif %}">
+                    <a href="#"><i class="fa fa-sync"></i> <span class="nav-label">VPN-Manager</span><span class="fa fa-angle-down pull-right"></span></a>
+                    <ul class="nav nav-second-level">
+
+                        <li class="{% if request.path == '/vpn-manager/' or '/vpn-manager/SSRcheck/' in request.path or '/vpn-manager/SSRhomedelete/' in request.path or '/vpn-manager/SSRhomeadd/' in request.path or '/vpn-manager/SSRhomehistory/' in request.path %}active{% endif %}">
+                            <a href="{% url 'SSR_home' %}"><i class="fa fa-cloud"></i> <span class="nav-label"> VPN Servers</span> </a>
+                        </li>
+
+                        <li class="{% if '/vpn-manager/initialization/' in request.path %}active{% endif %}">
+                            <a href="{% url 'SSR_initialization' %}"><i class="fa fa-sync"></i> <span class="nav-label"> VPN Initialization</span> </a>
+                        </li>
+            
+                            <li class="{% if '/vpn-manager/configuration/' in request.path %}active{% endif %}">
+                                <a href="{% url 'SSR_config' %}"><i class="fa fa-cog"></i> <span class="nav-label"> SSR Configuration</span> </a>
+                            </li>
+                <li class="{% if '/vpn-manager/v2ray-configuration/' in request.path %}active{% endif %}">
+                                <a href="{% url 'v2ray_config' %}"><i class="fa fa-cog"></i> <span class="nav-label"> V2RAY Configuration</span> </a>
+                            </li>
+
+            {% if "can_use_LEManager" in request.session.permissions %}
+                            <li class="{% if '/vpn-manager/file-configuration/' in request.path %}active{% endif %}">
+                                <a href="{% url 'SSR_fileconfig' %}"><i class="fa fa-edit"></i> <span class="nav-label"> VPN Configuration</span> </a>
+                            </li>
+            {% endif %}
+                    </ul>
+                </li>
+
+{% endif %}
+
+{% if "can_use_proxycontroller" in request.session.permissions %}
+                <li class="{% if 'proxycontroller' in request.path %}active{% endif %}">
+                    <a href="#"><i class="fa fa-eye"></i> <span class="nav-label">ProxyController</span><span class="fa fa-angle-down pull-right"></span></a>
+                    <ul class="nav nav-second-level">
+
+          
+                        <li class="{% if request.path == '/proxycontroller/' %}active{% endif %}">
+                            <a href="{% url 'index_proxycontroller' %}"><span class="nav-label"> Overview</span> </a>
+                        </li>
+
+                        <li class="{% if request.path == '/proxycontroller/dashboard/' %}active{% endif %}">
+                            <a href="{% url 'dashboard_proxycontroller' %}"><span class="nav-label"> Dashboard</span> </a>
+                        </li>
+
+                        <li class="{% if request.path == '/proxycontroller/servers/' %}active{% endif %}">
+                            <a href="{% url 'servers_proxycontroller' %}"><span class="nav-label"> Servers</span> </a>
+                        </li>
+                    </ul>
+                </li>
+{% endif %}
+{% if "can_use_INVENTORY" in request.session.permissions %}
+                <li class="{% if request.path == '/inventory/' %}active{% endif %}">
+                    <a href="{% url 'index_inventory' %}"><i class="fa fa-archive"></i> <span class="nav-label">Inventory</span> </a>
+                </li>
+{% endif %}
+
+{% if "can_use_SMSALERTS" in request.session.permissions %}
+                <li class="{% if request.path == '/smsalerts/' %}active{% endif %}">
+                    <a href="{% url 'index_smsalerts' %}"><i class="fa fa-comments"></i> <span class="nav-label">SMS Alerts</span> </a>
+                </li>
+{% endif %}
+
+            </ul>
+
+        </div>
+    </nav>
+
+        <div id="page-wrapper" class="gray-bg">
+        <div class="row border-bottom">
+        <nav class="navbar navbar-static-top  " role="navigation" style="margin-bottom: 0">
+        <div class="navbar-header">
+            <a class="navbar-minimalize minimalize-styl-2 btn btn-primary " href="#"><i class="fa fa-bars"></i> </a>
+
+        </div>
+            <ul class="nav navbar-top-links navbar-right">
+                <li class="dropdown">
+                    <a aria-expanded="false" role="button" href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="fa fa-user"></i> Signed in as {{ request.user }} <span class="caret"></span></a>
+                    <ul role="menu" class="dropdown-menu">
+                        {% if 'om' in request.session.attr.dept %}<li><a href="/admin" target="_blank">Admin</a></li>{% endif %}
+                        <li><a href="{% url 'logout' %}">Log out</a></li>
+
+                    </ul>
+                </li>
+
+
+            </ul>
+
+        </nav>
+        </div>
+
+        <div class="row wrapper border-bottom white-bg page-heading">
+                <div class="col-sm-4">
+                    <h2>{% block header %}{% endblock %}</h2>
+                    <ol class="breadcrumb">
+
+                        <li class="active">
+                            <strong>{% block details %}{% endblock %}</strong>
+                        </li>
+                    </ol>
+
+
+                </div>
+                <div class="col-sm-8">
+                    <div class="title-action">
+                        {% block action %}{% endblock %}
+                    </div>
+                </div>
+            </div>
+
+            {% block content %}
+            {% endblock %}
+            <div class="footer">
+
+                <div>
+                    <strong>Created by: </strong>OM Department &copy; 2018
+                </div>
+            </div>
+
+
+        </div>
+        </div>
+
+    {% block js %}
+    <script src="/static/js/jquery-2.1.1.js"></script>
+    <script src="/static/js/bootstrap.min.js"></script>
+    <script src="/static/js/plugins/metisMenu/jquery.metisMenu.js"></script>
+    <script src="/static/js/plugins/slimscroll/jquery.slimscroll.min.js"></script>
+
+    <!-- Custom and plugin javascript -->
+    <script src="/static/js/inspinia.js"></script>
+    <script src="/static/js/plugins/pace/pace.min.js"></script>
+
+    <!-- Flot -->
+    <script src="/static/js/plugins/flot/jquery.flot.js"></script>
+    <script src="/static/js/plugins/flot/jquery.flot.tooltip.min.js"></script>
+    <script src="/static/js/plugins/flot/jquery.flot.resize.js"></script>
+
+    <!-- ChartJS
+    <script src="/static/js/plugins/chartJs/Chart.min.js"></script>-->
+
+    <!-- Peity -->
+    <script src="/static/js/plugins/peity/jquery.peity.min.js"></script>
+    <!-- Peity demo -->
+    <script src="/static/js/demo/peity-demo.js"></script>
+    <script src="/static/js/plugins/dataTables/jquery.dataTables.js"></script>
+    <script src="/static/js/plugins/dataTables/dataTables.bootstrap.js"></script>
+    <script src="/static/js/plugins/dataTables/dataTables.responsive.js"></script>
+    <script src="/static/js/plugins/dataTables/dataTables.tableTools.min.js"></script>
+    <script src="/static/fa/js/fontawesome-all.js"></script>
+    <script src="/static/js/plugins/iCheck/icheck.min.js"></script>
+
+
+
+
+    {% endblock %}
+</body>
+
+</html>
+
+

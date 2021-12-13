@@ -1,0 +1,24 @@
+FILENAME: 80-443/52eu.net.conf
+-  
++  server {
++      listen 80;
++      server_name 52eu.net www.52eu.net;
++      rewrite ^(.*)$ https://www.52eu.net$1 permanent;
++  }
++  
++  server {
++      listen 443;
++      server_name 52eu.net www.52eu.net;
++      ssl on;
++      ssl_certificate /usr/local/nginx/conf.d/ssl/52eu.net/fullchain.pem;
++      ssl_certificate_key /usr/local/nginx/conf.d/ssl/52eu.net/privkey.pem;
++  
++      if ($http_host !~* 'www') {
++          rewrite ^(.*)$ https://www.$http_host$1 permanent;
++      }
++  
++      include /usr/local/nginx/conf.d/include/eung-zhifucstest.include;
++  }
++  
++  
+

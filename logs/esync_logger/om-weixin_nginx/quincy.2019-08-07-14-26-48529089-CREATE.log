@@ -1,0 +1,38 @@
+--- /ansible/nginx/hostgroups/om-weixin_nginx/nginx/conf.d/include/579832.com.include	2019-08-06 11:18:11.850491952 +0800
++++ /tmp/579832.com.include	2019-08-07 14:26:48.419825517 +0800
+@@ -3,12 +3,29 @@
+ 
+    # error_log  /usr/local/nginx/logs/579832/error.log;
+ 
++        root  /var/www/fanghong/public;
++
+ 	location / {
+-             root  /home/html/579832.com/;
+-            #root  /usr/local/nginx/html/579832.com/;
+-            index index.html;
+-           
+-        }
++            try_files $uri $uri/ /index.php?$query_string;
++    	}
++
++location ~ \.php$ {
++        try_files $uri /index.php =404;
++        fastcgi_split_path_info ^(.+\.php)(/.+)$;
++        #fastcgi_pass unix:/var/run/php5-fpm.sock;
++        fastcgi_pass unix:/tmp/php-cgi.sock;
++        fastcgi_index index.php;
++        fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
++        include fastcgi_params;
++    }
++
++
++#	location / {
++#             root  /home/html/579832.com/;
++#           #root  /usr/local/nginx/html/579832.com/;
++#           index index.html;
++#          
++#       }
+ 
+ 
+ 
+

@@ -1,0 +1,46 @@
+--- /ansible/nginx/hostgroups/om-fpms_pms_nginx/nginx/conf.d/include/autopay_official_masterconfig.include	2019-04-23 18:28:37.891816462 +0800
++++ /tmp/autopay_official_masterconfig.include	2020-12-30 15:35:25.243154045 +0800
+@@ -1,31 +1,5 @@
+- set $tag 0;
+-      #  if ($geoip2_data_city_name ~* 'Yunnan'){
+-      #     set $tag "${tag}1";
+-      #   }
+-       
+-	if ($geoip_region ~* '29'){
+-	set $tag "${tag}1";
+-#	return 403;
+-	}
+ 
+ 
+-	 if ($allowed_vpn_ip ~ 'yes'){
+-           set $tag "${tag}2";
+-        }
+-
+-        if ($tag !~* '01|02'){
+-           return 403;
+-        }
+-
+-        location /myip {
+-         default_type text/plain;
+-#         return 200 "$remote_addr $geoip_country_name $geoip_country_code $geoip_city $geoip2_data_city_name";
+-         return 200 "$remote_addr $geoip_country_name $geoip_country_code $geoip_city $geoip_region ";
+-       }       
+- 
+-        location ~ ^/(WEB-INF)/ {
+-            deny all;
+-        }
+ 
+         location / {
+ 			proxy_next_upstream http_502 http_504 error timeout invalid_header;
+@@ -45,7 +19,4 @@
+ 			proxy_temp_file_write_size      256k;
+ 			proxy_pass http://autopay;
+         }
+-  
+-		location  ^~ /api/addTransactionTask { 
+-            deny    all;
+-		}
+\ No newline at end of file
++  
+\ No newline at end of file
+

@@ -1,0 +1,81 @@
+#!/bin/bash
+/sbin/iptables -F
+/sbin/iptables -F -t nat
+/sbin/iptables -X
+/sbin/iptables -P INPUT ACCEPT
+/sbin/iptables -P OUTPUT ACCEPT
+/sbin/iptables -P FORWARD ACCEPT
+/sbin/iptables -A INPUT -i lo -j ACCEPT
+
+#TECHZONE
+/sbin/iptables -A INPUT -s 192.168.10.0/24 -m comment --comment ":TechZone Lan IP:" -j ACCEPT
+/sbin/iptables -A INPUT -s 192.168.11.0/24 -m comment --comment ":TechZone OM Lan IP:" -j ACCEPT
+/sbin/iptables -A INPUT -s 192.168.12.0/24 -m comment --comment ":TechZone DEV Lan IP:" -j ACCEPT
+/sbin/iptables -A INPUT -s 175.45.41.112/28 -m comment --comment ":HK-IP(techzone):" -j ACCEPT
+/sbin/iptables -A INPUT -s 175.45.41.114 -m comment --comment ":HK-IP(techzone):" -j ACCEPT
+/sbin/iptables -A INPUT -s 175.45.41.115 -m comment --comment ":HK-IP(techzone):" -j ACCEPT
+/sbin/iptables -A INPUT -s 175.100.204.34 -m comment --comment ":HK-IP(techzone):" -j ACCEPT
+/sbin/iptables -A INPUT -s 43.231.229.123 -m comment --comment ":HK-IP(EBET_chinese):" -j ACCEPT
+/sbin/iptables -A INPUT -s 43.231.220.123 -m comment --comment ":HK-IP(EBET_noypi):" -j ACCEPT
+/sbin/iptables -A INPUT -s 112.198.18.198 -m comment --comment ":HK-IP(EBET_noypi):" -j ACCEPT
+/sbin/iptables -A INPUT -s 112.198.18.0/24 -m comment --comment ":HK-IP(EBET_noypi):" -j ACCEPT
+/sbin/iptables -A INPUT -s 211.24.72.105 -m comment --comment ":HK-IP(malaysia):" -j ACCEPT
+/sbin/iptables -A INPUT -s 103.29.22.112/29 -m comment --comment ":fccdci(techzone):" -j ACCEPT
+
+#DATACENTER
+/sbin/iptables -A INPUT -s 10.167.11.0/24 -m comment --comment ":HKIDC IP:" -j ACCEPT
+/sbin/iptables -A INPUT -s 10.167.12.0/24 -m comment --comment ":HKIDC EXTENDED IP:" -j ACCEPT
+/sbin/iptables -A INPUT -s 10.167.22.0/24 -m comment --comment ":HKIDC EXTENDED IP:" -j ACCEPT
+/sbin/iptables -A INPUT -s 10.165.22.0/24 -m comment --comment ":HKIDC EXTENDED IP:" -j ACCEPT
+/sbin/iptables -A INPUT -s 10.165.11.0/24 -m comment --comment ":HKIDC EXTENDED IP:" -j ACCEPT
+/sbin/iptables -A INPUT -s 10.165.12.0/24 -m comment --comment ":HKIDC EXTENDED IP:" -j ACCEPT
+/sbin/iptables -A INPUT -s 10.165.13.0/24 -m comment --comment ":HKIDC EXTENDED IP:" -j ACCEPT
+
+#ENABLE FOR FORWARDING SERVERS
+/sbin/iptables -A INPUT -p tcp -m tcp --dport 80 -m comment --comment ":DEFAULT OPEN 80:" -j ACCEPT
+/sbin/iptables -A INPUT -p tcp -m tcp --dport 443 -m comment --comment ":DEFAULT OPEN 443:" -j ACCEPT
+
+#TestDB 192.168.10.145 drop from production
+/sbin/iptables -A INPUT -s 192.168.10.145 -m multiport -p tcp --sports 3306,3307,3308,3309 -m comment --comment ":DROP TESTDB:" -j DROP
+/sbin/iptables -A OUTPUT -d 192.168.10.145 -m multiport -p tcp --dports 3306,3307,3308,3309 -m comment --comment ":DROP TESTDB:" -j DROP
+
+##############################################################################################################################################################
+#TECHZONE
+/sbin/iptables -A INPUT -s 103.29.22.112/29 -j ACCEPT #fccdci(techzone)
+/sbin/iptables -A INPUT -s 203.177.15.222/30 -j ACCEPT #globe(techzone)
+/sbin/iptables -A INPUT -s 203.177.198.112/28 -j ACCEPT #globe(GDC)
+/sbin/iptables -A INPUT -s 175.45.41.112/28 -j ACCEPT #WTT(techzone)
+
+#ANXEUZ
+/sbin/iptables -A INPUT -s 223.119.50.66/29 -j ACCEPT #China Mobile
+/sbin/iptables -A INPUT -s 175.100.203.106/29 -j ACCEPT #HGC
+/sbin/iptables -A INPUT -s 203.177.234.146/30 -j ACCEPT #HGC
+/sbin/iptables -A INPUT -s 175.100.204.34 -j ACCEPT #HGC
+
+#IPEAK
+/sbin/iptables -A INPUT -s 175.100.203.211 -j ACCEPT #HGC IP
+/sbin/iptables -A INPUT -s 223.119.51.107/31 -j ACCEPT #China Mobile
+/sbin/iptables -A INPUT -s 103.16.170.195/30 -j ACCEPT #Radius
+
+#HASHTECH
+/sbin/iptables -A INPUT -s 203.90.246.80/29 -j ACCEPT #HGC
+/sbin/iptables -A INPUT -s 223.119.49.64/29 -j ACCEPT #CMI
+/sbin/iptables -A INPUT -s 203.90.246.82/29 -j ACCEPT #HGC
+/sbin/iptables -A INPUT -s 223.119.49.66/29 -j ACCEPT #CMI
+
+
+
+#SSR
+/sbin/iptables -A INPUT -p udp -m state --state NEW -m udp --match multiport --dports 3300:3399 -j ACCEPT
+/sbin/iptables -A INPUT -p tcp -m state --state NEW -m tcp --match multiport --dports 3300:3399 -j ACCEPT
+
+
+/sbin/iptables -A INPUT -p icmp -m limit --limit 1/s --limit-burst 10 -j ACCEPT
+/sbin/iptables -A INPUT -p tcp -m tcp --dport 80 -j ACCEPT #for http server,now allowed by default
+/sbin/iptables -A INPUT -p tcp -m tcp --dport 443 -j ACCEPT #for https server,allowed by default
+/sbin/iptables -A INPUT -m state --state RELATED,ESTABLISHED -j ACCEPT
+/sbin/iptables -A INPUT -m state --state INVALID,NEW -j DROP
+
+
+/sbin/iptables-save
+/sbin/iptables-save

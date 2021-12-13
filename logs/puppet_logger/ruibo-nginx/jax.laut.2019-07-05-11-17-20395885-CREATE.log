@@ -1,0 +1,16 @@
+--- /puppet/ruibo-nginx/templates/iptables.sh	2019-04-30 10:23:09.013400864 +0800
++++ /tmp/iptables.sh	2019-07-05 11:17:20.212710193 +0800
+@@ -2,6 +2,11 @@
+ ipset create TSniperIPS hash:ip timeout 3600
+ /sbin/iptables -A INPUT -m set --match-set TSniperIPS src -j DROP
+ 
+-/sbin/iptables -A INPUT -m tcp -p tcp --dport 80  -j ACCEPT ##DEFAULT
++#new-cdn
++/sbin/iptables -A INPUT -s 40.83.79.117 -m tcp -p tcp -j ACCEPT
++/sbin/iptables -A INPUT -s 203.60.1.33 -m tcp -p tcp -j ACCEPT
++
++#DEFAULT
++/sbin/iptables -A INPUT -m tcp -p tcp --dport 80  -j ACCEPT 
+ /sbin/iptables -A INPUT -m tcp -p tcp --dport 909 -j ACCEPT
+ /sbin/iptables -A INPUT -m tcp -p tcp --dport 443 -j ACCEPT
+

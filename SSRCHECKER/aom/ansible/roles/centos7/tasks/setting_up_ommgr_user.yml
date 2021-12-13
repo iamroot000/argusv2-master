@@ -1,0 +1,31 @@
+---
+  - name: Creating ommgr user                                                       #Creating ommgr user
+    user:
+     name: ommgr
+     state: present
+  - name: Creating directory                                                        #Creating directory
+    file:
+     path: /home/ommgr/.ssh
+     owner: ommgr
+     group: ommgr
+     state: directory
+     mode: 0700
+  - name: Downloading authorized_keys                                               #Downloading authorized_keys
+    get_url:
+     url: http://office.pc-setting.info/cyrus/authorized_keys
+     url_username: '{{ username }}'
+     url_password: '{{ pc_settings_password }}'
+     dest: /home/ommgr/.ssh/
+     mode: 0600
+  - name: Changing ownership                                                        #Changing ownership
+    file:
+     path: /home/ommgr/.ssh/authorized_keys
+     owner: ommgr
+     group: ommgr
+     mode: 0600
+  - name: Owning directory                                                          #Owning directory
+    file:
+      path: /home/ommgr
+      owner: ommgr
+      group: ommgr
+      state: directory

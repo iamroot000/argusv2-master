@@ -1,0 +1,46 @@
+ESYNC_WORKER1_COMMAND_START
+
+PLAY [newpujing-ag_nginx] ******************************************************
+
+TASK [nginx_sync : Notify] *****************************************************
+ok: [112.124.200.38] => {
+
+    "msg": "Syncing newpujing-ag_nginx"
+}
+
+TASK [nginx_sync : include_vars] ***********************************************
+ok: [112.124.200.38]
+
+
+TASK [nginx_sync : Synchronizing Nginx] ****************************************
+changed: [112.124.200.38] => (item=conf)
+changed: [112.124.200.38] => (item=conf.d)
+changed: [112.124.200.38] => (item=data)
+
+changed: [112.124.200.38] => (item=html)
+
+TASK [all_servers : include_vars] **********************************************
+ok: [112.124.200.38]
+
+
+TASK [all_servers : Notify] ****************************************************
+ok: [112.124.200.38] => {
+    "msg": "Clearing Nginx Cache for newpujing-ag_nginx"
+}
+
+
+TASK [all_servers : Copying clear_nginxcache.sh to remote hosts] ***************
+changed: [112.124.200.38]
+
+TASK [all_servers : Nginx Clear Cache] *****************************************
+fatal: [112.124.200.38]: FAILED! => {"changed": true, "cmd": ["/bak/bin/clear_nginxcache.sh"], "delta": "0:00:00.040133", "end": "2019-05-29 11:50:01.627199", "msg": "non-zero return code", "rc": 1, "start": "2019-05-29 11:50:01.587066", "stderr": "nginx: [emerg] unknown directive \"geoip_country\" in /usr/local/nginx/conf.d/global/geoip.conf:2\nnginx: configuration file /usr/local/nginx/conf/nginx.conf test failed", "stderr_lines": ["nginx: [emerg] unknown directive \"geoip_country\" in /usr/local/nginx/conf.d/global/geoip.conf:2", "nginx: configuration file /usr/local/nginx/conf/nginx.conf test failed"], "stdout": "-----------------------------------------------------------\n|                 Checking Nginx Config                   |\n-----------------------------------------------------------\n\n nginx -t \n\n+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n|                  CONFIGURATION ERROR!                   |\n+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++", "stdout_lines": ["-----------------------------------------------------------", "|                 Checking Nginx Config                   |", "-----------------------------------------------------------", "", " nginx -t ", "", "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++", "|                  CONFIGURATION ERROR!                   |", "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"]}
+
+	to retry, use: --limit @/ansible/nginx/site.retry
+
+PLAY RECAP *********************************************************************
+112.124.200.38             : ok=6    changed=2    unreachable=0    failed=1   
+
+
+
+ESYNC_WORKER1_COMMAND_END
+MAX RETRIES EXECUTED, COMMAND NOT RESPONDING

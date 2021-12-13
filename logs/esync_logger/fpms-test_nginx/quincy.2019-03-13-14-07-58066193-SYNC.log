@@ -1,0 +1,262 @@
+ESYNC_WORKER1_COMMAND_START
+
+PLAY [fpms-test_nginx] *********************************************************
+
+TASK [nginx_sync : Notify] *****************************************************
+ok: [119.9.104.64] => {
+
+    "msg": "Syncing fpms-test_nginx"
+}
+ok: [154.223.188.192] => {
+    "msg": "Syncing fpms-test_nginx"
+}
+
+
+TASK [nginx_sync : include_vars] ***********************************************
+ok: [119.9.104.64]
+ok: [154.223.188.192]
+
+
+TASK [nginx_sync : Synchronizing Nginx] ****************************************
+ok: [119.9.104.64] => (item=conf)
+ok: [154.223.188.192] => (item=conf)
+changed: [119.9.104.64] => (item=conf.d)
+changed: [154.223.188.192] => (item=conf.d)
+
+ok: [119.9.104.64] => (item=data)
+ok: [154.223.188.192] => (item=data)
+ok: [119.9.104.64] => (item=html)
+ok: [154.223.188.192] => (item=html)
+
+
+TASK [all_servers : include_vars] **********************************************
+ok: [119.9.104.64]
+ok: [154.223.188.192]
+
+TASK [all_servers : Notify] ****************************************************
+
+ok: [119.9.104.64] => {
+    "msg": "Clearing Nginx Cache for fpms-test_nginx"
+}
+ok: [154.223.188.192] => {
+    "msg": "Clearing Nginx Cache for fpms-test_nginx"
+
+}
+
+TASK [all_servers : Copying clear_nginxcache.sh to remote hosts] ***************
+ok: [154.223.188.192]
+ok: [119.9.104.64]
+
+
+TASK [all_servers : Nginx Clear Cache] *****************************************
+changed: [154.223.188.192]
+changed: [119.9.104.64]
+
+
+TASK [all_servers : debug] *****************************************************
+ok: [119.9.104.64] => {
+    "script_result.stdout_lines": [
+        "-----------------------------------------------------------", 
+        "|                 Checking Nginx Config                   |", 
+
+        "-----------------------------------------------------------", 
+        "", 
+        " nginx -t ", 
+        "", 
+        "-----------------------------------------------------------", 
+
+        "|                 Stopping Nginx Process                  |", 
+        "-----------------------------------------------------------", 
+        "", 
+        " /usr/bin/killall -9 nginx ", 
+        "", 
+
+        "-----------------------------------------------------------", 
+        "|                 Clearing Proxy Cache                    |", 
+        "-----------------------------------------------------------", 
+        "", 
+        " /bin/rm -rf /tmp/nginx_cache ", 
+
+        "", 
+        "-----------------------------------------------------------", 
+        "|                Restarting Nginx Process                 |", 
+        "-----------------------------------------------------------", 
+        "root     25237  0.4  0.0 106080  1424 ?        S    14:08   0:00 /bin/bash /bak/bin/clear_nginxcache.sh", 
+
+        "root     25266  0.0  0.0 294120  1728 ?        Ss   14:08   0:00 nginx: master process /usr/local/nginx/sbin/nginx", 
+        "nobody   25268  0.0  0.3 298292  6148 ?        S    14:08   0:00 nginx: worker process      ", 
+        "nobody   25269  0.0  0.3 298292  6148 ?        S    14:08   0:00 nginx: worker process      ", 
+        "nobody   25270  0.0  0.3 298292  6148 ?        S    14:08   0:00 nginx: worker process      ", 
+        "nobody   25271  0.0  0.3 298292  6484 ?        S    14:08   0:00 nginx: worker process      ", 
+
+        "nobody   25272  0.0  0.1 294120  2140 ?        S    14:08   0:00 nginx: cache manager process", 
+        "nobody   25273  0.0  0.1 294120  2088 ?        S    14:08   0:00 nginx: cache loader process", 
+        "root     25329  0.0  0.0 103320   888 ?        S    14:08   0:00 grep nginx", 
+        "             total       used       free     shared    buffers     cached", 
+        "Mem:          2000       1784        215          1        115        130", 
+
+        "-/+ buffers/cache:       1538        461", 
+        "Swap:            0          0          0", 
+        "-----------------------------------------------------------", 
+        "|                     Reload SUCCESS!                     |", 
+        "-----------------------------------------------------------"
+
+    ]
+}
+ok: [154.223.188.192] => {
+    "script_result.stdout_lines": [
+        "-----------------------------------------------------------", 
+
+        "|                 Checking Nginx Config                   |", 
+        "-----------------------------------------------------------", 
+        "", 
+        " nginx -t ", 
+        "", 
+
+        "-----------------------------------------------------------", 
+        "|                 Stopping Nginx Process                  |", 
+        "-----------------------------------------------------------", 
+        "", 
+        " /usr/bin/killall -9 nginx ", 
+
+        "", 
+        "-----------------------------------------------------------", 
+        "|                 Clearing Proxy Cache                    |", 
+        "-----------------------------------------------------------", 
+        "", 
+
+        " /bin/rm -rf /tmp/nginx_cache ", 
+        "", 
+        "-----------------------------------------------------------", 
+        "|                Restarting Nginx Process                 |", 
+        "-----------------------------------------------------------", 
+
+        "root     16937  0.0  0.0 106084  1400 ?        S    14:08   0:00 /bin/bash /bak/bin/clear_nginxcache.sh", 
+        "root     17014  0.0  0.0 296592  1708 ?        Ss   14:08   0:00 nginx: master process /usr/local/nginx/sbin/nginx", 
+        "nobody   17015  0.0  0.3 300844  6140 ?        S    14:08   0:00 nginx: worker process      ", 
+        "nobody   17017  0.0  0.3 300844  6140 ?        S    14:08   0:00 nginx: worker process      ", 
+        "nobody   17018  0.0  0.3 300844  6140 ?        S    14:08   0:00 nginx: worker process      ", 
+
+        "nobody   17019  0.0  0.3 300844  6140 ?        S    14:08   0:00 nginx: worker process      ", 
+        "nobody   17020  0.0  0.1 296592  2132 ?        S    14:08   0:00 nginx: cache manager process", 
+        "nobody   17021  0.0  0.1 296592  2072 ?        S    14:08   0:00 nginx: cache loader process", 
+        "root     17023  0.0  0.0 103264   856 ?        S    14:08   0:00 grep nginx", 
+        "             total       used       free     shared    buffers     cached", 
+
+        "Mem:          1877       1793         83          0        196        400", 
+        "-/+ buffers/cache:       1197        680", 
+        "Swap:         2047          1       2046", 
+        "-----------------------------------------------------------", 
+        "|                     Reload SUCCESS!                     |", 
+
+        "-----------------------------------------------------------"
+    ]
+}
+
+PLAY [127.0.0.1] ***************************************************************
+
+
+TASK [sync_to_git : Synchronizing Nginx To GIT] ********************************
+changed: [127.0.0.1]
+
+TASK [sync_to_git : debug] *****************************************************
+
+ok: [127.0.0.1] => {
+    "script_result.stdout_lines": [
+        "# On branch master", 
+        "# Changes not staged for commit:", 
+        "#   (use \"git add/rm <file>...\" to update what will be committed)", 
+
+        "#   (use \"git checkout -- <file>...\" to discard changes in working directory)", 
+        "#   (commit or discard the untracked or modified content in submodules)", 
+        "#", 
+        "#\tdeleted:    ../../../haproxy/roles/sync_haproxy/conf.d.tgz", 
+        "#\tdeleted:    ../../.hosts.swp", 
+
+        "#\tdeleted:    ../../.sync_nginx.yml.swp", 
+        "#\tdeleted:    ../agcmb-nginx/nginx/conf.d/other/bw12_ag.conf", 
+        "#\tdeleted:    ../agcmb-nginx/nginx/conf/fastcgi.conf", 
+        "#\tdeleted:    ../agcmb-nginx/nginx/conf/fastcgi_params", 
+        "#\tdeleted:    ../agcmb-nginx/nginx/conf/index.html", 
+
+        "#\tdeleted:    ../agcmb-nginx/nginx/conf/koi-utf", 
+        "#\tdeleted:    ../agcmb-nginx/nginx/conf/koi-win", 
+        "#\tdeleted:    ../agcmb-nginx/nginx/conf/mime.types", 
+        "#\tdeleted:    ../agcmb-nginx/nginx/conf/nginx.conf", 
+        "#\tdeleted:    ../agcmb-nginx/nginx/conf/nginx.conf.bak", 
+
+        "#\tdeleted:    ../agcmb-nginx/nginx/conf/scgi_params", 
+        "#\tdeleted:    ../agcmb-nginx/nginx/conf/uwsgi_params", 
+        "#\tdeleted:    ../agcmb-nginx/nginx/conf/win-utf", 
+        "#\tdeleted:    ../agcmb-nginx/nginx/data/GeoIP-106_20171017.dat", 
+        "#\tdeleted:    ../agcmb-nginx/nginx/html/block.html", 
+
+        "#\tdeleted:    ../agcmb-nginx/nginx/html/blocked/css/bootstrap.min.css", 
+        "#\tdeleted:    ../agcmb-nginx/nginx/html/blocked/css/custom.css", 
+        "#\tdeleted:    ../agcmb-nginx/nginx/html/blocked/css/customip.css", 
+        "#\tdeleted:    ../agcmb-nginx/nginx/html/blocked/images/char-bg-2.png", 
+        "#\tdeleted:    ../agcmb-nginx/nginx/html/blocked/images/ip.png", 
+
+        "#\tdeleted:    ../agcmb-nginx/nginx/html/blocked/images/xbet-logo.png", 
+        "#\tdeleted:    ../agcmb-nginx/nginx/html/blocked/js/bootstrap.min.js", 
+        "#\tdeleted:    ../agcmb-nginx/nginx/html/blocked/js/jquery.min.js", 
+        "#\tdeleted:    ../agcmb-nginx/nginx/html/blocked/xbet.jpg", 
+        "#\tdeleted:    ../agcmb-nginx/nginx/html/ip.html", 
+
+        "#\tdeleted:    ../agcmb-nginx/nginx/html/pc.jpg", 
+        "#\tdeleted:    ../agcmb-nginx/nginx/html/proxy/index.html", 
+        "#\tdeleted:    ../agcmb-nginx/nginx/html/red-map.jpg", 
+        "#\tdeleted:    ../agcmb-nginx/nginx/html/red-map.jpg_bak", 
+        "#\tdeleted:    ../agcmb-nginx/nginx/html/update.html", 
+
+        "#\tdeleted:    ../agcmb-nginx/scripts/clear_nginxcache.sh", 
+        "#\tdeleted:    ../bbetasia-nginx/nginx/conf.d/80-443/callmeboss168.com.conf", 
+        "#\tmodified:   ../callmeboss-nginx (modified content)", 
+        "#\tdeleted:    ../eu-nginx/nginx/conf.d/include/eu_lite_masterconfig.include", 
+        "#\tdeleted:    nginx/conf.d/global/_default.conf", 
+
+        "#\tdeleted:    nginx/conf.d/global/geoip.conf", 
+        "#\tdeleted:    nginx/conf.d/global/whitelist_map.conf", 
+        "#\tdeleted:    nginx/conf.d/other/devtest.wsweb.me.conf", 
+        "#\tdeleted:    nginx/conf.d/other/payment-dev.neweb.me.conf", 
+        "#\tdeleted:    ../../yaml/.SyncToGIT.yml.swp", 
+
+        "#\tdeleted:    ../../yaml/.nginx_clearcache.yml.swp", 
+        "#\tdeleted:    ../../yaml/.nginx_sync.yml.swp", 
+        "#\tdeleted:    ../../../puppet/.ansible.cfg.swp", 
+        "#\tdeleted:    ../../../puppet/.hostvars.json.swp", 
+        "#\tdeleted:    ../../../puppet/.jhostvars.json.swp", 
+
+        "#\tdeleted:    ../../../puppet/.puppet.yml.swp", 
+        "#\tdeleted:    ../../../puppet/roles/add-repo/tasks/.main.yml.swp", 
+        "#\tdeleted:    ../../../puppet/roles/puppet/tasks/.pupmaster.yml.swp", 
+        "#\tdeleted:    ../../../puppet/roles/puppet/templates/.00-defauls.pp.j2.swp", 
+        "#\tdeleted:    ../../../puppet/roles/puppetmaster/tasks/.iptables.yml.swp", 
+
+        "#\tdeleted:    ../../../puppet/roles/puppetmaster/tasks/.main.yml.swp", 
+        "#\tdeleted:    ../../../puppet/roles/puppetmaster/tasks/.ssh_keys.yml.swp", 
+        "#\tdeleted:    ../../../puppet/templates/.iptables-template.sh.swo", 
+        "#\tdeleted:    ../../../puppet/templates/.iptables-template.sh.swp", 
+        "#\tdeleted:    ../../../puppet/templates/.iptables.pp.swp", 
+
+        "#", 
+        "no changes added to commit (use \"git add\" and/or \"git commit -a\")", 
+        "Branch master set up to track remote branch master from origin."
+    ]
+}
+
+
+PLAY [fpms-test_nginx] *********************************************************
+
+PLAY [127.0.0.1] ***************************************************************
+
+
+PLAY RECAP *********************************************************************
+119.9.104.64               : ok=8    changed=2    unreachable=0    failed=0   
+127.0.0.1                  : ok=2    changed=1    unreachable=0    failed=0   
+154.223.188.192            : ok=8    changed=2    unreachable=0    failed=0   
+
+
+
+ESYNC_WORKER1_COMMAND_END
+MAX RETRIES EXECUTED, COMMAND NOT RESPONDING

@@ -1,0 +1,25 @@
+---
+  - name: Setting up default timezone HK                                #Setting up default timezone HK
+    timezone:
+     name: Asia/Hong_Kong
+  - name: Setting up cron                                               #Setting up crontab
+    cron:
+     name: "{{ item.name }}"
+     job: "{{ item.job }}"
+     user: root
+     hour: "{{ item.hour }}"
+     minute: "{{ item.minute }}"
+     state: present
+    with_items:
+     - { name: 'Setting ntpupdate', job: '/usr/sbin/ntpdate pool.ntp.org > /dev/null 2>&1', hour: '*/5', minute: '*' }
+  - name: Executing ntpdate                                             #Executing ntpdate
+    command: /usr/sbin/ntpdate pool.ntp.org
+    failed_when: false
+  - name: Checking current time                                         #Checking current time
+    shell: timedatectl status | grep "Local time"
+    register: ctime
+  - name: Current Time                                                  #Current Time
+    debug:
+      var: ctime.stdout_lines
+  - name: Setting default language US                                   #Setting default language US
+    command: localectl set-locale LANG=en_US.UTF-8

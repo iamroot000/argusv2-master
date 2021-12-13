@@ -1,0 +1,24 @@
+FILENAME: 80-443/jinshihao15.com.conf
+-  
++  server {
++      listen 80;
++      server_name jinshihao15.com www.jinshihao15.com;
++      rewrite ^(.*)$ https://www.jinshihao15.com$1 permanent;
++  }
++  
++  server {
++      listen 443;
++      server_name jinshihao15.com www.jinshihao15.com;
++      ssl on;
++      ssl_certificate /usr/local/nginx/conf.d/ssl/jinshihao15.com/fullchain.pem;
++      ssl_certificate_key /usr/local/nginx/conf.d/ssl/jinshihao15.com/privkey.pem;
++  
++      if ($http_host !~* 'www') {
++          rewrite ^(.*)$ https://www.$http_host$1 permanent;
++      }
++  
++      include /usr/local/nginx/conf.d/include/bbetasia_official_masterconfig.include;
++  }
++  
++  
+

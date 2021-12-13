@@ -1,0 +1,105 @@
+{% extends "base.html" %}
+
+{% block js %}
+    {{ block.super }} {# includes previous content in block #}
+
+    <script src="/static/js/select2/select2.full.min.js"></script>
+
+    <script src="/static/js/fwdcontrol/haproxy.js" type="text/javascript"></script>
+   <script src="/static/js/plugins/codemirror/codemirror.js"></script>
+    <script src="/static/js/fwdcontrol/coffeescript.js" type="text/javascript"></script>
+    <script src="/static/js/plugins/codemirror/mode/javascript/javascript.js"></script>
+    <script src="/static/js/plugins/toastr/toastr.min.js"></script>
+
+{% endblock %}
+
+{% block style %}
+    {{ block.super }} {# includes previous content in block #}
+
+    <link href="/static/css/plugins/codemirror/codemirror.css" rel="stylesheet">
+    <link href="/static/css/plugins/codemirror/monokai.css" rel="stylesheet">
+
+
+<style>
+
+    .CodeMirror {
+  border: 1px solid #eee;
+  height: auto;
+}
+</style>
+{% endblock %}
+
+
+
+{% block content %}
+
+<div class="row">
+        <div class="col-lg-12">
+
+    <div class="ibox float-e-margins">
+
+
+        <div class="ibox-content">
+            <div class="row">
+                <div class="col-lg-6">
+                    <h2>Main Data center Haproxy Servers</h2>
+                </div>
+                <div class="col-lg-6">
+                    <h3>Hosts</h3>
+                    <ul>
+                        {% for i in ansible_hosts %}
+                            <li>{{ i }}</li>
+                        {% endfor %}
+
+                    </ul>
+                </div>
+            </div>
+
+            <hr/>
+            <div class="row">
+                <div class="col-lg-3">
+
+
+                    <select class="form-control select2"  data-placeholder="File" name="file" id="file" onchange="getConfig(this.value);" required>
+
+                        {% for i in FILES %}
+                        <option id="{{ i }}" value="{{ i }}" >{{ i }}</option>
+                        {% endfor %}
+
+                    </select>
+                </div>
+                <div class="col-lg-9">
+
+                    <div class="col-lg-1 pull-right">
+                        <a href="#" id="sync" class="btn btn-primary pull-right" onclick="sync();">Sync</a>
+                    </div>
+                    <div class="col-lg-6 pull-right">
+                        <a href="#" id="commit" class="btn btn-success pull-right" onclick="commitFile();">Commit File</a>
+                    </div>
+                </div>
+
+
+            </div>
+            <br/>
+            <div class="row">
+                <div class="col-lg-12">
+                <textarea id="filehandler">
+
+                </textarea>
+                </div>
+            </div>
+
+
+
+
+
+
+
+        </div>
+
+    </div>
+    </div>
+
+</div>
+
+{% endblock %}

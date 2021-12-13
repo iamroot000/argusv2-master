@@ -1,0 +1,84 @@
+---
+  - name: Adding Epel and Rpmforge Repository
+    shell: "{{ item }}"
+    with_items:
+     - 'find /root/ -type f -name "add-rpmforge_epel-repo.sh" | xargs rm -f'
+     - 'find /root/ -type f -name "RPM-GPG-KEY.dag.txt" | xargs rm -f'
+  - name: Downloading rpmforge
+    get_url:
+     url: http://office.pc-setting.info/cyrus/add-rpmforge_epel-repo.sh
+     url_username: omadmin
+     url_password: ngxOM1q5t
+     dest: /root/
+     mode: '+x'
+  - name: Executing script
+    shell: /root/add-rpmforge_epel-repo.sh
+  - name: Variables
+    shell: "{{ item.shell }}"
+    register: "{{ item.register }}"
+    with_items:
+     - { shell: 'cat /etc/redhat-release 2>&1', register: 'centos'  }
+     - { shell: "cat /etc/redhat-release | awk '{print $3}' | cut -d '.' -f1 2>&1", register: 'centos6'  }
+     - { shell: "cat /etc/redhat-release | awk '{print $4}' | cut -d '.' -f1 2>&1", register: 'centos7'  }
+     - { shell: 'uname -r | cut -d "." -f1 2>&1', register: 'kernel'  }
+  - name: Variables2
+    shell: curl -s https://ip.cn | grep -E -o '([0-9]{1,3}[\.]){3}[0-9]{1,3}'
+    register: IP
+
+  handlers:
+  - name: Puppet6 Installing Puppet Agent
+    yum:
+     name: puppet-agent
+     state: present
+  - name: Puppet6 Configuring Puppet Agent
+    lineinfile:
+     dest: '{{ item.dest }}'
+     regexp: '^{{ item.regexp }}'
+     line: '{{ item.line }}'
+     state: present
+    with_items:
+     - { dest: '/etc/puppetlabs/puppet/puppet.conf', regexp: 'certname = ', line: 'certname = {{ IP.stdout }}'  }
+     - { dest: '/etc/puppetlabs/puppet/puppet.conf', regexp: 'server = ', line: 'server = puppetmaster-softlayer-hk189'  }
+     - { dest: '/etc/puppetlabs/puppet/puppet.conf', regexp: 'environment = ', line: 'environment = production'  }
+     - { dest: '/etc/puppetlabs/puppet/puppet.conf', regexp: 'runinterval = ', line: 'runinterval = 1m'  }
+     - { dest: '/etc/hosts', regexp: '119.81.239.189 puppetmaster-softlayer-hk189', line: '119.81.239.189 puppetmaster-softlayer-hk189'  }
+  - name: Puppet6 source /etc/profile
+    shell: source /etc/profile
+    args:
+     executable: /bin/bash
+  - name: Enable puppet6
+    systemd:
+     name: puppet
+     enabled: yes
+  - name: Puppet6 agent
+    debug:
+     msg: "Puppet Agent has been installed."
+  - name: Puppet7 Installing Puppet Agent
+    yum:
+     name: puppet-agent
+     state: present
+  - name: Puppet7 Configuring Puppet Agent
+    lineinfile:
+     dest: '{{ item.dest }}'
+     regexp: '^{{ item.regexp }}'
+     line: '{{ item.line }}'
+     state: present
+    with_items:
+     - { dest: '/etc/puppetlabs/puppet/puppet.conf', regexp: 'certname = ', line: 'certname = {{ IP.stdout }}'  }
+     - { dest: '/etc/puppetlabs/puppet/puppet.conf', regexp: 'server = ', line: 'server = puppetmaster-softlayer-hk189'  }
+     - { dest: '/etc/puppetlabs/puppet/puppet.conf', regexp: 'environment = ', line: 'environment = production'  }
+     - { dest: '/etc/puppetlabs/puppet/puppet.conf', regexp: 'runinterval = ', line: 'runinterval = 1m'  }
+     - { dest: '/etc/hosts', regexp: '119.81.239.189 puppetmaster-softlayer-hk189', line: '119.81.239.189 puppetmaster-softlayer-hk189'  }
+     - { dest: '/etc/profile', regexp: 'export PATH=', line: 'export PATH=/opt/puppetlabs/bin/puppet:$PATH'  }
+  - name: Puppet7 source /etc/profile
+    shell: source /etc/profile
+    args:
+     executable: /bin/bash
+  - name: Enable puppet7
+    systemd:
+     name: puppet
+     enabled: yes
+  - name: Puppet7 agent
+    debug:
+     msg: "Puppet Agent has been installed."
+  

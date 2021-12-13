@@ -1,0 +1,138 @@
+ESYNC_WORKER1_COMMAND_END
+MAX RETRIES EXECUTED, COMMAND NOT RESPONDINGESYNC_WORKER1_COMMAND_START
+
+PLAY [fpms-test_nginx] *********************************************************
+
+TASK [nginx_sync : Notify] *****************************************************
+ok: [119.9.104.64] => {
+
+    "msg": "Syncing fpms-test_nginx"
+}
+ok: [154.223.188.192] => {
+    "msg": "Syncing fpms-test_nginx"
+}
+
+
+TASK [nginx_sync : include_vars] ***********************************************
+ok: [119.9.104.64]
+ok: [154.223.188.192]
+
+
+TASK [nginx_sync : Synchronizing Nginx] ****************************************
+changed: [154.223.188.192] => (item=conf)
+changed: [119.9.104.64] => (item=conf)
+ok: [119.9.104.64] => (item=conf.d)
+ok: [154.223.188.192] => (item=conf.d)
+
+ok: [119.9.104.64] => (item=data)
+ok: [154.223.188.192] => (item=data)
+ok: [119.9.104.64] => (item=html)
+ok: [154.223.188.192] => (item=html)
+
+
+TASK [all_servers : include_vars] **********************************************
+ok: [119.9.104.64]
+ok: [154.223.188.192]
+
+TASK [all_servers : Notify] ****************************************************
+
+ok: [119.9.104.64] => {
+    "msg": "Clearing Nginx Cache for fpms-test_nginx"
+}
+ok: [154.223.188.192] => {
+    "msg": "Clearing Nginx Cache for fpms-test_nginx"
+
+}
+
+TASK [all_servers : Copying clear_nginxcache.sh to remote hosts] ***************
+ok: [154.223.188.192]
+ok: [119.9.104.64]
+
+
+TASK [all_servers : Nginx Clear Cache] *****************************************
+fatal: [154.223.188.192]: FAILED! => {"changed": true, "cmd": ["/bak/bin/clear_nginxcache.sh"], "delta": "0:00:00.013945", "end": "2019-03-12 09:56:45.174604", "msg": "non-zero return code", "rc": 1, "start": "2019-03-12 09:56:45.160659", "stderr": "nginx: [emerg] unknown directive \"geoip_country\" in /usr/local/nginx/conf.d/global/geoip.conf:2\nnginx: configuration file /usr/local/nginx/conf/nginx.conf test failed", "stderr_lines": ["nginx: [emerg] unknown directive \"geoip_country\" in /usr/local/nginx/conf.d/global/geoip.conf:2", "nginx: configuration file /usr/local/nginx/conf/nginx.conf test failed"], "stdout": "-----------------------------------------------------------\n|                 Checking Nginx Config                   |\n-----------------------------------------------------------\n\n nginx -t \n\n+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n|                  CONFIGURATION ERROR!                   |\n+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++", "stdout_lines": ["-----------------------------------------------------------", "|                 Checking Nginx Config                   |", "-----------------------------------------------------------", "", " nginx -t ", "", "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++", "|                  CONFIGURATION ERROR!                   |", "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"]}
+changed: [119.9.104.64]
+
+
+TASK [all_servers : debug] *****************************************************
+ok: [119.9.104.64] => {
+    "script_result.stdout_lines": [
+        "-----------------------------------------------------------", 
+        "|                 Checking Nginx Config                   |", 
+
+        "-----------------------------------------------------------", 
+        "", 
+        " nginx -t ", 
+        "", 
+        "-----------------------------------------------------------", 
+
+        "|                 Stopping Nginx Process                  |", 
+        "-----------------------------------------------------------", 
+        "", 
+        " /usr/bin/killall -9 nginx ", 
+        "", 
+
+        "-----------------------------------------------------------", 
+        "|                 Clearing Proxy Cache                    |", 
+        "-----------------------------------------------------------", 
+        "", 
+        " /bin/rm -rf /tmp/nginx_cache ", 
+
+        "", 
+        "-----------------------------------------------------------", 
+        "|                Restarting Nginx Process                 |", 
+        "-----------------------------------------------------------", 
+        "root     28262  0.3  0.0 106080  1428 ?        S    09:56   0:00 /bin/bash /bak/bin/clear_nginxcache.sh", 
+
+        "root     28273  0.0  0.1 296152  3760 ?        Ss   09:56   0:00 nginx: master process /usr/local/nginx/sbin/nginx", 
+        "nobody   28275  0.0  0.3 300324  8180 ?        S    09:56   0:00 nginx: worker process      ", 
+        "nobody   28276  0.0  0.3 300324  8180 ?        S    09:56   0:00 nginx: worker process      ", 
+        "nobody   28277  0.0  0.3 300324  8180 ?        S    09:56   0:00 nginx: worker process      ", 
+        "nobody   28278  0.0  0.3 300324  8180 ?        S    09:56   0:00 nginx: worker process      ", 
+
+        "nobody   28279  0.0  0.2 296152  4172 ?        S    09:56   0:00 nginx: cache manager process", 
+        "nobody   28280  0.0  0.2 296152  4120 ?        S    09:56   0:00 nginx: cache loader process", 
+        "root     28285  0.0  0.0 103320   888 ?        S    09:56   0:00 grep nginx", 
+        "             total       used       free     shared    buffers     cached", 
+        "Mem:          2000       1852        147          1        124        208", 
+
+        "-/+ buffers/cache:       1518        481", 
+        "Swap:            0          0          0", 
+        "-----------------------------------------------------------", 
+        "|                     Reload SUCCESS!                     |", 
+        "-----------------------------------------------------------"
+
+    ]
+}
+
+PLAY [127.0.0.1] ***************************************************************
+
+
+TASK [sync_to_git : Synchronizing Nginx To GIT] ********************************
+changed: [127.0.0.1]
+
+TASK [sync_to_git : debug] *****************************************************
+ok: [127.0.0.1] => {
+
+    "script_result.stdout_lines": [
+        "[master 7bf9d1d] aaron.navarro", 
+        " 3 files changed, 220 insertions(+), 93 deletions(-)", 
+        " create mode 100644 nginx/hostgroups/fpms-test_nginx/nginx/conf.d/other/devtest.wsweb.me.conf", 
+        "Branch master set up to track remote branch master from origin."
+
+    ]
+}
+
+PLAY [fpms-test_nginx] *********************************************************
+
+
+PLAY [127.0.0.1] ***************************************************************
+	to retry, use: --limit @/ansible/nginx/site.retry
+
+PLAY RECAP *********************************************************************
+119.9.104.64               : ok=8    changed=2    unreachable=0    failed=0   
+
+127.0.0.1                  : ok=2    changed=1    unreachable=0    failed=0   
+154.223.188.192            : ok=6    changed=1    unreachable=0    failed=1   
+
+

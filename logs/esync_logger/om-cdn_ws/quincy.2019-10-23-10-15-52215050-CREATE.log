@@ -1,0 +1,32 @@
+--- /ansible/nginx/hostgroups/om-cdn_ws/nginx/conf.d/other/v68-prod-test.conf	2019-10-23 10:03:10.679283044 +0800
++++ /tmp/v68-prod-test.conf	2019-10-23 10:15:52.113871112 +0800
+@@ -329,5 +329,28 @@
+ }
+ 
+ 
++server {
++        listen 90;
++        server_name   prod.v68game.com;
++        access_log logs/90.access.log main;
++        error_log  logs/90.error.log;
++        location / {
++                    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
++                proxy_set_header X-Real-IP  $remote_addr;
++                proxy_next_upstream http_502 http_504 http_404 error timeout invalid_header;
++                proxy_set_header Host $host:$server_port;
++                proxy_http_version 1.1;
++                proxy_set_header Upgrade $http_upgrade;
++                proxy_set_header Connection $connection_upgrade;
++                proxy_connect_timeout   1800;
++                proxy_send_timeout      1800;
++                proxy_read_timeout      1800;
++                #root html;
++                #index index.html index.htm index.jsp index.php;
++                proxy_pass http://59.148.22.110:9090;
++        }
++}
++
++
+ 
+ 
+

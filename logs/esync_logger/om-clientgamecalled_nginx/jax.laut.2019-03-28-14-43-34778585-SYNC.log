@@ -1,0 +1,191 @@
+ESYNC_WORKER1_COMMAND_START
+
+PLAY [om-clientgamecalled_nginx] ***********************************************
+
+TASK [nginx_sync : Notify] *****************************************************
+ok: [119.9.110.31] => {
+
+    "msg": "Syncing om-clientgamecalled_nginx"
+}
+ok: [23.99.114.30] => {
+    "msg": "Syncing om-clientgamecalled_nginx"
+}
+
+
+TASK [nginx_sync : include_vars] ***********************************************
+ok: [119.9.110.31]
+ok: [23.99.114.30]
+
+
+TASK [nginx_sync : Synchronizing Nginx] ****************************************
+ok: [119.9.110.31] => (item=conf)
+ok: [23.99.114.30] => (item=conf)
+changed: [119.9.110.31] => (item=conf.d)
+changed: [23.99.114.30] => (item=conf.d)
+
+ok: [119.9.110.31] => (item=data)
+ok: [23.99.114.30] => (item=data)
+ok: [119.9.110.31] => (item=html)
+ok: [23.99.114.30] => (item=html)
+
+
+TASK [all_servers : include_vars] **********************************************
+ok: [119.9.110.31]
+ok: [23.99.114.30]
+
+TASK [all_servers : Notify] ****************************************************
+
+ok: [119.9.110.31] => {
+    "msg": "Clearing Nginx Cache for om-clientgamecalled_nginx"
+}
+ok: [23.99.114.30] => {
+    "msg": "Clearing Nginx Cache for om-clientgamecalled_nginx"
+
+ESYNC_WORKER1_COMMAND_END
+MAX RETRIES EXECUTED, COMMAND NOT RESPONDING}
+
+TASK [all_servers : Copying clear_nginxcache.sh to remote hosts] ***************
+ok: [23.99.114.30]
+ok: [119.9.110.31]
+
+
+TASK [all_servers : Nginx Clear Cache] *****************************************
+changed: [23.99.114.30]
+changed: [119.9.110.31]
+
+
+TASK [all_servers : debug] *****************************************************
+ok: [119.9.110.31] => {
+    "script_result.stdout_lines": [
+        "-----------------------------------------------------------", 
+        "|                 Checking Nginx Config                   |", 
+
+        "-----------------------------------------------------------", 
+        "", 
+        " nginx -t ", 
+        "", 
+        "-----------------------------------------------------------", 
+
+        "|                 Stopping Nginx Process                  |", 
+        "-----------------------------------------------------------", 
+        "", 
+        " /usr/bin/killall -9 nginx ", 
+        "", 
+
+        "-----------------------------------------------------------", 
+        "|                 Clearing Proxy Cache                    |", 
+        "-----------------------------------------------------------", 
+        "", 
+        " /bin/rm -rf /tmp/nginx_cache ", 
+
+        "", 
+        "-----------------------------------------------------------", 
+        "|                Restarting Nginx Process                 |", 
+        "-----------------------------------------------------------", 
+        "root     29074  0.0  0.0 106064  1432 ?        S    14:43   0:00 /bin/bash /bak/bin/clear_nginxcache.sh", 
+
+        "root     29099  0.0  0.1 464672  5552 ?        Ss   14:43   0:00 nginx: master process /usr/local/nginx/sbin/nginx", 
+        "nobody   29100  0.0  0.3 471240 13904 ?        S    14:43   0:00 nginx: worker process      ", 
+        "nobody   29102  0.0  0.3 471240 13904 ?        S    14:43   0:00 nginx: worker process      ", 
+        "nobody   29103  0.0  0.3 471240 13904 ?        S    14:43   0:00 nginx: worker process      ", 
+        "nobody   29104  0.0  0.3 471240 13904 ?        S    14:43   0:00 nginx: worker process      ", 
+
+        "nobody   29105  0.0  0.1 464672  6044 ?        S    14:43   0:00 nginx: cache manager process", 
+        "nobody   29106  0.0  0.1 464672  5916 ?        S    14:43   0:00 nginx: cache loader process", 
+        "root     29108  0.0  0.0 103244   880 ?        S    14:43   0:00 grep nginx", 
+        "             total       used       free     shared    buffers     cached", 
+        "Mem:          3954       3501        452          2        405        487", 
+
+        "-/+ buffers/cache:       2607       1346", 
+        "Swap:            0          0          0", 
+        "-----------------------------------------------------------", 
+        "|                     Reload SUCCESS!                     |", 
+        "-----------------------------------------------------------"
+
+    ]
+}
+ok: [23.99.114.30] => {
+    "script_result.stdout_lines": [
+        "-----------------------------------------------------------", 
+
+        "|                 Checking Nginx Config                   |", 
+        "-----------------------------------------------------------", 
+        "", 
+        " nginx -t ", 
+        "", 
+
+        "-----------------------------------------------------------", 
+        "|                 Stopping Nginx Process                  |", 
+        "-----------------------------------------------------------", 
+        "", 
+        " /usr/bin/killall -9 nginx ", 
+
+        "", 
+        "-----------------------------------------------------------", 
+        "|                 Clearing Proxy Cache                    |", 
+        "-----------------------------------------------------------", 
+        "", 
+
+        " /bin/rm -rf /tmp/nginx_cache ", 
+        "", 
+        "-----------------------------------------------------------", 
+        "|                Restarting Nginx Process                 |", 
+        "-----------------------------------------------------------", 
+
+        "root      31016  0.0  0.0 105468   884 pts/3    S+   14:41   0:00 less /usr/local/nginx/conf.d/other/cpms-front-ptgmr.conf", 
+        "root      31367  0.0  0.0 100912   592 pts/7    S+   14:41   0:00 tailf /usr/local/nginx/logs/realcpmsfrontptgmr.access.log", 
+        "root      31978  0.0  0.0 106120  1296 ?        S    14:43   0:00 /bin/bash /bak/bin/clear_nginxcache.sh", 
+        "root      32113  2.0  0.2 462536 10196 ?        Ss   14:43   0:00 /usr/local/nginx/sbin/nginx", 
+        "root      32118  0.0  0.1 462544  5424 ?        Ss   14:43   0:00 nginx: master process /usr/local/nginx/sbin/nginx", 
+
+        "nobody    32119  0.0  0.3 469112 13780 ?        S    14:43   0:00 nginx: worker process      ", 
+        "nobody    32121  0.0  0.4 469112 14224 ?        S    14:43   0:00 nginx: worker process      ", 
+        "nobody    32122  0.0  0.4 469112 14224 ?        S    14:43   0:00 nginx: worker process      ", 
+        "nobody    32123  0.5  0.3 469112 13692 ?        S    14:43   0:00 nginx: worker process      ", 
+        "nobody    32124  0.0  0.1 462544  5832 ?        S    14:43   0:00 nginx: cache manager process", 
+
+        "nobody    32125  0.0  0.1 462544  5780 ?        S    14:43   0:00 nginx: cache loader process", 
+        "root      32130  0.0  0.0 103332   856 ?        S    14:43   0:00 grep nginx", 
+        "root      93962  0.0  0.0   9120   652 ?        Ss   Mar19   0:00 /sbin/dhclient -H om-clientgamecalled_nginx2.hk.az.monaco1.me -1 -q -lf /var/lib/dhclient/dhclient-eth0.leases -pf /var/run/dhclient-eth0.pid eth0", 
+        "root     130177  0.0  0.0 105468   956 pts/4    S+   12:59   0:00 less /usr/local/nginx/conf.d/other/cpms-front-ptgmr.conf", 
+        "             total       used       free     shared    buffers     cached", 
+
+        "Mem:          3440       2108       1331          5        206        646", 
+        "-/+ buffers/cache:       1256       2184", 
+        "Swap:            0          0          0", 
+        "-----------------------------------------------------------", 
+        "|                     Reload SUCCESS!                     |", 
+
+        "-----------------------------------------------------------"
+    ]
+}
+
+PLAY [127.0.0.1] ***************************************************************
+
+
+TASK [sync_to_git : Synchronizing Nginx To GIT] ********************************
+changed: [127.0.0.1]
+
+TASK [sync_to_git : debug] *****************************************************
+
+ok: [127.0.0.1] => {
+    "script_result.stdout_lines": [
+        "[master 5eab0e0] jax.laut", 
+        " 1 file changed, 4 insertions(+)", 
+        "Branch master set up to track remote branch master from origin."
+
+    ]
+}
+
+PLAY [om-clientgamecalled_nginx] ***********************************************
+
+
+PLAY [127.0.0.1] ***************************************************************
+
+PLAY RECAP *********************************************************************
+119.9.110.31               : ok=8    changed=2    unreachable=0    failed=0   
+127.0.0.1                  : ok=2    changed=1    unreachable=0    failed=0   
+
+23.99.114.30               : ok=8    changed=2    unreachable=0    failed=0   
+
+

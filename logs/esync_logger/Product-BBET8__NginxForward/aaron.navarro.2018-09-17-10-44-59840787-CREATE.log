@@ -1,0 +1,24 @@
+FILENAME: 80-443/veligood.com.conf
+-  
++  server {
++      listen 80;
++      server_name veligood.com www.veligood.com;
++      rewrite ^(.*)$ https://www.veligood.com$1 permanent;
++  }
++  
++  server {
++      listen 443;
++      server_name veligood.com www.veligood.com;
++      ssl on;
++      ssl_certificate /usr/local/nginx/conf.d/ssl/veligood.com/fullchain.pem;
++      ssl_certificate_key /usr/local/nginx/conf.d/ssl/veligood.com/privkey.pem;
++  
++      if ($http_host !~* 'www') {
++          rewrite ^(.*)$ https://www.$http_host$1 permanent;
++      }
++  
++      include /usr/local/nginx/conf.d/include/bbet8_veligood_web.include;
++  }
++  
++  
+

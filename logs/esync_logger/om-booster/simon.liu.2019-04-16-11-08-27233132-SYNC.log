@@ -1,0 +1,172 @@
+ESYNC_WORKER1_COMMAND_START
+
+PLAY [om-booster] **************************************************************
+
+TASK [nginx_sync : Notify] *****************************************************
+ok: [39.108.231.108] => {
+
+    "msg": "Syncing om-booster"
+}
+ok: [168.63.220.150] => {
+    "msg": "Syncing om-booster"
+}
+
+
+TASK [nginx_sync : include_vars] ***********************************************
+ok: [39.108.231.108]
+ok: [168.63.220.150]
+
+
+TASK [nginx_sync : Synchronizing Nginx] ****************************************
+changed: [168.63.220.150] => (item=conf)
+changed: [39.108.231.108] => (item=conf)
+changed: [168.63.220.150] => (item=conf.d)
+changed: [39.108.231.108] => (item=conf.d)
+
+ok: [168.63.220.150] => (item=data)
+ok: [39.108.231.108] => (item=data)
+ok: [168.63.220.150] => (item=html)
+ok: [39.108.231.108] => (item=html)
+
+
+TASK [all_servers : include_vars] **********************************************
+ok: [39.108.231.108]
+ok: [168.63.220.150]
+
+TASK [all_servers : Notify] ****************************************************
+
+ok: [39.108.231.108] => {
+    "msg": "Clearing Nginx Cache for om-booster"
+}
+ok: [168.63.220.150] => {
+    "msg": "Clearing Nginx Cache for om-booster"
+
+ESYNC_WORKER1_COMMAND_END
+MAX RETRIES EXECUTED, COMMAND NOT RESPONDING}
+
+TASK [all_servers : Copying clear_nginxcache.sh to remote hosts] ***************
+ok: [168.63.220.150]
+ok: [39.108.231.108]
+
+
+TASK [all_servers : Nginx Clear Cache] *****************************************
+changed: [39.108.231.108]
+changed: [168.63.220.150]
+
+
+TASK [all_servers : debug] *****************************************************
+ok: [39.108.231.108] => {
+    "script_result.stdout_lines": [
+        "-----------------------------------------------------------", 
+        "|                 Checking Nginx Config                   |", 
+
+        "-----------------------------------------------------------", 
+        "", 
+        " nginx -t ", 
+        "", 
+        "-----------------------------------------------------------", 
+
+        "|                 Stopping Nginx Process                  |", 
+        "-----------------------------------------------------------", 
+        "", 
+        " /usr/bin/killall -9 nginx ", 
+        "", 
+
+        "-----------------------------------------------------------", 
+        "|                 Clearing Proxy Cache                    |", 
+        "-----------------------------------------------------------", 
+        "", 
+        " /bin/rm -rf /tmp/nginx_cache ", 
+
+        "", 
+        "-----------------------------------------------------------", 
+        "|                Restarting Nginx Process                 |", 
+        "-----------------------------------------------------------", 
+        "root     27474  0.3  0.0 113180  1500 ?        S    11:08   0:00 /bin/bash /bak/bin/clear_nginxcache.sh", 
+
+        "root     27697  0.6  0.0  32644  3252 pts/5    Ss+  11:08   0:00 nginx: master process nginx -g daemon off;", 
+        "101      27784  0.0  0.0  33100  1600 pts/5    S+   11:08   0:00 nginx: worker process", 
+        "root     27787  0.0  0.0 724820  3532 ?        Ss   11:08   0:00 nginx: master process /usr/local/nginx/sbin/nginx", 
+        "nobody   27788  0.0  0.1 729072  8172 ?        S    11:08   0:00 nginx: worker process", 
+        "nobody   27790  0.0  0.1 729072  8172 ?        S    11:08   0:00 nginx: worker process", 
+
+        "nobody   27791  0.0  0.1 729072  8172 ?        S    11:08   0:00 nginx: worker process", 
+        "nobody   27792  0.0  0.1 729072  8172 ?        S    11:08   0:00 nginx: worker process", 
+        "nobody   27793  0.0  0.0 724820  3972 ?        S    11:08   0:00 nginx: cache manager process", 
+        "nobody   27794  0.0  0.0 724820  3972 ?        S    11:08   0:00 nginx: cache loader process", 
+        "root     27796  0.0  0.0 112712   956 ?        S    11:08   0:00 grep nginx", 
+
+        "              total        used        free      shared  buff/cache   available", 
+        "Mem:           7821         589        3403           5        3827        6887", 
+        "Swap:             0           0           0", 
+        "-----------------------------------------------------------", 
+        "|                     Reload SUCCESS!                     |", 
+
+        "-----------------------------------------------------------"
+    ]
+}
+ok: [168.63.220.150] => {
+    "script_result.stdout_lines": [
+
+        "-----------------------------------------------------------", 
+        "|                 Checking Nginx Config                   |", 
+        "-----------------------------------------------------------", 
+        "", 
+        " nginx -t ", 
+
+        "", 
+        "-----------------------------------------------------------", 
+        "|                 Stopping Nginx Process                  |", 
+        "-----------------------------------------------------------", 
+        "", 
+
+        " /usr/bin/killall -9 nginx ", 
+        "", 
+        "-----------------------------------------------------------", 
+        "|                 Clearing Proxy Cache                    |", 
+        "-----------------------------------------------------------", 
+
+        "", 
+        " /bin/rm -rf /tmp/nginx_cache ", 
+        "", 
+        "-----------------------------------------------------------", 
+        "|                Restarting Nginx Process                 |", 
+
+        "-----------------------------------------------------------", 
+        "root      29230  0.0  0.0  32644  3256 pts/0    Ss+  Apr11   0:00 nginx: master process nginx -g daemon off;", 
+        "101       29290  0.0  0.0  33100  1836 pts/0    S+   Apr11   0:00 nginx: worker process", 
+        "root      64850  0.0  0.0 725368  3548 ?        Ss   11:04   0:00 nginx: master process /usr/local/nginx/sbin/nginx", 
+        "nobody    64851  0.0  0.1 731852 10320 ?        S    11:04   0:00 nginx: worker process", 
+
+        "nobody    64852  0.0  0.1 731788  8284 ?        S    11:04   0:00 nginx: worker process", 
+        "nobody    64854  0.0  0.1 731852 10300 ?        S    11:04   0:00 nginx: worker process", 
+        "nobody    64855  0.0  0.1 731980 10584 ?        S    11:04   0:00 nginx: worker process", 
+        "nobody    64856  0.0  0.0 727456  4312 ?        S    11:04   0:00 nginx: cache manager process", 
+        "root      65066  0.5  0.0 113180  1500 ?        S    11:08   0:00 /bin/bash /bak/bin/clear_nginxcache.sh", 
+
+        "root      65074  0.0  0.0 112712   960 ?        S    11:08   0:00 grep nginx", 
+        "              total        used        free      shared  buff/cache   available", 
+        "Mem:           7964         979        1420         117        5564        6106", 
+        "Swap:             0           0           0", 
+        "-----------------------------------------------------------", 
+
+        "|                     Reload SUCCESS!                     |", 
+        "-----------------------------------------------------------"
+    ]
+}
+
+
+PLAY [127.0.0.1] ***************************************************************
+
+TASK [sync_to_git : Synchronizing Nginx To GIT] ********************************
+fatal: [127.0.0.1]: FAILED! => {"changed": true, "cmd": "git add .\n git commit -m \"simon.liu\"\n git push\n git push -u origin master", "delta": "0:00:20.300451", "end": "2019-04-16 11:09:06.276835", "msg": "non-zero return code", "rc": 128, "start": "2019-04-16 11:08:45.976384", "stderr": "fatal: unable to access 'http://om:sPCJ-015@git.neweb.me/nginx_cloud/om-booster.git/': Could not resolve host: git.neweb.me; Unknown error\nfatal: unable to access 'http://om:sPCJ-015@git.neweb.me/nginx_cloud/om-booster.git/': Could not resolve host: git.neweb.me; Unknown error", "stderr_lines": ["fatal: unable to access 'http://om:sPCJ-015@git.neweb.me/nginx_cloud/om-booster.git/': Could not resolve host: git.neweb.me; Unknown error", "fatal: unable to access 'http://om:sPCJ-015@git.neweb.me/nginx_cloud/om-booster.git/': Could not resolve host: git.neweb.me; Unknown error"], "stdout": "[master 1b14ac3] simon.liu\n 2 files changed, 2 insertions(+), 2 deletions(-)", "stdout_lines": ["[master 1b14ac3] simon.liu", " 2 files changed, 2 insertions(+), 2 deletions(-)"]}
+	to retry, use: --limit @/ansible/nginx/site.retry
+
+
+PLAY RECAP *********************************************************************
+127.0.0.1                  : ok=0    changed=0    unreachable=0    failed=1   
+168.63.220.150             : ok=8    changed=2    unreachable=0    failed=0   
+39.108.231.108             : ok=8    changed=2    unreachable=0    failed=0   
+
+
+

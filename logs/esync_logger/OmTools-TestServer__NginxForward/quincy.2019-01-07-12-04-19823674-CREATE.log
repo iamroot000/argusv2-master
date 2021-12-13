@@ -1,0 +1,44 @@
+--- /srv/OmTools-TestServer__NginxForward/nginx/conf.d/include/xbetcms.neweb.me.include	2019-01-07 11:53:38.100056340 +0800
++++ /tmp/xbetcms.neweb.me.include	2019-01-07 12:04:19.676056340 +0800
+@@ -9,12 +9,38 @@
+         }
+ 
+        location ~* .*\.(html|png|jpg|gif|jpeg|bmp|ico|css|js|json|exe)?$ {
+-           include proxy.conf;
++       proxy_redirect          off; 
++		proxy_set_header        Host            $host; 
++		#proxy_set_header        X-Real-IP       $remote_addr;
++		#proxy_set_header        referer         "";
++		proxy_set_header        X-Forwarded-For $proxy_add_x_forwarded_for; 
++		proxy_connect_timeout   80; 
++		proxy_send_timeout      80; 
++		proxy_read_timeout      80; 
++		client_max_body_size    35m;
++		client_body_buffer_size 256k;
++		proxy_buffer_size       256k;
++		proxy_buffers           4 256k;
++		proxy_busy_buffers_size 256k;
++		proxy_temp_file_write_size      256k;
+            proxy_pass http://xbetappcms;
+       }
+ 
+        location  /api/ {
+-               include proxy.conf;
++       proxy_redirect          off; 
++		proxy_set_header        Host            $host; 
++		#proxy_set_header        X-Real-IP       $remote_addr;
++		#proxy_set_header        referer         "";
++		proxy_set_header        X-Forwarded-For $proxy_add_x_forwarded_for; 
++		proxy_connect_timeout   80; 
++		proxy_send_timeout      80; 
++		proxy_read_timeout      80; 
++		client_max_body_size    35m;
++		client_body_buffer_size 256k;
++		proxy_buffer_size       256k;
++		proxy_buffers           4 256k;
++		proxy_busy_buffers_size 256k;
++		proxy_temp_file_write_size      256k;
+                proxy_pass http://xbetappcms;
+ 
+        }
+

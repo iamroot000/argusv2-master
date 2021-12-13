@@ -1,0 +1,60 @@
+--- /puppet/Mirror-FPMS_PMS__NginxForward/templates/iptables.sh	2019-04-18 08:26:13.069490795 +0800
++++ /tmp/iptables.sh	2019-04-30 10:33:28.802699386 +0800
+@@ -1,10 +1,4 @@
+-##DEF
+-/sbin/iptables -A INPUT -m tcp -p tcp --dport 80  -j ACCEPT ##DEFAULT
+-/sbin/iptables -A INPUT -m tcp -p tcp --dport 90  -j ACCEPT ##DEFAULT
+-/sbin/iptables -A INPUT -m tcp -p tcp --dport 443  -j ACCEPT ##DEFAULT
+-/sbin/iptables -A INPUT -m tcp -p tcp --dport 909  -j ACCEPT ##DEFAULT
+-/sbin/iptables -A INPUT -m tcp -p tcp --dport 9005  -j ACCEPT ##DEFAULT
+-/sbin/iptables -A INPUT -m tcp -p tcp --dport 9001  -j ACCEPT ##DEFAULT
++
+ 
+ #ACC
+ /sbin/iptables -A INPUT -s 175.100.203.211 -j ACCEPT #anxuze zhongzhuangapp
+@@ -22,15 +16,7 @@
+ /sbin/iptables -A INPUT -s 14.204.143.46 -j ACCEPT #yunnan office
+ /sbin/iptables -A INPUT -s 118.200.76.228 -j ACCEPT #vincent singapore office IP
+ 
+-#fpms
+-/sbin/iptables -A INPUT -m tcp -p tcp --dport 8220 -j ACCEPT
+-/sbin/iptables -A INPUT -m tcp -p tcp --dport 8330 -j ACCEPT
+-/sbin/iptables -A INPUT -m tcp -p tcp --dport 9000 -j ACCEPT
+-/sbin/iptables -A INPUT -m tcp -p tcp --dport 9280 -j ACCEPT
+-/sbin/iptables -A INPUT -m tcp -p tcp --dport 9680 -j ACCEPT
+-/sbin/iptables -A INPUT -m tcp -p tcp --dport 7000 -j ACCEPT
+-/sbin/iptables -A INPUT -m tcp -p tcp --dport 1802 -j ACCEPT
+-/sbin/iptables -A INPUT -m tcp -p tcp --dport 1804 -j ACCEPT
++
+ 
+ ##Gabo IP
+ /sbin/iptables -A INPUT -s 47.52.192.226 -j ACCEPT
+@@ -75,5 +61,24 @@
+ #aden from china
+ /sbin/iptables -A INPUT -s 125.70.170.196 -j ACCEPT
+ 
+-##TESTING
+-##this is test
++
++ipset destroy TSniperIPS
++ipset create TSniperIPS hash:ip timeout 3600
++/sbin/iptables -A INPUT -m set --match-set TSniperIPS src -j DROP
++
++##DEF
++/sbin/iptables -A INPUT -m tcp -p tcp --dport 80  -j ACCEPT ##DEFAULT
++/sbin/iptables -A INPUT -m tcp -p tcp --dport 90  -j ACCEPT ##DEFAULT
++/sbin/iptables -A INPUT -m tcp -p tcp --dport 443  -j ACCEPT ##DEFAULT
++/sbin/iptables -A INPUT -m tcp -p tcp --dport 909  -j ACCEPT ##DEFAULT
++/sbin/iptables -A INPUT -m tcp -p tcp --dport 9005  -j ACCEPT ##DEFAULT
++/sbin/iptables -A INPUT -m tcp -p tcp --dport 9001  -j ACCEPT ##DEFAULT
++#fpms
++/sbin/iptables -A INPUT -m tcp -p tcp --dport 8220 -j ACCEPT
++/sbin/iptables -A INPUT -m tcp -p tcp --dport 8330 -j ACCEPT
++/sbin/iptables -A INPUT -m tcp -p tcp --dport 9000 -j ACCEPT
++/sbin/iptables -A INPUT -m tcp -p tcp --dport 9280 -j ACCEPT
++/sbin/iptables -A INPUT -m tcp -p tcp --dport 9680 -j ACCEPT
++/sbin/iptables -A INPUT -m tcp -p tcp --dport 7000 -j ACCEPT
++/sbin/iptables -A INPUT -m tcp -p tcp --dport 1802 -j ACCEPT
++/sbin/iptables -A INPUT -m tcp -p tcp --dport 1804 -j ACCEPT
+\ No newline at end of file
+

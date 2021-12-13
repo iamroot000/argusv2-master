@@ -1,0 +1,33 @@
+--- /srv/Mirror-CPMS-ClientGameCalled__NginxForward/nginx/conf.d/other/cpms-front-ptgmr.conf	2018-10-08 10:52:31.452825675 +0800
++++ /tmp/cpms-front-ptgmr.conf	2018-11-20 11:08:50.664772139 +0800
+@@ -17,6 +17,16 @@
+ 
+ 
+ }
++
++upstream cmb27frontcstest  {
++#        server  203.192.151.12:7113 max_fails=2  fail_timeout=30s ;
++#        server  203.177.198.116:7113 max_fails=2  fail_timeout=30s;
++        server  101.78.133.212:9023 max_fails=2  fail_timeout=30s;
++        server  205.177.199.12:9023 max_fails=2  fail_timeout=30s backup;
++
++
++}
++
+ upstream rbfrontcstest  {
+ #        server  203.192.151.12:7113 max_fails=2  fail_timeout=30s ;
+ #        server  203.177.198.116:7113 max_fails=2  fail_timeout=30s;
+@@ -56,6 +66,12 @@
+ 	        proxy_next_upstream http_500 http_502 http_503 http_504 http_404 timeout invalid_header error;
+ 		    proxy_pass http://eufrontcstest;
+         }
++          location /cmb27 {
++#		    include /usr/local/nginx/conf.d/include/whitelistIP.include;
++	        include /usr/local/nginx/conf.d/include/proxy.conf.fwd.include ;
++	        proxy_next_upstream http_500 http_502 http_503 http_504 http_404 timeout invalid_header error;
++		    proxy_pass http://cmb27frontcstest;
++        } 
+           location /ruibo {
+ #		    include /usr/local/nginx/conf.d/include/whitelistIP.include;
+ 	        include /usr/local/nginx/conf.d/include/proxy.conf.fwd.include ;
+

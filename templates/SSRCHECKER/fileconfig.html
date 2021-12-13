@@ -1,0 +1,233 @@
+{% extends "base.html" %}
+
+{% block js %}
+    {{ block.super }} {# includes previous content in block #}
+
+    <script src="/static/js/select2/select2.full.min.js"></script>
+
+    <script src="/static/js/plugins/codemirror/codemirror.js"></script>
+    <script src="/static/js/esync/nginx-format.js" type="text/javascript"></script>
+    <script src="/static/js/plugins/codemirror/mode/javascript/javascript.js"></script>
+    <script src="/static/js/plugins/toastr/toastr.min.js"></script>
+
+    <script type="text/javascript" src="/static/multiselect/js/multiselect.min.js"></script>
+    <script src="/static/js/esync/index.js" type="text/javascript"></script>
+    <script>
+    function textFunction() {
+      var x = document.getElementById("file").value;
+      document.getElementById("filehandler").innerHTML = "You selected: " + x;
+    }
+    </script>
+
+
+
+{% endblock %}
+
+{% block style %}
+    {{ block.super }} {# includes previous content in block #}
+
+    <link href="/static/css/plugins/codemirror/codemirror.css" rel="stylesheet">
+    <link href="/static/css/plugins/codemirror/monokai.css" rel="stylesheet">
+
+
+<style>
+
+#myBar {
+  width: 1%;
+  height: 30px;
+  background-color: #4CAF50;
+}
+
+    .CodeMirror {
+  border: 1px solid #eee;
+  height: auto;
+
+}
+.cm-s-monokai .CodeMirror-cursor {border-left: 5px solid #f8f8f0 !important;}
+
+.filename-btn {
+    margin-bottom:5px;
+}
+
+pre{
+    white-space: pre-wrap;
+}
+</style>
+{% endblock %}
+
+
+{% block title %}
+{{ HOSTGROUP }}
+{% endblock %}
+{% block header %}
+<span id="hostgroup">VPN-Manager</span>
+{% endblock %}
+
+
+{% block details %}
+<span id="config_src">VPN Configuration</span>
+{% endblock %}
+
+
+
+
+{% block action %}
+
+{% endblock %}
+{% block content %}
+
+<div onkeyup="resetCounter()" onclick="resetCounter()">
+    {% if request.path == '/vpn-manager/file-configuration/SSRfileedit/' %}
+        <form method="POST" action="{% url 'SSR_filesave'  %}">
+    {% else %}
+        <form method="POST" action="{% url 'SSR_fileedit' %}">
+    {% endif %}
+                                    {% csrf_token %}
+        <div class="row border-bottom white-bg dashboard-header">
+                        <div class="col-lg-6 pull-right" >
+                                <div class="col-lg-6 pull-right" >
+                                    <div class="col-lg-9 " >
+                                    {{ myform.FILE.label_tag }} {{ myform.FILE }}
+                                    </div>
+                                     <div class="col-lg-3 pull-right" id="filediv">
+                                     <h1></h1>
+                                    {% if logs_recap is not True %}
+                                        <p ><button type="submit" class="btn btn-success" disabled><span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>Syncing...</button></p>
+                                    {% else %}
+                                         {% if request.path == '/vpn-manager/file-configuration/SSRfileedit/' %}
+                                            <p > <a href="{% url 'SSR_fileconfig' %}"><button type="button" class="btn btn-danger"><span class="glyphicon glyphicon-edit"></span>Cancel</button></a></p>
+                                         {% else %}
+                                            <p ><button type="submit" class="btn btn-info"><span class="glyphicon glyphicon-edit"></span>Edit</button></p>
+                                         {% endif %}
+                                    {% endif %}
+                                    </div>
+
+                                </div>
+                        </div>
+                        <h1></h1>
+                        <div class="col-lg-6 pull-left" >
+                                {% if messages %}
+                                    <ul class="messages">
+                                        {% for message in messages %}
+                                            {% if message.tags == 'error' %}
+                                                <div {% if message.tags %} class="alert alert-danger" {% endif %} align="left"><h4 align="center">{{ message }}</h4></div>
+                                            {% else %}
+                                                <div {% if message.tags %} class="alert alert-{{ message.tags }}" {% endif %} align="left"><h4 align="center">{{ message }}</h4></div>
+                                            {% endif %}
+                                        {% endfor %}
+                                    </ul>
+                                {% endif %}
+
+                        </div>
+        </div>
+
+
+        <div class="row border-bottom white-bg dashboard-header">
+                    <div class="row" id="textrow">
+                    {{ myform.PREVIOUS.label_tag }} {{ myform.PREVIOUS }}
+                    <hr>
+                    <div class="col-lg-3 pull-right" >
+                        <div class="col-lg-3 pull-right" >
+
+                        {% if logs_recap is not True %}
+                            <p align="right"><button type="submit" class="btn btn-success btn-lg" disabled><span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>Syncing...</button>&emsp;</p>
+                        {% else %}
+                             {% if request.path == '/vpn-manager/file-configuration/SSRfileedit/' or request.path == '/vpn-manager/file-configuration/' %}
+                                {% if messages %}
+                                    {% for message in messages %}
+                                        {% if message.tags == 'error' or message.tags == 'warning' %}
+                                        <p align="right"><a href='#'><button type="button" class="btn btn-success btn-lg" disabled><i class="fa fa-sync"></i><span>Sync</span></button></a>&emsp;</p>
+                                        {% endif %}
+                                    {% endfor %}
+                                {% else %}
+                                    <p align="right"><a href='#'><button type="button" class="btn btn-success btn-lg" disabled><i class="fa fa-sync"></i><span>Sync</span></button></a>&emsp;</p>
+                                {% endif %}
+                             {% else %}
+                                <p align="right"><a href='{% url "SSR_filesync" %}'><button type="button" class="btn btn-success btn-lg "><i class="fa fa-sync"></i><span>Sync</span></button></a>&emsp;</p>
+                            {% endif %}
+                        {% endif %}
+                        </div>
+                         <div class="col-lg-3 pull-right" id="filediv">
+
+                        {% if logs_recap is not True %}
+                            <p ><button type="submit" class="btn btn-primary" disabled><span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>Syncing...</button></p>
+                        {% else %}
+                             {% if request.path == '/vpn-manager/file-configuration/SSRfileedit/' %}
+                                <p > <button type="submit" class="btn btn-primary" ><span class="glyphicon glyphicon-ok"></span>Save</button></p>
+                             {% else %}
+                                <p > <button type="submit" class="btn btn-primary" disabled><span class="glyphicon glyphicon-ok"></span>Save</button></p>
+                             {% endif %}
+                        {% endif %}
+                         </div>
+
+                    </div>
+        </div>
+    </form>
+
+        <div class="row border-bottom white-bg dashboard-header">
+            <hr>
+        <div class="row-2 mb-3">
+            <h1 class="display-3">History:</h1>
+              <div class="col-sm">
+                  <table class="table table-sm table-striped table-bordered" id="mydatatable" style="width: 100%">
+                    <thead>
+                        <tr class="thead-default">
+                            <th align="center" scope="col" >USERNAME</th>
+                            <th align="center" scope="col">FILE</th>
+                            <th align="center" scope="col">UPDATED FILE</th>
+                            <th align="center" scope="col">PREVIOUS FILE</th>
+                            <th align="center" scope="col">ACTION</th>
+                            <th align="center" scope="col">DATE</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    {% for history_data in historydata %}
+                        <tr>
+                            <td align="center" width="8%">{{ history_data.USERNAME }}</td>
+                            <td align="center" width="10%"><p class="text-dark"><h4>{{ history_data.FILE }}</h4></p></td>
+                            <td align="center" width="5%">Details: <span class="glyphicon glyphicon-zoom-in"></span><a href='{% url "SSR_fileupdate" history_data.id %}' target="_blank"> View</a></td>
+                            <td align="center" width="5%">Details: <span class="glyphicon glyphicon-zoom-out"></span><a href='{% url "SSR_fileprevious" history_data.id %}' target="_blank"> View</a></td>
+                            {% if history_data.IP != 'SAVED' %}
+                            <td align="center" width="5%"><span class="badge badge-success">SYNC:</span><span class="glyphicon glyphicon-file"></span><a href='{% url "SSR_filelogs" history_data.id %}' target="_blank"> Logs</a></td>
+                            {% else %}
+                            <td align="center" width="5%"><span class="badge badge-info">{{ history_data.IP }}</span></td>
+                            {% endif %}
+                            <td align="center" width="10%">{{ history_data.DATE }}</td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                    <tfoot>
+                    </tfoot>
+                </table>
+              </div>
+
+        </div>
+            </div>
+<!--SCRIPT-->
+<script src="https://code.jquery.com/jquery-3.3.1.js"></script>
+<script src="https://cdn.datatables.net/1.10.20/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.10.20/js/dataTables.bootstrap4.min.js"></script>
+<!--datatable-->
+<script>
+        $(document).ready(function() {
+            var table = $('#mydatatable').DataTable({
+                            "order": [[ 5, "desc" ]], //or desc (for descending)
+                            "columnDefs" : [{"targets":5, "type":"DATE"}],
+                        });
+        } );
+</script>
+<!--datatable-->
+{% if logs_recap is not True %}
+   <script>
+    setTimeout(function() {
+       location.reload();
+    },5000);
+    $(function () {
+       $("#execute_content").animate({
+        scrollTop: $('#execute_content').get(0).scrollHeight}, 100);});
+   </script>
+{% endif %}
+</div>
+
+{% endblock %}
+

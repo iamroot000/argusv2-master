@@ -1,0 +1,118 @@
+ESYNC_WORKER1_COMMAND_START
+
+PLAY [om-chengdu_nginx] ********************************************************
+
+TASK [nginx_sync : Notify] *****************************************************
+ok: [47.112.127.70] => {
+
+    "msg": "Syncing om-chengdu_nginx"
+}
+
+TASK [nginx_sync : include_vars] ***********************************************
+ok: [47.112.127.70]
+
+
+TASK [nginx_sync : Synchronizing Nginx] ****************************************
+changed: [47.112.127.70] => (item=conf)
+changed: [47.112.127.70] => (item=conf.d)
+ok: [47.112.127.70] => (item=data)
+
+ok: [47.112.127.70] => (item=html)
+
+TASK [all_servers : include_vars] **********************************************
+ok: [47.112.127.70]
+
+
+TASK [all_servers : Notify] ****************************************************
+ok: [47.112.127.70] => {
+    "msg": "Clearing Nginx Cache for om-chengdu_nginx"
+}
+
+
+TASK [all_servers : Copying clear_nginxcache.sh to remote hosts] ***************
+ok: [47.112.127.70]
+
+TASK [all_servers : Nginx Clear Cache] *****************************************
+changed: [47.112.127.70]
+
+
+TASK [all_servers : debug] *****************************************************
+ok: [47.112.127.70] => {
+    "script_result.stdout_lines": [
+        "-----------------------------------------------------------", 
+
+        "|                 Checking Nginx Config                   |", 
+        "-----------------------------------------------------------", 
+        "", 
+        " nginx -t ", 
+        "", 
+
+        "-----------------------------------------------------------", 
+        "|                 Stopping Nginx Process                  |", 
+        "-----------------------------------------------------------", 
+        "", 
+        " /usr/bin/killall -9 nginx ", 
+
+        "", 
+        "-----------------------------------------------------------", 
+        "|                 Clearing Proxy Cache                    |", 
+        "-----------------------------------------------------------", 
+        "", 
+
+        " /bin/rm -rf /tmp/nginx_cache ", 
+        "", 
+        "-----------------------------------------------------------", 
+        "|                Restarting Nginx Process                 |", 
+        "-----------------------------------------------------------", 
+
+        "root      3320  0.1  0.0 113180  1500 ?        S    14:04   0:00 /bin/bash /bak/bin/clear_nginxcache.sh", 
+        "root      3331  0.0  0.0 662752  1292 ?        Ss   14:04   0:00 nginx: master process /usr/local/nginx/sbin/nginx", 
+        "nobody    3332  0.0  0.1 667004  6160 ?        S    14:04   0:00 nginx: worker process", 
+        "nobody    3334  0.0  0.1 667004  5660 ?        S    14:04   0:00 nginx: worker process", 
+        "nobody    3335  0.0  0.1 667004  5908 ?        S    14:04   0:00 nginx: worker process", 
+
+        "nobody    3336  0.0  0.1 667004  5660 ?        S    14:04   0:00 nginx: worker process", 
+        "nobody    3337  0.0  0.0 662916  1712 ?        S    14:04   0:00 nginx: cache manager process", 
+        "nobody    3338  0.0  0.0 662916  1712 ?        S    14:04   0:00 nginx: cache loader process", 
+        "root      3340  0.0  0.0 112708   952 ?        S    14:04   0:00 grep nginx", 
+        "              total        used        free      shared  buff/cache   available", 
+
+        "Mem:           3789         154         146           4        3488        3327", 
+        "Swap:             0           0           0", 
+        "-----------------------------------------------------------", 
+        "|                     Reload SUCCESS!                     |", 
+        "-----------------------------------------------------------"
+
+    ]
+}
+
+PLAY [127.0.0.1] ***************************************************************
+
+
+TASK [sync_to_git : Synchronizing Nginx To GIT] ********************************
+changed: [127.0.0.1]
+
+TASK [sync_to_git : debug] *****************************************************
+ok: [127.0.0.1] => {
+
+    "script_result.stdout_lines": [
+        "[master 17728b9] sherlock.li", 
+        " 1 file changed, 25 insertions(+)", 
+        "Branch master set up to track remote branch master from origin."
+    ]
+
+}
+
+PLAY [om-chengdu_nginx] ********************************************************
+
+PLAY [127.0.0.1] ***************************************************************
+
+
+PLAY RECAP *********************************************************************
+127.0.0.1                  : ok=2    changed=1    unreachable=0    failed=0   
+47.112.127.70              : ok=8    changed=2    unreachable=0    failed=0   
+
+
+
+ESYNC_WORKER1_COMMAND_END
+MAX RETRIES EXECUTED, COMMAND NOT RESPONDING

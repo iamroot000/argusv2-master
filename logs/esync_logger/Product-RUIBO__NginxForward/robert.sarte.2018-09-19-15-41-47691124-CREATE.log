@@ -1,0 +1,39 @@
+FILENAME: 80-443/kbl8.net.conf
+-  
++  server {
++      listen 80;
++      server_name mk1.kbl8.net;
++      rewrite ^(.*)$ https://mk1.kbl8.net$1 permanent;
++  }
++  
++  server {
++      listen 443;
++      server_name mk1.kbl8.net;
++      ssl on;
++      ssl_certificate /usr/local/nginx/conf.d/ssl/kbl8.net/fullchain.pem;
++      ssl_certificate_key /usr/local/nginx/conf.d/ssl/kbl8.net/privkey.pem;
++      include /usr/local/nginx/conf.d/include/ruibo_spzhao_masterconfig.include;
++  }
++  
++  
+server {
+    listen 80;
+    server_name kbl8.net www.kbl8.net;
+    rewrite ^(.*)$ https://www.kbl8.net$1 permanent;
+}
+
+server {
+    listen 443;
+    server_name kbl8.net www.kbl8.net;
+    ssl on;
+    ssl_certificate /usr/local/nginx/conf.d/ssl/kbl8.net/fullchain.pem;
+    ssl_certificate_key /usr/local/nginx/conf.d/ssl/kbl8.net/privkey.pem;
+
+    if ($http_host !~* 'www') {
+        rewrite ^(.*)$ https://www.$http_host$1 permanent;
+    }
+
+    include /usr/local/nginx/conf.d/include/ruibo_official_masterconfig.include;
+}
+
+

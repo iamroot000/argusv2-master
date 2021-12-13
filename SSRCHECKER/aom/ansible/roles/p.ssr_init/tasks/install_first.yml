@@ -1,0 +1,31 @@
+---
+- name: Clear Memory Cache
+  shell: "echo 3 > /proc/sys/vm/drop_caches"
+
+- name: Install libselinux-python
+  yum:
+    name: '{{ item }}'
+    state: present
+  with_items:
+    - libselinux-python
+    - openssh-clients
+
+- name: Configuring resolver
+  template:
+    src: '{{ item.src }}'
+    dest: '{{ item.dest }}'
+    owner: '{{ item.own_grp }}'
+    group: '{{ item.own_grp }}'
+    mode: '{{ item.mod }}'
+  with_items:
+    - { src: 'resolv.conf.j2', dest: '/etc/resolv.conf', own_grp: 'root', mod: '0644' }
+
+
+
+#- name: Install libselinux-python
+#  yum:
+#    name: '{{ item }}'
+#    state: present
+#  with_items:
+#    - libselinux-python
+#    - openssh-clients

@@ -1,0 +1,41 @@
+--- /ansible/nginx/hostgroups/acc-pms_proxy/nginx/conf.d/other/lvl-pms2_backgroud.conf	2019-11-27 14:22:40.085580147 +0800
++++ /tmp/lvl-pms2_backgroud.conf	2019-11-27 15:52:36.306987731 +0800
+@@ -1,6 +1,6 @@
+ server {
+         listen      443 ssl;
+-        server_name www.payworld.site;
++        server_name ivi.payworld.site;
+         index   index.jsp index.html index.htm;
+         charset utf-8;
+   
+@@ -39,5 +39,28 @@
+ }
+ 
+ 
+-
++server {
++        listen      9001;
++        server_name ivi.payworld.site;
++        index   index.jsp index.html index.htm;
++        charset utf-8;
++        access_log  logs/pms2-9001.access.log main;
++        access_log  logs/pms2-9001.logstash.access.log logstash;
++        location / {
++           proxy_redirect          off; 
++				proxy_set_header        Host            $host; 
++				proxy_set_header        X-Real-IP       $remote_addr;
++				proxy_set_header        referer         "";
++				proxy_set_header        X-Forwarded-For $proxy_add_x_forwarded_for; 
++				proxy_connect_timeout   80; 
++				proxy_send_timeout      80; 
++				proxy_read_timeout      80; 
++				client_max_body_size    35m;
++				client_body_buffer_size 256k;
++				proxy_buffer_size       256k;
++				proxy_buffers           4 256k;
++				proxy_busy_buffers_size 256k;
++				proxy_temp_file_write_size      256k;
++            proxy_pass http://pms2_9001;
++        }
+ 
+

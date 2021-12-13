@@ -1,0 +1,62 @@
+--- /ansible/nginx/hostgroups/om-test_nginx/nginx/conf.d/other/yifu-test-domain.conf	2019-04-04 17:27:54.477019756 +0800
++++ /tmp/yifu-test-domain.conf	2019-04-24 19:15:15.948310805 +0800
+@@ -1,6 +1,6 @@
+ server {
+         listen         80;
+-        server_name    yifu-cstest.paymehome.co yifu2-cstest.paymehome.co yifu3-cstest.paymehome.co;
++        server_name   yifu2-cstest.paymehome.co yifu3-cstest.paymehome.co;
+         index   index.jsp index.html index.htm;
+ 
+         charset utf-8;
+@@ -27,4 +27,48 @@
+             proxy_pass http://test-yifu1-domain;
+         }
+ 
+-}
+\ No newline at end of file
++}
++
++
++server {
++    listen 80;
++    server_name yifu-cstest.paymehome.co;
++    rewrite ^(.*)$ https://yifu-cstest.paymehome.co$1 permanent;
++}
++
++server {
++        listen         443;
++        server_name    yifu-cstest.paymehome.co ;
++        index   index.jsp index.html index.htm;
++
++        charset utf-8;
++  
++  		  ssl on;
++       ssl_certificate /usr/local/nginx/conf.d/ssl/paymehome.co/fullchain.pem;
++       ssl_certificate_key /usr/local/nginx/conf.d/ssl/paymehome.co/privkey.pem;
++
++        access_log  logs/yifu-cstest.access.log ;
++
++         location ~ ^/(WEB-INF)/ {
++            deny all;
++         }
++
++        location / {
++			proxy_redirect          off; 
++			proxy_set_header        Host            $host; 
++			proxy_set_header        X-Forwarded-For $proxy_add_x_forwarded_for; 
++			proxy_connect_timeout   80; 
++			proxy_send_timeout      80; 
++			proxy_read_timeout      80; 
++			client_max_body_size    35m;
++			client_body_buffer_size 256k;
++			proxy_buffer_size       256k;
++			proxy_buffers           4 256k;
++			proxy_busy_buffers_size 256k;
++			proxy_temp_file_write_size      256k;
++            proxy_pass http://test-yifu1-domain;
++        }
++
++}
++
++
+

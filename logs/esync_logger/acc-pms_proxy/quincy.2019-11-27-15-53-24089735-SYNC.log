@@ -1,0 +1,115 @@
+ESYNC_WORKER1_COMMAND_START
+ [WARNING]: Invalid characters were found in group names but not replaced, use
+-vvvv to see details
+
+PLAY [acc-pms_proxy] ***********************************************************
+
+
+TASK [Gathering Facts] *********************************************************
+ok: [13.94.29.0]
+
+TASK [nginx_sync : Change python interpreter] **********************************
+skipping: [13.94.29.0]
+
+
+TASK [nginx_sync : change python interpreter] **********************************
+skipping: [13.94.29.0]
+
+TASK [nginx_sync : Notify] *****************************************************
+
+ok: [13.94.29.0] => {
+    "msg": "Syncing acc-pms_proxy"
+}
+
+TASK [nginx_sync : include_vars] ***********************************************
+
+ok: [13.94.29.0]
+
+TASK [nginx_sync : Synchronizing Nginx] ****************************************
+changed: [13.94.29.0] => (item=conf)
+changed: [13.94.29.0] => (item=conf.d)
+
+changed: [13.94.29.0] => (item=data)
+changed: [13.94.29.0] => (item=html)
+
+TASK [all_servers : include_vars] **********************************************
+ok: [13.94.29.0]
+
+
+TASK [all_servers : Notify] ****************************************************
+ok: [13.94.29.0] => {
+    "msg": "Clearing Nginx Cache for acc-pms_proxy"
+}
+
+
+TASK [all_servers : Copying clear_nginxcache.sh to remote hosts] ***************
+changed: [13.94.29.0]
+
+TASK [all_servers : Nginx Clear Cache] *****************************************
+
+changed: [13.94.29.0]
+
+TASK [all_servers : debug] *****************************************************
+ok: [13.94.29.0] => {
+    "script_result.stdout_lines": [
+
+        "-----------------------------------------------------------", 
+        "|                 Checking Nginx Config                   |", 
+        "-----------------------------------------------------------", 
+        "", 
+        " nginx -t ", 
+
+        "", 
+        "-----------------------------------------------------------", 
+        "|                 Stopping Nginx Process                  |", 
+        "-----------------------------------------------------------", 
+        "", 
+
+        " /usr/bin/killall -9 nginx ", 
+        "", 
+        "-----------------------------------------------------------", 
+        "|                 Clearing Proxy Cache                    |", 
+        "-----------------------------------------------------------", 
+
+        "", 
+        " /bin/rm -rf /tmp/nginx_cache ", 
+        "", 
+        "-----------------------------------------------------------", 
+        "|                Restarting Nginx Process                 |", 
+
+        "-----------------------------------------------------------", 
+        "root     107206  0.4  0.0 113188  1484 ?        S    15:53   0:00 /bin/bash /bak/bin/clear_nginxcache.sh", 
+        "root     107216  0.0  0.0 296416  3320 ?        Ss   15:53   0:00 nginx: master process /usr/local/nginx/sbin/nginx", 
+        "nobody   107218  0.0  0.1 302752  7768 ?        S    15:53   0:00 nginx: worker process", 
+        "nobody   107219  0.0  0.1 302752  7768 ?        S    15:53   0:00 nginx: worker process", 
+
+        "nobody   107220  0.0  0.1 302752  7768 ?        S    15:53   0:00 nginx: worker process", 
+        "nobody   107221  0.0  0.1 302752  7768 ?        S    15:53   0:00 nginx: worker process", 
+        "nobody   107222  0.0  0.0 298744  3816 ?        S    15:53   0:00 nginx: cache manager process", 
+        "nobody   107223  0.0  0.0 298744  3816 ?        S    15:53   0:00 nginx: cache loader process", 
+        "root     107225  0.0  0.0 112712   936 ?        S    15:53   0:00 grep nginx", 
+
+        "              total        used        free      shared  buff/cache   available", 
+        "Mem:           3931         324         195          26        3411        3289", 
+        "Swap:             0           0           0", 
+        "-----------------------------------------------------------", 
+        "|                     Reload SUCCESS!                     |", 
+
+        "-----------------------------------------------------------"
+    ]
+}
+
+PLAY [127.0.0.1] ***************************************************************
+
+
+TASK [sync_to_git : Synchronizing Nginx To GIT] ********************************
+fatal: [127.0.0.1]: FAILED! => {"ansible_facts": {"discovered_interpreter_python": "/usr/bin/python"}, "changed": true, "cmd": "git add .\ngit commit -m \"quincy\"\ngit push  \ngit push -u origin master\n", "delta": "0:00:00.357864", "end": "2019-11-27 15:53:48.120047", "msg": "non-zero return code", "rc": 128, "start": "2019-11-27 15:53:47.762183", "stderr": "fatal: The current branch master has no upstream branch.\nTo push the current branch and set the remote as upstream, use\n\n    git push --set-upstream origin master\n\nfatal: repository 'http://om:sPCJ-015@git.neweb.me/nginx_cloud/acc-pms_proxy.git/' not found", "stderr_lines": ["fatal: The current branch master has no upstream branch.", "To push the current branch and set the remote as upstream, use", "", "    git push --set-upstream origin master", "", "fatal: repository 'http://om:sPCJ-015@git.neweb.me/nginx_cloud/acc-pms_proxy.git/' not found"], "stdout": "[master a841eed] quincy\n 3 files changed, 109 insertions(+), 8 deletions(-)\n rewrite nginx/conf.d/global/upstream.conf (92%)\n create mode 100644 nginx/conf.d/other/lvl-pms2_backgroud.conf\n create mode 120000 nginx/conf.d/ssl/payworld.site", "stdout_lines": ["[master a841eed] quincy", " 3 files changed, 109 insertions(+), 8 deletions(-)", " rewrite nginx/conf.d/global/upstream.conf (92%)", " create mode 100644 nginx/conf.d/other/lvl-pms2_backgroud.conf", " create mode 120000 nginx/conf.d/ssl/payworld.site"]}
+
+PLAY RECAP *********************************************************************
+
+127.0.0.1                  : ok=0    changed=0    unreachable=0    failed=1    skipped=0    rescued=0    ignored=0   
+13.94.29.0                 : ok=9    changed=3    unreachable=0    failed=0    skipped=2    rescued=0    ignored=0   
+
+
+ESYNC_WORKER1_COMMAND_END
+MAX RETRIES EXECUTED, COMMAND NOT RESPONDING

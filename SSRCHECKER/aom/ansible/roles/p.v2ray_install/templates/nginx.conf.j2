@@ -1,0 +1,55 @@
+server{
+
+    listen 80;
+
+    server_name {{ v2ray_idcip }}.{{ v2ray_domain }}; 
+
+    rewrite ^(.*)$ https://{{ v2ray_idcip }}.{{ v2ray_domain }}$1 permanent; 
+
+}
+
+server {
+
+    listen 443 ssl;
+
+    server_name {{ v2ray_idcip }}.{{ v2ray_domain }}; 
+
+    #ssl on;
+
+    ssl_certificate /etc/nginx/conf.d/ssl/{{ v2ray_domain }}/fullchain.pem;
+
+    ssl_certificate_key /etc/nginx/conf.d/ssl/{{ v2ray_domain }}/privkey.pem;
+
+   location / { 
+
+       root        /usr/share/nginx/html; 
+
+       index index.html; 
+
+        } 
+
+    location /{{ v2ray_url_path }}
+
+      { # and V2Ray conf  path  name same " awesomepa"
+
+      proxy_redirect off; 
+
+      proxy_pass http://127.0.0.1:{{ v2ray_port }}; # v2ray listen port :23456 
+
+      proxy_http_version 1.1; 
+
+      proxy_set_header Upgrade $http_upgrade; 
+
+      proxy_set_header Connection "upgrade"; 
+
+      proxy_set_header Host $host; 
+
+      # Show real IP in v2ray access.log 
+
+      proxy_set_header X-Real-IP $remote_addr; 
+
+      proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for; 
+
+    }
+
+} 

@@ -1,0 +1,148 @@
+ESYNC_WORKER1_COMMAND_START
+[WARNING]: Invalid characters were found in group names but not replaced, use
+-vvvv to see details
+
+PLAY [wukongchat-prod] *********************************************************
+
+
+TASK [Gathering Facts] *********************************************************
+ok: [13.70.22.153]
+
+TASK [nginx_sync : Change python interpreter] **********************************
+skipping: [13.70.22.153]
+
+
+TASK [nginx_sync : change python interpreter] **********************************
+skipping: [13.70.22.153]
+
+TASK [nginx_sync : set_fact] ***************************************************
+
+ok: [13.70.22.153]
+
+TASK [nginx_sync : set_fact] ***************************************************
+ok: [13.70.22.153]
+
+
+TASK [nginx_sync : Notify] *****************************************************
+ok: [13.70.22.153] => {
+    "msg": "Syncing wukongchat-prod"
+}
+
+
+TASK [nginx_sync : include_vars] ***********************************************
+ok: [13.70.22.153]
+
+TASK [nginx_sync : Synchronizing Nginx] ****************************************
+ok: [13.70.22.153] => (item=conf)
+
+changed: [13.70.22.153] => (item=conf.d)
+ok: [13.70.22.153] => (item=data)
+ok: [13.70.22.153] => (item=html)
+
+TASK [nginx_sync : Synchronizing Nginx Excluding HTML] *************************
+
+skipping: [13.70.22.153] => (item=conf) 
+skipping: [13.70.22.153] => (item=conf.d) 
+skipping: [13.70.22.153] => (item=data) 
+
+TASK [nginx_sync : Set HTML Dir to root] ***************************************
+
+ok: [13.70.22.153]
+
+TASK [all_servers : include_vars] **********************************************
+ok: [13.70.22.153]
+
+
+TASK [all_servers : Notify] ****************************************************
+ok: [13.70.22.153] => {
+    "msg": "Clearing Nginx Cache for wukongchat-prod"
+}
+
+
+TASK [all_servers : Copying clear_nginxcache.sh to remote hosts] ***************
+ok: [13.70.22.153]
+
+TASK [all_servers : Nginx Clear Cache] *****************************************
+changed: [13.70.22.153]
+
+
+TASK [all_servers : debug] *****************************************************
+ok: [13.70.22.153] => {
+    "script_result.stdout_lines": [
+        "-----------------------------------------------------------", 
+
+        "|                 Checking Nginx Config                   |", 
+        "-----------------------------------------------------------", 
+        "", 
+        " nginx -t ", 
+        "", 
+
+        "-----------------------------------------------------------", 
+        "|                 Stopping Nginx Process                  |", 
+        "-----------------------------------------------------------", 
+        "", 
+        " /usr/bin/killall -9 nginx ", 
+
+        "", 
+        "-----------------------------------------------------------", 
+        "|                 Clearing Proxy Cache                    |", 
+        "-----------------------------------------------------------", 
+        "", 
+
+        " /bin/rm -rf /tmp/nginx_cache ", 
+        "", 
+        "-----------------------------------------------------------", 
+        "|                Restarting Nginx Process                 |", 
+        "-----------------------------------------------------------", 
+
+        "root     11746  0.6  0.0 113288  1480 ?        S    16:26   0:00 /bin/bash /bak/bin/clear_nginxcache.sh", 
+        "root     11831  0.5  0.0  32600  3236 pts/2    Ss+  16:26   0:00 nginx: master process /usr/sbin/nginx -g daemon off;", 
+        "root     11866  0.7  0.0  32600  3244 pts/4    Ss+  16:26   0:00 nginx: master process /usr/sbin/nginx -g daemon off;", 
+        "101      11891  0.0  0.0  33048  1600 pts/2    S+   16:26   0:00 nginx: worker process", 
+        "101      11900  0.0  0.0  33048  1840 pts/4    S+   16:26   0:00 nginx: worker process", 
+
+        "root     11906  0.0  0.0 307660  1972 ?        Ss   16:26   0:00 nginx: master process /usr/local/nginx/sbin/nginx", 
+        "nobody   11907  0.0  0.1 314000  8136 ?        S    16:26   0:00 nginx: worker process", 
+        "nobody   11909  0.0  0.0 314000  6672 ?        S    16:26   0:00 nginx: worker process", 
+        "nobody   11910  0.0  0.0 314000  6672 ?        S    16:26   0:00 nginx: worker process", 
+        "nobody   11911  0.0  0.0 314000  6672 ?        S    16:26   0:00 nginx: worker process", 
+
+        "nobody   11912  0.0  0.0 309748  2716 ?        S    16:26   0:00 nginx: cache manager process", 
+        "nobody   11913  0.0  0.0 309748  2464 ?        S    16:26   0:00 nginx: cache loader process", 
+        "root     11917  0.0  0.0 112816   952 ?        S    16:26   0:00 grep nginx", 
+        "              total        used        free      shared  buff/cache   available", 
+        "Mem:           7821        1815         242         405        5763        5293", 
+
+        "Swap:             0           0           0", 
+        "-----------------------------------------------------------", 
+        "|                     Reload SUCCESS!                     |", 
+        "-----------------------------------------------------------"
+    ]
+
+}
+
+PLAY [127.0.0.1] ***************************************************************
+
+TASK [sync_to_git : Synchronizing Nginx To GIT] ********************************
+
+changed: [127.0.0.1]
+
+TASK [sync_to_git : debug] *****************************************************
+ok: [127.0.0.1] => {
+    "msg": " [u'[master 903dc3e] adrian.chong', u' 1 file changed, 10 insertions(+), 8 deletions(-)', u'Branch master set up to track remote branch master from origin.']"
+
+}
+
+PLAY [wukongchat-prod] *********************************************************
+
+PLAY [127.0.0.1] ***************************************************************
+
+
+PLAY RECAP *********************************************************************
+127.0.0.1                  : ok=2    changed=1    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0   
+13.70.22.153               : ok=12   changed=2    unreachable=0    failed=0    skipped=3    rescued=0    ignored=0   
+
+
+
+ESYNC_WORKER1_COMMAND_END
+MAX RETRIES EXECUTED, COMMAND NOT RESPONDING

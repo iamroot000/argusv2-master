@@ -1,0 +1,138 @@
+#- name: Find my public ip
+#  ipify_facts:
+#  register: ip_response
+
+
+- name: IP last octet
+  command: echo "{{ ansible_host.split('.')[-1] }}"
+  register: last_octet
+
+
+- name: Copying nginx
+  copy:
+    src: "{{ item.src }}"
+    dest: "{{ item.dest }}"
+  with_items:
+   - src: "nginx-centos7.rpm"
+     dest: "/root/"
+   - src: "nginx.repo"
+     dest: "/etc/yum.repos.d/"
+
+
+- name: Installing nginx
+  command: rpm -Uvh /root/nginx-centos7.rpm
+  failed_when: false
+
+
+- name: Installing packages
+  yum:
+    name: '{{ item }}'
+    state: present
+  with_items:
+    - nginx
+  ignore_errors: yes
+
+
+- name: Removing old nginx config
+  file:
+   path: "{{ item }}"
+   state: absent
+  with_items:
+    - "/etc/nginx/conf.d/default.conf"
+    - "/usr/share/nginx/html"
+
+- name: Create ssl directory
+  file:
+    path:  "{{ item }}"
+    state: directory
+  with_items:
+    - "/etc/nginx/conf.d/ssl/"
+    - "/etc/nginx/conf.d/ssl/{{ v2ray_domain }}"
+
+
+- name: Adding new nginx config
+  template:
+    dest: '{{ item.dest }}'
+    src: '{{ item.src }}'
+  vars:
+    v2ray_idcip: "{{ v2ray_idc }}{{ last_octet.stdout }}"
+  with_items:
+    - dest: "/etc/nginx/conf.d/{{ v2ray_idcip }}.{{ v2ray_domain }}.conf"
+      src: "nginx.conf.j2"
+    - dest: "/etc/nginx/conf.d/ssl/{{ v2ray_domain }}/fullchain.pem"
+      src: "{{ v2ray_domain }}_fullchain.pem.j2"
+    - dest: "/etc/nginx/conf.d/ssl/{{ v2ray_domain }}/privkey.pem"
+      src: "{{ v2ray_domain }}_privkey.pem.j2"
+
+
+- name: Make directory extract at /root/
+  file:
+    path: /root/extract/
+    state: directory
+
+
+- name: Downloading web template
+  copy:
+    src: "{{ item }}"
+    dest: /root/extract/
+  with_items:
+    - web.zip
+    - web2.zip
+    - web3.zip
+    - web4.zip
+    - web5.zip
+    - web6.zip
+    - web7.zip
+    - web8.zip
+    - web9.zip
+
+
+
+
+- name: Extracting web template
+  unarchive:
+    remote_src: yes
+    src: "{{ item }}"
+    dest: /root/extract/
+  ignore_errors: yes
+  with_random_choice:
+    - /root/extract/web.zip
+    - /root/extract/web2.zip
+    - /root/extract/web3.zip
+    - /root/extract/web4.zip
+    - /root/extract/web5.zip
+    - /root/extract/web6.zip
+    - /root/extract/web7.zip
+    - /root/extract/web8.zip
+    - /root/extract/web9.zip
+
+
+- name: Copying to nginx html
+  command: "cp -r /root/extract/html /usr/share/nginx/"
+
+- name: Check systemctl
+  stat:
+    path: '/usr/bin/systemctl'
+  register: systemctl_loc
+
+
+- name: Restarting nginx
+  systemd:
+    name: nginx
+    state: restarted
+  when: 'systemctl_loc.stat.path is defined'
+
+
+
+- name: Restarting nginx (2)
+  service:
+    name: nginx
+    state: restarted
+  when: 'systemctl_loc.stat.path is not defined'
+
+- name: Check that you can connect (GET) to a page and it returns a status 200
+  debug:
+   msg: "{{ hostvars[inventory_hostname]['inventory_hostname'] }} ===> https://{{ item }}"
+  with_items:
+   - "{{ v2ray_idc }}{{ last_octet.stdout }}.{{ v2ray_domain  }}"
+  ignore_errors: yes

@@ -1,0 +1,34 @@
+--- /ansible/nginx/hostgroups/sabang-proxy/nginx/conf.d/other/lazabong.conf	2021-04-08 22:17:46.504826553 +0800
++++ /tmp/lazabong.conf	2021-05-11 16:32:47.062254429 +0800
+@@ -127,6 +127,30 @@
+ }
+ 
+ 
++server {
++        listen         443 ssl;
++        server_name    dj-app.lazabong.com;
++        index   index.jsp index.html index.htm;
++
++        charset utf-8;
++  
++		ssl on;
++    	ssl_certificate /usr/local/nginx/conf.d/ssl/lazabong.com/fullchain.pem;
++    	ssl_certificate_key /usr/local/nginx/conf.d/ssl/lazabong.com/privkey.pem;
++        access_log  logs/pmsdj-9006.access.log ;
++
++         location ~ ^/(WEB-INF)/ {
++            deny all;
++         }
++
++        location / {
++            include /usr/local/nginx/conf.d/include/proxy.include;
++    		proxy_pass http://pmsdj_9006;
++        }
++
++}
++
++
+ 
+ server {
+         listen      9001;
+

@@ -1,0 +1,140 @@
+{% load tags %}
+
+<!DOCTYPE html>
+<html>
+
+<head>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>ARGUS | Event - {% for i in data %}{{ i.eventid }}, {% endfor %}</title>
+    {% block style %}
+    <link href="/static/css/bootstrap.min.css" rel="stylesheet">
+    <link href="/static/css/plugins/toastr/toastr.min.css" rel="stylesheet">
+    <link href="/static/font-awesome/css/font-awesome.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.5.0/css/all.css" integrity="sha384-B4dIYHKNBt8Bc12p+WXckhzcICo0wtJAoU8YZTY5qE0Id1GSseTk6S+L3BlXeVIU" crossorigin="anonymous">
+
+
+    <link href="/static/css/plugins/iCheck/custom.css" rel="stylesheet">
+    <link href="/static/css/animate.css" rel="stylesheet">
+    <link href="/static/css/style.css" rel="stylesheet">
+    <link href="/static/css/plugins/dataTables/dataTables.bootstrap.css" rel="stylesheet">
+    <link href="/static/css/plugins/dataTables/dataTables.responsive.css" rel="stylesheet">
+    <link href="/static/css/plugins/dataTables/dataTables.tableTools.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="/static/js/select2/select2.min.css">
+    {% endblock %}
+
+    <style>
+
+        
+    </style>
+</head>
+
+<body>
+    <div class="row wrapper border-bottom white-bg page-heading" style="padding-left:50px;padding-right:50px">
+        <h2>Events</h2>
+    </div>
+    <div class="row wrapper border-bottom white-bg page-heading" style="padding-top:20px;padding-left:70px;padding-right:70px">
+        <div class="col-lg-8">
+            <div class="form-group">
+              <label for="message">Message:</label>
+              <textarea  placeholder="Recovery/Escalation/Assignment Message..." class="form-control" rows="4" id="message"></textarea>
+            </div>
+        </div>
+        <div class="col-lg-4">
+            <div class="form-group">
+                <label for="escalate">Escalate:</label>
+                <select id="escalate" class="select2 form-control pull-right" multiple="multiple">
+                    {% for k,v in users.items %}
+                        <option value="{{ k }}">{{ k }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+        </div>
+        <div class="col-lg-4" style="padding-top:25px">
+            <button class="btn btn-primary pull-right" onclick="submitChanges()"><i class="fa fa-edit"></i> Submit</button>
+
+        </div>
+    </div>
+    {% for i in data %}
+    <div class="row wrapper border-bottom white-bg page-heading" style="padding-left:60px;padding-right:60px">
+        <div class="col-lg-12">
+            <h2><b class="eid">{{ i.eventid }}</b> - {{ i.ip }} - {{ i.name }} -
+                {% if i.severity == 1 %}
+                    <span class="badge badge-success">Information</span>
+                {% elif i.severity == 2 %}
+                    <span class="badge badge-warning">Warning</span>
+                {% elif i.severity == 3 %}
+                    <span class="badge badge-warning">Average</span>
+                {% elif i.severity == 4 %}
+                    <span class="badge badge-danger">High</span>
+                {% elif i.severity == 5 %}
+                    <span class="badge badge-danger">Disaster</span>
+                {% endif %}
+                {% if i.value != 1 %}
+                    <span class="label label-primary">RESOLVED</span>
+                {% else %}
+                    <span class="label label-danger pull-center">PROBLEM</span>
+
+                {% endif %}
+                <p class="pull-right">{{ i.clock }}</p></h2>
+            <hr/>
+        </div>
+        <div class="col-lg-12">
+
+        </div>
+        <div class="col-lg-12">
+            <table class="table table-responsive table-striped">
+                {% if not i.acknowledged%}
+                    <tr>
+                        <td>No Acknowledgements</td>
+                    </tr>
+                {% else %}
+                    {% for p in i.acknowledged %}
+                        <tr>
+                            <td>{{ p.clock }}</td>
+                            <td>{{ p.params.USER }}</td>
+                            <td>{{ p.message }}</td>
+
+                            <td>{% if p.params.ESCALATE %}
+                                    <b style="color:blue">Escalated to: </b>
+                                    {% for user in p.params.ESCALATE %}
+                                <span class="label label-default">{{ user }}</span>
+                                    {% endfor %}
+                                {% endif %}</td>
+                        </tr>
+                    {% endfor %}
+                {% endif %}
+            </table>
+            <hr/>
+        </div>
+    </div>
+    {% endfor %}
+
+    <pre id="jsown" style="display:none">
+
+    </pre>
+
+
+    <!-- Mainly scripts -->
+    {% block js %}
+    <script src="/static/js/jquery-2.1.1.js"></script>
+    <script src="/static/js/bootstrap.min.js"></script>
+    <script src="/static/js/plugins/metisMenu/jquery.metisMenu.js"></script>
+    <script src="/static/js/plugins/slimscroll/jquery.slimscroll.min.js"></script>
+    <script src="/static/js/inspinia.js"></script>
+    <script src="/static/js/plugins/pace/pace.min.js"></script>
+    <script src="/static/js/plugins/dataTables/jquery.dataTables.js"></script>
+    <script src="/static/js/plugins/dataTables/dataTables.bootstrap.js"></script>
+    <script src="/static/js/plugins/dataTables/dataTables.responsive.js"></script>
+    <script src="/static/js/plugins/dataTables/dataTables.tableTools.min.js"></script>
+    <script src="/static/fa/js/fontawesome-all.js"></script>
+    <script src="/static/js/select2/select2.full.min.js"></script>
+    <script src="/static/js/monitoring/event.js"></script>
+
+
+    {% endblock %}
+</body>
+
+</html>

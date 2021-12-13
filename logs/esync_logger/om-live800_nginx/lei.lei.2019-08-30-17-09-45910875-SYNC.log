@@ -1,0 +1,122 @@
+ESYNC_WORKER1_COMMAND_START
+ [WARNING]: Invalid characters were found in group names but not replaced, use
+-vvvv to see details
+
+PLAY [om-live800_nginx] ********************************************************
+
+
+TASK [Gathering Facts] *********************************************************
+ok: [161.202.34.84]
+
+TASK [nginx_sync : Change python interpreter] **********************************
+skipping: [161.202.34.84]
+
+
+TASK [nginx_sync : change python interpreter] **********************************
+skipping: [161.202.34.84]
+
+TASK [nginx_sync : Notify] *****************************************************
+
+ok: [161.202.34.84] => {
+    "msg": "Syncing om-live800_nginx"
+}
+
+TASK [nginx_sync : include_vars] ***********************************************
+
+ok: [161.202.34.84]
+
+TASK [nginx_sync : Synchronizing Nginx] ****************************************
+ok: [161.202.34.84] => (item=conf)
+changed: [161.202.34.84] => (item=conf.d)
+
+ok: [161.202.34.84] => (item=data)
+ok: [161.202.34.84] => (item=html)
+
+TASK [all_servers : include_vars] **********************************************
+ok: [161.202.34.84]
+
+
+TASK [all_servers : Notify] ****************************************************
+ok: [161.202.34.84] => {
+    "msg": "Clearing Nginx Cache for om-live800_nginx"
+}
+
+
+TASK [all_servers : Copying clear_nginxcache.sh to remote hosts] ***************
+ok: [161.202.34.84]
+
+TASK [all_servers : Nginx Clear Cache] *****************************************
+
+changed: [161.202.34.84]
+
+TASK [all_servers : debug] *****************************************************
+ok: [161.202.34.84] => {
+    "script_result.stdout_lines": [
+
+        "-----------------------------------------------------------", 
+        "|                 Checking Nginx Config                   |", 
+        "-----------------------------------------------------------", 
+        "", 
+        " nginx -t ", 
+
+        "", 
+        "-----------------------------------------------------------", 
+        "|                 Stopping Nginx Process                  |", 
+        "-----------------------------------------------------------", 
+        "", 
+
+        " /usr/bin/killall -9 nginx ", 
+        "", 
+        "-----------------------------------------------------------", 
+        "|                 Clearing Proxy Cache                    |", 
+        "-----------------------------------------------------------", 
+
+        "", 
+        " /bin/rm -rf /tmp/nginx_cache ", 
+        "", 
+        "-----------------------------------------------------------", 
+        "|                Restarting Nginx Process                 |", 
+
+        "-----------------------------------------------------------", 
+        "root     13159  0.0  0.1 256296  6980 ?        Ss   Jun18   0:00 nginx: master process /usr/local/nginx/sbin/nginx", 
+        "nobody   15040  0.4  0.5 268764 20960 ?        S    Jun18 448:56 nginx: worker process", 
+        "nobody   15041  0.5  0.5 270012 22468 ?        S    Jun18 529:10 nginx: worker process", 
+        "nobody   15042  0.0  0.1 256296  6340 ?        S    Jun18   1:00 nginx: cache manager process", 
+
+        "root     28824  0.5  0.0 113180  1500 ?        S    17:10   0:00 /bin/bash /bak/bin/clear_nginxcache.sh", 
+        "root     28836  0.0  0.0 112712   952 ?        S    17:10   0:00 grep nginx", 
+        "              total        used        free      shared  buff/cache   available", 
+        "Mem:           3783         134         180         189        3469        3130", 
+        "Swap:          2047          27        2019", 
+
+        "-----------------------------------------------------------", 
+        "|                     Reload SUCCESS!                     |", 
+        "-----------------------------------------------------------"
+    ]
+}
+
+
+PLAY [127.0.0.1] ***************************************************************
+
+TASK [sync_to_git : Synchronizing Nginx To GIT] ********************************
+changed: [127.0.0.1]
+
+
+TASK [sync_to_git : debug] *****************************************************
+ok: [127.0.0.1] => {
+    "msg": " [u'[master 9d89a88] lei.lei', u' 88 files changed, 4020 insertions(+), 42 deletions(-)', u' rewrite nginx/conf.d/global/geoip.conf (100%)', u' create mode 100644 nginx/conf.d/include/chat800.include', u' create mode 100644 nginx/conf.d/include/domains.include', u' create mode 100644 nginx/conf.d/new-cert/chat800.com.bak', u' create mode 100644 nginx/conf.d/new-cert/chat800.com.crt', u' create mode 100644 nginx/conf.d/new-cert/chat800.com.key', u' create mode 100644 nginx/conf.d/new-cert/chat800.com.key.bak', u' create mode 100755 nginx/conf.d/new-cert/chat84.me/fullchain.pem', u' create mode 100755 nginx/conf.d/new-cert/chat84.me/privkey.pem', u' create mode 100755 nginx/conf.d/new-cert/eulive88.com/fullchain.pem', u' create mode 100755 nginx/conf.d/new-cert/eulive88.com/privkey.pem', u' create mode 100755 nginx/conf.d/new-cert/forchat600.com/fullchain.pem', u' create mode 100755 nginx/conf.d/new-cert/forchat600.com/privkey.pem', u' create mode 100755 nginx/conf.d/new-cert/hmchat88.com/fullchain.pem', u' create mode 100755 nginx/conf.d/new-cert/hmchat88.com/privkey.pem', u' create mode 100644 nginx/conf.d/new-cert/www.chat84.me.crt', u' create mode 100644 nginx/conf.d/new-cert/www.chat84.me.key', u' create mode 100644 nginx/conf.d/new-cert/www.hmchat88.com.crt', u' create mode 100644 nginx/conf.d/new-cert/www.hmchat88.com.key', u' create mode 100644 nginx/conf.d/new-cert/www_baoyunlaichat_com/www_baoyunlaichat_com.crt', u' create mode 100644 nginx/conf.d/new-cert/www_baoyunlaichat_com/www_baoyunlaichat_com.key', u' create mode 100644 nginx/conf.d/new-cert/www_eulivechat_com.key', u' create mode 100644 nginx/conf.d/new-cert/www_eulivechat_com/www_eulivechat_com.crt', u' create mode 100644 nginx/conf.d/new-cert/www_eulivechat_com/www_eulivechat_com.key', u' create mode 100644 nginx/conf.d/new-cert/www_forchat600_com/fullchain.pem', u' create mode 100644 nginx/conf.d/new-cert/www_forchat600_com/privkey.pem', u' create mode 100644 nginx/conf.d/new-cert/www_forchat999_com/forchat999.com.cert', u' create mode 100644 nginx/conf.d/new-cert/www_forchat999_com/forchat999.com.key', u' create mode 100644 nginx/conf.d/new-cert/www_fromchat444_com/www_fromchat444_com.crt', u' create mode 100644 nginx/conf.d/new-cert/www_fromchat444_com/www_fromchat444_com.key', u' create mode 100644 nginx/conf.d/new-cert/www_gochat222_com/www_gochat222_com.crt', u' create mode 100644 nginx/conf.d/new-cert/www_gochat222_com/www_gochat222_com.key', u' create mode 100755 nginx/conf.d/new-cert/www_gochat900_com/fullchain.pem', u' create mode 100755 nginx/conf.d/new-cert/www_gochat900_com/privkey.pem', u' create mode 100644 nginx/conf.d/new-cert/www_jiabochat_com/www_jiabochat_com.crt', u' create mode 100644 nginx/conf.d/new-cert/www_jiabochat_com/www_jiabochat_com.key', u' create mode 100644 nginx/conf.d/new-cert/www_jinbailichat_com/www_jinbailichat_com.crt', u' create mode 100644 nginx/conf.d/new-cert/www_jinbailichat_com/www_jinbailichat_com.key', u' create mode 100644 nginx/conf.d/new-cert/www_jinshihaochat_com/www_jinshihaochat_com.crt', u' create mode 100644 nginx/conf.d/new-cert/www_jinshihaochat_com/www_jinshihaochat_com.key', u' create mode 100644 nginx/conf.d/new-cert/www_linechat555_com/www_linechat555_com.crt', u' create mode 100644 nginx/conf.d/new-cert/www_linechat555_com/www_linechat555_com.key', u' create mode 100644 nginx/conf.d/new-cert/www_livechat666_com/www_livechat666_com.crt', u' create mode 100644 nginx/conf.d/new-cert/www_livechat666_com/www_livechat666_com.key', u' create mode 100644 nginx/conf.d/new-cert/www_msgreenchat_com/www_msgreenchat_com.crt', u' create mode 100644 nginx/conf.d/new-cert/www_msgreenchat_com/www_msgreenchat_com.key', u' create mode 100644 nginx/conf.d/new-cert/www_newcs800_com/www_newcs800_com.crt', u' create mode 100644 nginx/conf.d/new-cert/www_newcs800_com/www_newcs800_com.key', u' create mode 100644 nginx/conf.d/new-cert/www_newcs800_com/www_newcs800_com.zip', u' create mode 100644 nginx/conf.d/new-cert/www_sipchat888_com/www_sipchat888_com.crt', u' create mode 100644 nginx/conf.d/new-cert/www_sipchat888_com/www_sipchat888_com.key', u' create mode 100644 nginx/conf.d/new-cert/www_thenchat700_com/fullchain.pem', u' create mode 100644 nginx/conf.d/new-cert/www_thenchat700_com/privkey.pem', u' create mode 100644 nginx/conf.d/new-cert/www_tochat333_com/www_tochat333_com.crt', u' create mode 100644 nginx/conf.d/new-cert/www_tochat333_com/www_tochat333_com.key', u' create mode 100644 nginx/conf.d/new-cert/www_tochat800_com/fullchain.pem', u' create mode 100644 nginx/conf.d/new-cert/www_tochat800_com/privkey.pem', u' create mode 100644 nginx/conf.d/new-cert/www_xbetchat_com/www_xbetchat_com.crt', u' create mode 100644 nginx/conf.d/new-cert/www_xbetchat_com/www_xbetchat_com.key', u' create mode 100644 nginx/conf.d/new-cert/www_xindelichat666_com/www_xindelichat666_com.crt', u' create mode 100644 nginx/conf.d/new-cert/www_xindelichat666_com/www_xindelichat666_com.key', u' create mode 100644 nginx/conf.d/new-cert/www_xindelichat888_com/www_xindelichat888_com.crt', u' create mode 100644 nginx/conf.d/new-cert/www_xindelichat888_com/www_xindelichat888_com.key', u' create mode 100644 nginx/conf.d/new-cert/www_xindelichat_com/www_xindelichat_com.crt', u' create mode 100644 nginx/conf.d/new-cert/www_xindelichat_com/www_xindelichat_com.key', u' create mode 100644 nginx/conf.d/other/live800.domains.conf', u' create mode 100644 nginx/conf.d/other/live800.domains2.conf', u' create mode 120000 nginx/conf.d/ssl/baoyunlaichat.com', u' create mode 120000 nginx/conf.d/ssl/eulivechat.com', u' create mode 120000 nginx/conf.d/ssl/forchat600.com', u' create mode 120000 nginx/conf.d/ssl/forchat999.com', u' create mode 120000 nginx/conf.d/ssl/fromchat444.com', u' create mode 120000 nginx/conf.d/ssl/gochat222.com', u' create mode 120000 nginx/conf.d/ssl/gochat900.com', u' create mode 120000 nginx/conf.d/ssl/jiabochat.com', u' create mode 120000 nginx/conf.d/ssl/jinbailichat.com', u' create mode 120000 nginx/conf.d/ssl/jinshihaochat.com', u' create mode 120000 nginx/conf.d/ssl/livechat666.com', u' create mode 120000 nginx/conf.d/ssl/msgreenchat.com', u' create mode 120000 nginx/conf.d/ssl/newcs800.com', u' create mode 120000 nginx/conf.d/ssl/sipchat888.com', u' create mode 120000 nginx/conf.d/ssl/thenchat700.com', u' create mode 120000 nginx/conf.d/ssl/tochat333.com', u' create mode 120000 nginx/conf.d/ssl/tochat800.com', u' create mode 120000 nginx/conf.d/ssl/xbetchat.com', u' create mode 120000 nginx/conf.d/ssl/xindelichat.com', u'Branch master set up to track remote branch master from origin.']"
+}
+
+
+PLAY [om-live800_nginx] ********************************************************
+
+PLAY [127.0.0.1] ***************************************************************
+
+
+PLAY RECAP *********************************************************************
+127.0.0.1                  : ok=2    changed=1    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0   
+161.202.34.84              : ok=9    changed=2    unreachable=0    failed=0    skipped=2    rescued=0    ignored=0   
+
+
+ESYNC_WORKER1_COMMAND_END
+MAX RETRIES EXECUTED, COMMAND NOT RESPONDING

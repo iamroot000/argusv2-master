@@ -1,0 +1,26 @@
+---
+- ignore_errors: true
+  name: SSR data
+  register: ssr_data
+  slurp:
+    path: /etc/shadowsocksr/user-config.json
+- ignore_errors: true
+  name: Transfering
+  template:
+    dest: '{{ item.dest }}'
+    src: '{{ item.src }}'
+  vars:
+    ssr_port: '{{ (ssr_data.content|b64decode|from_json).server_port }}'
+  with_items:
+  - dest: /bak/bin/iptables.sh
+    src: /app/argus_test/web/argus/SSRCHECKER/aom/ansible/roles/p.ssr_config/templates/iptables_ssr.sh.j2
+  - dest: /home/ommgr/.ssh/authorized_keys
+    src: /app/argus_test/web/argus/SSRCHECKER/aom/ansible/roles/p.ssr_init/templates/authorized_keys.j2
+  - dest: /etc/crontab
+    src: /app/argus_test/web/argus/SSRCHECKER/aom/ansible/roles/p.ssr_init/templates/crontab.j2
+- command: '{{ item }}'
+  failed_when: false
+  name: Run iptables.
+  with_items:
+  - /bak/bin/iptables.sh
+  - /etc/init.d/iptables save

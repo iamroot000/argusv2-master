@@ -1,0 +1,91 @@
+--- /srv/Mirror-CPMS-ClientGameCalled__NginxForward/nginx/conf.d/other/loginapi.conf	2018-09-19 15:17:53.463785581 +0800
++++ /tmp/loginapi.conf	2018-09-19 15:20:50.155657555 +0800
+@@ -15,22 +15,27 @@
+             access_log  logs/loginapiBSgame.access.log.logstash.log logstash; 
+     
+     		if ($allowed_ip_BS ~ "no" ){ return 403; }
++
+             include proxy.conf.gm; 
+-            proxy_pass http://clientgamecalled; # 反向代理 
++            proxy_pass http://clientgamecalled;
+         } 
+ 
+         location /opusgame {  
+             access_log  logs/loginapiOPUSgame.access.log  main;  
+-            access_log  logs/loginapiOPUSgame.access.log.logstash.log logstash;  
+-            include whiteOPUSgame.conf;  
++            access_log  logs/loginapiOPUSgame.access.log.logstash.log logstash;
++
++            if ($allowed_ip_OPUS ~ "no" ){ return 403; }  
++
+             include proxy.conf.gm;  
+-            proxy_pass http://clientgamecalled; # 反向代理  
++            proxy_pass http://clientgamecalled;
+         }  
+  
+         location /eagame {   
+             access_log  logs/loginapiEAgame.access.log  main;   
+             access_log  logs/loginapiEAgame.access.log.logstash.log logstash;   
+-            include whiteEAgame.conf;   
++
++            if ($allowed_ip_EA ~ "no" ){ return 403; } 
++
+             include proxy.conf.gm;   
+             proxy_pass http://clientgamecalled; # 反向代理   
+         }   
+@@ -38,7 +43,9 @@
+         location /aggame {   
+             access_log  logs/loginapiAGgame.access.log  main;   
+             access_log  logs/loginapiAGgame.access.log.logstash.log logstash;   
+-            include whiteAGgame.conf;   
++            
++            if ($allowed_ip_AG ~ "no" ){ return 403; }  
++
+             include proxy.conf.gm;   
+             proxy_pass http://clientgamecalled; # 反向代理   
+         }   
+@@ -46,7 +53,9 @@
+         location /sagame {    
+             access_log  logs/loginapiSAgame.access.log  main;    
+             access_log  logs/loginapiSAgame.access.log.logstash.log logstash;    
+-            include whiteSAgame.conf;    
++            
++            if ($allowed_ip_SA ~ "no" ){ return 403; }  
++
+             include proxy.conf.gm;    
+             proxy_pass http://clientgamecalled; # 反向代理    
+         }   
+@@ -54,7 +63,9 @@
+         location /ibsgame {  # this is ISB game. accdg to sir Jay wrong spelling but currently in-use
+             access_log  logs/loginapiISBgame.access.log  main;
+             access_log  logs/loginapiISBgame.access.log.logstash.log logstash;
+-            include whiteISBgame.conf;
++
++            if ($allowed_ip_ISB ~ "no" ){ return 403; }
++
+             include proxy.conf.gm;
+             proxy_pass http://clientgamecalled; # 反向代理    
+         }
+@@ -62,7 +73,9 @@
+         location /isbgame { # in-use also for the new projects
+             access_log  logs/loginapiISBgame.access.log  main;
+             access_log  logs/loginapiISBgame.access.log.logstash.log logstash;
+-            include whiteISBgame.conf;
++            
++            if ($allowed_ip_ISB ~ "no" ){ return 403; }
++
+             include proxy.conf.gm;
+             proxy_pass http://clientgamecalled; # 反向代理    
+         }
+@@ -70,7 +83,9 @@
+         location /ebetgame {
+             access_log  logs/loginapiEBETgame.access.log  main;
+             access_log  logs/loginapiEBETgame.access.log.logstash.log logstash;
+-            include whiteEBETgame.conf;
++            
++            if ($allowed_ip_EBET ~ "no" ){ return 403; }
++
+             include proxy.conf.gm;
+             proxy_pass http://clientgamecalled; # 反向代理    
+         }
+

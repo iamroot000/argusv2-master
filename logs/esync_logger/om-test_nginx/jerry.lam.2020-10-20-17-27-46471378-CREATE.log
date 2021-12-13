@@ -1,0 +1,39 @@
+--- /ansible/nginx/hostgroups/om-test_nginx/nginx/conf.d/include/xjw3-eu-test.include	2020-06-17 14:35:33.057731099 +0800
++++ /tmp/xjw3-eu-test.include	2020-10-20 17:27:46.518187769 +0800
+@@ -42,6 +42,35 @@
+ 	}
+ 
+ 
++	error_page 403 302 /iph;
++location  /iph {
++ alias html/;
++    allow all;
++    index index.html;
++}
++
++if ($allowed_ip = yes ){ 
++ set $test ALLOW; 
++}
++if ($allowed_ip = no){
++ set $test BLOCK;
++}
++if ($allowed_country = no ){ 
++ set $test BLOCK;
++}
++
++if ($allowed_country = yes ){
++ set $test ALLOW; 
++}
++
++
++
++
++location /ipblock {
++  if ( $test = BLOCK ) { return 200 'BLOCK';  }
++  if ( $test = ALLOW ) { return 200 'OK';}
++}
++
+ 	location / {
+             proxy_set_header Host  $host;
+             proxy_set_header X-Forwarded-For  $remote_addr;
+

@@ -1,0 +1,24 @@
+FILENAME: 80-443/9988bd.com.conf
+-  
++  server {
++      listen 80;
++      server_name 9988bd.com www.9988bd.com;
++      rewrite ^(.*)$ https://www.9988bd.com$1 permanent;
++  }
++  
++  server {
++      listen 443;
++      server_name 9988bd.com www.9988bd.com;
++      ssl on;
++      ssl_certificate /usr/local/nginx/conf.d/ssl/9988bd.com/fullchain.pem;
++      ssl_certificate_key /usr/local/nginx/conf.d/ssl/9988bd.com/privkey.pem;
++  
++      if ($http_host !~* 'www') {
++          rewrite ^(.*)$ https://www.$http_host$1 permanent;
++      }
++  
++      include /usr/local/nginx/conf.d/include/xyh_official_masterconfig.include;
++  }
++  
++  
+

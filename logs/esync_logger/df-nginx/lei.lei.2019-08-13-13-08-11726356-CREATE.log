@@ -1,0 +1,27 @@
+--- /ansible/nginx/hostgroups/df-nginx/nginx/conf.d/include/news_service.include	2019-08-13 13:07:40.154432002 +0800
++++ /tmp/news_service.include	2019-08-13 13:08:11.627432002 +0800
+@@ -1,4 +1,23 @@
+ 
+ 
++     location  / {
++       include /etc/nginx/conf.d/global/location_proxy_config.include;
++       proxy_pass http://news8082/guide;
++    }
++    location  /index {
++      proxy_set_header        Host            $http_host;
++       proxy_set_header        X-Real-IP       $remote_addr;
++       proxy_set_header        X-Forwarded-For  $proxy_add_x_forwarded_for;
++       proxy_pass http://news8082/index;
++    }
++    location ~* ^/(v|s).* {
++       include /etc/nginx/conf.d/global/location_proxy_config.include;
++       proxy_pass http://news8082;
++   }
++    location ~* ^.*\.(js|ico|jpg|gif|png|css)$ {
++        include /etc/nginx/conf.d/global/location_proxy_static_config.include;
++        proxy_pass  http://news8082;
++        }
++
+ 
+ 
+

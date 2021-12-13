@@ -1,0 +1,24 @@
+FILENAME: 80-443/y91999.vip.conf
+-  
++  server {
++      listen 80;
++      server_name y91999.vip www.y91999.vip;
++      rewrite ^(.*)$ https://www.y91999.vip$1 permanent;
++  }
++  
++  server {
++      listen 443;
++      server_name y91999.vip www.y91999.vip;
++      ssl on;
++      ssl_certificate /usr/local/nginx/conf.d/ssl/y91999.vip/fullchain.pem;
++      ssl_certificate_key /usr/local/nginx/conf.d/ssl/y91999.vip/privkey.pem;
++  
++      if ($http_host !~* 'www') {
++          rewrite ^(.*)$ https://www.$http_host$1 permanent;
++      }
++  
++      include /usr/local/nginx/conf.d/include/xyh_official_masterconfig.include;
++  }
++  
++  
+

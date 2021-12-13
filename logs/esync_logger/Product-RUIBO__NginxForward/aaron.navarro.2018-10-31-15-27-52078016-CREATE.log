@@ -1,0 +1,24 @@
+--- /srv/Product-RUIBO__NginxForward/nginx/conf.d/global/_default.conf	2018-09-04 16:14:18.951266981 +0800
++++ /tmp/_default.conf	2018-10-31 15:27:51.928476120 +0800
+@@ -3,6 +3,20 @@
+     server_name  _;
+ 
+     include /usr/local/nginx/conf.d/include/ruibo_official_masterconfig.include;
++  	location = /statuscheck {
++        set $test BLOCK;
++
++        if ($allowed_ip ~ "yes" ){
++          set $test ALLOW;
++        }
++
++        if ( $test = "BLOCK" ) {
++          return 403 '{"status":false}';
++          add_header Content-Type text/plain;
++        }
++        return 200 '{"status":true}';
++        add_header Content-Type text/plain;
++    }
+ 
+     access_log  logs/default.access.log main;
+     access_log  logs/default.logstash.access.log logstash;
+

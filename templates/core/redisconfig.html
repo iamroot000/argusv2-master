@@ -1,0 +1,84 @@
+{% extends "base.html" %}
+
+{% block js %}
+    {{ block.super }} {# includes previous content in block #}
+
+    
+    <script src="/static/js/plugins/codemirror/codemirror.js"></script>
+    <script src="/static/js/esync/nginx-format.js" type="text/javascript"></script>
+    <script src="/static/js/plugins/codemirror/mode/javascript/javascript.js"></script>
+        <script src="/static/js/select2/select2.full.min.js"></script>
+
+    <script src="/static/js/core/redisconfig.js" type="text/javascript"></script>
+
+
+{% endblock %}
+
+
+{% block style %}
+    {{ block.super }} {# includes previous content in block #}
+
+    <link href="/static/css/plugins/codemirror/codemirror.css" rel="stylesheet">
+    <link href="/static/css/plugins/codemirror/monokai.css" rel="stylesheet">
+
+
+<style>
+    .CodeMirror {
+    border: 1px solid #eee;
+    height: auto;
+
+    }
+    .cm-s-monokai .CodeMirror-cursor {border-left: 5px solid #f8f8f0 !important;}
+
+    textarea {
+  /* margin:0px 0px; this is redundant anyways since its specified below*/
+  padding-top:10px;
+  padding-bottom:25px; /* increased! */
+  /* height:16px; */
+  /* line-height:16px; */
+  width:100%; /* changed from 96 to 100% */
+  display:block;
+  /* margin:0px auto; not needed since i have width 100% now */
+}
+</style>
+
+{% endblock %}
+
+{% block title %}
+{% block header %}
+Redis Configs
+{% endblock %}
+{% endblock %}
+
+{% block details %}
+Redis Configs
+{% endblock %}
+
+{% block action %}
+        <div class="col-lg-4">
+            <button class="btn btn-danger" onclick='saveConfig()'>Save</button>
+        </div>
+        <div class="col-lg-4 ">
+            <label for="dir_new">Redis Key:</label>
+            <select class="form-control select2"  data-placeholder="Redis Key" onchange="getConfig(this.value);" id="redis_key" required>
+                {% for k in keys %}
+                    <option value="{{ k }}">{{ k }}</option>
+                {% endfor %}
+            </select>
+        </div>
+{% endblock %}
+
+{% block content %}
+
+<div class="row border-bottom white-bg dashboard-header">
+
+    <div class="row" id="textrow">
+        <div class="col-lg-12" >
+            <label for="raw_grp">JSON: </label>
+                <textarea class="form-control" id="redishandler">
+                </textarea>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

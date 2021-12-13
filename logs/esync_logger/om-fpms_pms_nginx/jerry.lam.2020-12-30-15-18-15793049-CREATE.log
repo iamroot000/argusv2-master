@@ -1,0 +1,57 @@
+--- /ansible/nginx/hostgroups/om-fpms_pms_nginx/nginx/conf.d/other/pay-web.conf	2020-12-30 14:58:19.261852677 +0800
++++ /tmp/pay-web.conf	2020-12-30 15:18:15.774639178 +0800
+@@ -1,4 +1,12 @@
+ server {
++    listen 80;
++    server_name yun885.cn www.yun885.cn;
++    rewrite ^(.*)$ https://www.yun885.cn$1 permanent;
++}
++
++
++
++server {
+     listen 443;
+     server_name yun885.cn;
+     ssl on;
+@@ -6,36 +14,11 @@
+     ssl_certificate_key /usr/local/nginx/conf.d/ssl/yun885.cn/privkey.pem;
+     
+   
+-  	access_log  logs/pay-web.access.log main;
+-    access_log  logs/pay-web.logstash.access.log logstash;
+-    error_log  logs/pay-web.error.log;
+-
+-	
++  	if ($http_host !~* 'www') {
++        rewrite ^(.*)$ https://www.$http_host$1 permanent;
++    }
+ 
+-	
+-	
+-	location / {
+-  
+-  			proxy_pass http://pay-web; 
+-            proxy_set_header Host  $host;
+-            proxy_set_header X-Forwarded-For  $remote_addr;
+-            proxy_set_header X-Forwarded-Proto $scheme ;
+-        }
+-
+-  
+-  	location /websocket {
+-	proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+-	proxy_set_header X-Real-IP  $remote_addr;
+-	proxy_next_upstream http_502 http_504 http_404 error timeout invalid_header;
+-	proxy_set_header Host $host:$server_port;
+-	proxy_http_version 1.1;
+-	proxy_set_header Upgrade $http_upgrade;
+-	proxy_set_header Connection $connection_upgrade;
+-	proxy_connect_timeout   1800;
+-	proxy_send_timeout      1800;
+-	proxy_read_timeout      1800;
+-	proxy_pass http://9280;
+-}
++    include /usr/local/nginx/conf.d/include/pay-web.include;
+ 
+ 
+ 	
+

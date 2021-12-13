@@ -1,0 +1,110 @@
+ESYNC_WORKER1_COMMAND_START
+
+PLAY [acc-midpay_nginx] ********************************************************
+
+TASK [nginx_sync : Notify] *****************************************************
+ok: [47.107.33.107] => {
+
+    "msg": "Syncing acc-midpay_nginx"
+}
+
+TASK [nginx_sync : include_vars] ***********************************************
+ok: [47.107.33.107]
+
+
+TASK [nginx_sync : Synchronizing Nginx] ****************************************
+changed: [47.107.33.107] => (item=conf)
+changed: [47.107.33.107] => (item=conf.d)
+changed: [47.107.33.107] => (item=data)
+
+changed: [47.107.33.107] => (item=html)
+
+TASK [all_servers : include_vars] **********************************************
+ok: [47.107.33.107]
+
+
+TASK [all_servers : Notify] ****************************************************
+ok: [47.107.33.107] => {
+    "msg": "Clearing Nginx Cache for acc-midpay_nginx"
+}
+
+
+TASK [all_servers : Copying clear_nginxcache.sh to remote hosts] ***************
+changed: [47.107.33.107]
+
+TASK [all_servers : Nginx Clear Cache] *****************************************
+changed: [47.107.33.107]
+
+
+TASK [all_servers : debug] *****************************************************
+ok: [47.107.33.107] => {
+    "script_result.stdout_lines": [
+        "-----------------------------------------------------------", 
+
+        "|                 Checking Nginx Config                   |", 
+        "-----------------------------------------------------------", 
+        "", 
+        " nginx -t ", 
+        "", 
+
+        "-----------------------------------------------------------", 
+        "|                 Stopping Nginx Process                  |", 
+        "-----------------------------------------------------------", 
+        "", 
+        " /usr/bin/killall -9 nginx ", 
+
+        "", 
+        "-----------------------------------------------------------", 
+        "|                 Clearing Proxy Cache                    |", 
+        "-----------------------------------------------------------", 
+        "", 
+
+        " /bin/rm -rf /tmp/nginx_cache ", 
+        "", 
+        "-----------------------------------------------------------", 
+        "|                Restarting Nginx Process                 |", 
+        "-----------------------------------------------------------", 
+
+        "root       927  0.0  0.0   9116   716 ?        Ss   Apr15   0:00 /sbin/dhclient -H midpay-nginx6 -1 -q -cf /etc/dhcp/dhclient-eth0.conf -lf /var/lib/dhclient/dhclient-eth0.leases -pf /var/run/dhclient-eth0.pid eth0", 
+        "root     24265  0.0  0.0 106080  1412 ?        S    13:57   0:00 /bin/bash /bak/bin/clear_nginxcache.sh", 
+        "root     24271  0.0  0.0 295384  1600 ?        Ss   13:57   0:00 nginx: master process /usr/local/nginx/sbin/nginx", 
+        "nobody   24272  0.0  0.7 322520 28924 ?        S    13:57   0:00 nginx: worker process      ", 
+        "nobody   24273  0.0  0.7 322520 28924 ?        S    13:57   0:00 nginx: worker process      ", 
+
+        "nobody   24275  0.0  0.7 322520 28924 ?        S    13:57   0:00 nginx: worker process      ", 
+        "nobody   24276  0.0  0.7 322520 28924 ?        S    13:57   0:00 nginx: worker process      ", 
+        "nobody   24277  0.0  0.7 322520 28924 ?        S    13:57   0:00 nginx: worker process      ", 
+        "nobody   24278  0.0  0.7 322520 28924 ?        S    13:57   0:00 nginx: worker process      ", 
+        "nobody   24279  0.0  0.7 322520 28924 ?        S    13:57   0:00 nginx: worker process      ", 
+
+        "nobody   24280  0.0  0.7 322520 28924 ?        S    13:57   0:00 nginx: worker process      ", 
+        "nobody   24281  0.0  0.0 295532  2012 ?        S    13:57   0:00 nginx: cache manager process", 
+        "nobody   24282  0.0  0.0 295532  1964 ?        S    13:57   0:00 nginx: cache loader process", 
+        "root     24284  0.0  0.0 103324   892 ?        S    13:57   0:00 grep nginx", 
+        "             total       used       free     shared    buffers     cached", 
+
+        "Mem:          3961       3715        246          1        148        296", 
+        "-/+ buffers/cache:       3270        691", 
+        "Swap:            0          0          0", 
+        "-----------------------------------------------------------", 
+        "|                     Reload SUCCESS!                     |", 
+
+        "-----------------------------------------------------------"
+    ]
+}
+
+PLAY [127.0.0.1] ***************************************************************
+
+
+TASK [sync_to_git : Synchronizing Nginx To GIT] ********************************
+fatal: [127.0.0.1]: FAILED! => {"changed": true, "cmd": "git add .\n git commit -m \"quincy\"\n git push\n git push -u origin master", "delta": "0:00:00.673386", "end": "2019-05-17 13:57:31.946984", "msg": "non-zero return code", "rc": 128, "start": "2019-05-17 13:57:31.273598", "stderr": "fatal: Authentication failed for 'http://om:VA1913wm@git.neweb.me/omgroup/ansible-207.git/'\nfatal: Authentication failed for 'http://om:VA1913wm@git.neweb.me/omgroup/ansible-207.git/'", "stderr_lines": ["fatal: Authentication failed for 'http://om:VA1913wm@git.neweb.me/omgroup/ansible-207.git/'", "fatal: Authentication failed for 'http://om:VA1913wm@git.neweb.me/omgroup/ansible-207.git/'"], "stdout": "[master 652787b] quincy\n 24 files changed, 1442 insertions(+)\n create mode 100644 nginx/hostgroups/acc-midpay_nginx/nginx/conf.d/global/_default.conf\n create mode 100644 nginx/hostgroups/acc-midpay_nginx/nginx/conf.d/global/upstream.conf\n create mode 100644 nginx/hostgroups/acc-midpay_nginx/nginx/conf.d/other/fkttong.conf\n create mode 100644 nginx/hostgroups/acc-midpay_nginx/nginx/conf.d/other/others.conf\n create mode 100644 nginx/hostgroups/acc-midpay_nginx/nginx/conf.d/other/weichat.conf\n create mode 100644 nginx/hostgroups/acc-midpay_nginx/nginx/conf/fastcgi.conf\n create mode 100644 nginx/hostgroups/acc-midpay_nginx/nginx/conf/fastcgi.conf.default\n create mode 100644 nginx/hostgroups/acc-midpay_nginx/nginx/conf/fastcgi_params\n create mode 100644 nginx/hostgroups/acc-midpay_nginx/nginx/conf/fastcgi_params.default\n create mode 100644 nginx/hostgroups/acc-midpay_nginx/nginx/conf/koi-utf\n create mode 100644 nginx/hostgroups/acc-midpay_nginx/nginx/conf/koi-win\n create mode 100644 nginx/hostgroups/acc-midpay_nginx/nginx/conf/mime.types\n create mode 100644 nginx/hostgroups/acc-midpay_nginx/nginx/conf/mime.types.default\n create mode 100644 nginx/hostgroups/acc-midpay_nginx/nginx/conf/nginx.conf\n create mode 100644 nginx/hostgroups/acc-midpay_nginx/nginx/conf/nginx.conf.default\n create mode 100644 nginx/hostgroups/acc-midpay_nginx/nginx/conf/nginx.pid\n create mode 100644 nginx/hostgroups/acc-midpay_nginx/nginx/conf/scgi_params\n create mode 100644 nginx/hostgroups/acc-midpay_nginx/nginx/conf/scgi_params.default\n create mode 100644 nginx/hostgroups/acc-midpay_nginx/nginx/conf/uwsgi_params\n create mode 100644 nginx/hostgroups/acc-midpay_nginx/nginx/conf/uwsgi_params.default\n create mode 100644 nginx/hostgroups/acc-midpay_nginx/nginx/conf/win-utf\n create mode 100644 nginx/hostgroups/acc-midpay_nginx/nginx/data/GeoIP-106_20171017.dat\n create mode 100644 nginx/hostgroups/acc-midpay_nginx/nginx/html/red-map.jpg\n create mode 100644 nginx/hostgroups/acc-midpay_nginx/scripts/clear_nginxcache.sh", "stdout_lines": ["[master 652787b] quincy", " 24 files changed, 1442 insertions(+)", " create mode 100644 nginx/hostgroups/acc-midpay_nginx/nginx/conf.d/global/_default.conf", " create mode 100644 nginx/hostgroups/acc-midpay_nginx/nginx/conf.d/global/upstream.conf", " create mode 100644 nginx/hostgroups/acc-midpay_nginx/nginx/conf.d/other/fkttong.conf", " create mode 100644 nginx/hostgroups/acc-midpay_nginx/nginx/conf.d/other/others.conf", " create mode 100644 nginx/hostgroups/acc-midpay_nginx/nginx/conf.d/other/weichat.conf", " create mode 100644 nginx/hostgroups/acc-midpay_nginx/nginx/conf/fastcgi.conf", " create mode 100644 nginx/hostgroups/acc-midpay_nginx/nginx/conf/fastcgi.conf.default", " create mode 100644 nginx/hostgroups/acc-midpay_nginx/nginx/conf/fastcgi_params", " create mode 100644 nginx/hostgroups/acc-midpay_nginx/nginx/conf/fastcgi_params.default", " create mode 100644 nginx/hostgroups/acc-midpay_nginx/nginx/conf/koi-utf", " create mode 100644 nginx/hostgroups/acc-midpay_nginx/nginx/conf/koi-win", " create mode 100644 nginx/hostgroups/acc-midpay_nginx/nginx/conf/mime.types", " create mode 100644 nginx/hostgroups/acc-midpay_nginx/nginx/conf/mime.types.default", " create mode 100644 nginx/hostgroups/acc-midpay_nginx/nginx/conf/nginx.conf", " create mode 100644 nginx/hostgroups/acc-midpay_nginx/nginx/conf/nginx.conf.default", " create mode 100644 nginx/hostgroups/acc-midpay_nginx/nginx/conf/nginx.pid", " create mode 100644 nginx/hostgroups/acc-midpay_nginx/nginx/conf/scgi_params", " create mode 100644 nginx/hostgroups/acc-midpay_nginx/nginx/conf/scgi_params.default", " create mode 100644 nginx/hostgroups/acc-midpay_nginx/nginx/conf/uwsgi_params", " create mode 100644 nginx/hostgroups/acc-midpay_nginx/nginx/conf/uwsgi_params.default", " create mode 100644 nginx/hostgroups/acc-midpay_nginx/nginx/conf/win-utf", " create mode 100644 nginx/hostgroups/acc-midpay_nginx/nginx/data/GeoIP-106_20171017.dat", " create mode 100644 nginx/hostgroups/acc-midpay_nginx/nginx/html/red-map.jpg", " create mode 100644 nginx/hostgroups/acc-midpay_nginx/scripts/clear_nginxcache.sh"]}
+	to retry, use: --limit @/ansible/nginx/site.retry
+
+
+PLAY RECAP *********************************************************************
+127.0.0.1                  : ok=0    changed=0    unreachable=0    failed=1   
+47.107.33.107              : ok=8    changed=3    unreachable=0    failed=0   
+
+
+ESYNC_WORKER1_COMMAND_END
+MAX RETRIES EXECUTED, COMMAND NOT RESPONDING

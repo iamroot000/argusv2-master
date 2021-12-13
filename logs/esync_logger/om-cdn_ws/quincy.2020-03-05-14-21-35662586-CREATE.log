@@ -1,0 +1,38 @@
+--- /ansible/nginx/hostgroups/om-cdn_ws/nginx/conf.d/other/v68_fpms.conf	2020-03-03 11:40:39.653387334 +0800
++++ /tmp/v68_fpms.conf	2020-03-05 14:21:35.622435223 +0800
+@@ -81,6 +81,34 @@
+ }
+ 
+ 
++server {
++    listen 80;
++    server_name verific.j01z.cn;
++
++  root html;
++index   index.jsp index.html index.htm;
++access_log  logs/ip.j01z.cn.access.log main;
++access_log  logs/ip.j01z.cn.logstash.access.log logstash;
++#      		add_header Access-Control-Allow-Origin *;
++#    		add_header Access-Control-Allow-Methods 'GET, POST, OPTIONS';
++#    		add_header Access-Control-Allow-Headers 'DNT,X-Mx-ReqToken,Keep-Alive,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Authorization';
++
++  location / {
++#  if ( $test = "BLOCK" ) { return 666;  }
++#	proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
++#	proxy_set_header X-Real-IP  $remote_addr;
++#  	proxy_set_header X-Forwarded-For $remote_addr;
++	proxy_next_upstream http_502 http_504 http_404 error timeout invalid_header;
++	proxy_set_header Host $host:$server_port;
++	proxy_connect_timeout   1800;
++	proxy_send_timeout      1800;
++	proxy_read_timeout      1800;
++	proxy_pass http://fpms-7000;
++}
++
++  
++  
++}
+ 
+ 
+ 
+

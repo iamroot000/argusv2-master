@@ -1,0 +1,397 @@
+--- /ansible/nginx/hostgroups/om-clientgamecalled_nginx/nginx/conf.d/other/globalebet.conf	2019-05-16 09:57:27.572749908 +0800
++++ /tmp/globalebet.conf	2019-05-16 15:53:47.967029913 +0800
+@@ -20,6 +20,7 @@
+         charset utf-8;
+ 
+         access_log  logs/mainapi.ebet2017.com.access.log main;
++        access_log  logs/mainapi.ebet2017.com.logstash.access.log logstash;
+         location ~ ^/(WEB-INF)/ {
+         deny all;
+         }
+@@ -52,6 +53,7 @@
+         #ssl_certificate_key /usr/local/nginx/conf/ssl/ebetapi888.com/privkey.pem;
+ 
+         access_log  logs/main.ebetapi888.com.access.log main;
++        access_log  logs/main.ebetapi888.com.logstash.access.log logstash;
+         location ~ ^/(WEB-INF)/ {
+         deny all;
+         }
+@@ -90,6 +92,7 @@
+         charset utf-8;
+ 
+         access_log  logs/pt.ebetapi888.com.access.log main;
++        access_log  logs/pt.ebetapi888.com.logstash.access.log logstash;
+         location ~ ^/(WEB-INF)/ {
+         deny all;
+         }
+@@ -116,6 +119,7 @@
+         charset utf-8;
+ 
+         access_log  logs/opus.ebetapi888.com.access.log main;
++        access_log  logs/opus.ebetapi888.com.logstash.access.log logstash;
+         location ~ ^/(WEB-INF)/ {
+         deny all;
+         }
+@@ -150,6 +154,7 @@
+         #ssl_certificate_key /usr/local/nginx/conf/ssl/ebetapi888.com/privkey.pem;
+ 
+         access_log  logs/office.ebetapi888.com.access.log main;
++        access_log  logs/office.ebetapi888.com.logstash.access.log logstash;
+         location ~ ^/(WEB-INF)/ {
+         deny all;
+         }
+@@ -180,208 +185,6 @@
+         }
+ 
+ 
+-upstream isbwallet {
+-
+-#        server 101.78.133.212:8089 max_fails=1  fail_timeout=2s;
+-        server 205.177.199.12:8089 max_fails=1  fail_timeout=2s;
+-}
+-
+-server {
+-        #listen     443;
+-	    listen 80;
+-        server_name wallet.isb.ebetapi888.com;
+-        index index.jsp index.html index.htm;
+-        charset utf-8;
+-        #ssl on;
+-        #ssl_certificate /usr/local/nginx/conf/ssl/ebetapi888.com/fullchain.pem;
+-        #ssl_certificate_key /usr/local/nginx/conf/ssl/ebetapi888.com/privkey.pem;
+-
+-        access_log  logs/wallet.isb.ebetapi888.com.access.log main;
+-        location ~ ^/(WEB-INF)/ {
+-        deny all;
+-        }
+-
+-        location / {
+-            include /usr/local/nginx/conf.d/include/proxy.conf.globalebet.include;
+-	    proxy_http_version 1.1;
+-            proxy_set_header Upgrade $http_upgrade;
+-            proxy_set_header Connection "upgrade";
+-            proxy_pass http://isbwallet;
+-        }
+-
+-        error_page   404 404.jsp;
+-        error_page   500 502 503 500.jsp;
+-        }
+-
+-
+-upstream isbwalletreal {
+-
+-#        server 101.78.133.212:7115 max_fails=1  fail_timeout=2s;
+-        server 205.177.199.12:7115 max_fails=1  fail_timeout=2s;
+-}
+-
+-server {
+-        #listen     443;
+-	    listen 80;
+-        server_name wallet.isb.gameapi.me;
+-        index index.jsp index.html index.htm;
+-        charset utf-8;
+-        #ssl on;
+-        #ssl_certificate /usr/local/nginx/conf/ssl/ebetapi888.com/fullchain.pem;
+-        #ssl_certificate_key /usr/local/nginx/conf/ssl/ebetapi888.com/privkey.pem;
+-
+-        access_log  logs/walletreal.isb.ebetapi888.com.access.log main;
+-        location ~ ^/(WEB-INF)/ {
+-        deny all;
+-        }
+-
+-        location / {
+-            include /usr/local/nginx/conf.d/include/proxy.conf.globalebet.include;
+-	    proxy_http_version 1.1;
+-            proxy_set_header Upgrade $http_upgrade;
+-            proxy_set_header Connection "upgrade";
+-            proxy_pass http://isbwalletreal;
+-        }
+-
+-        error_page   404 404.jsp;
+-        error_page   500 502 503 500.jsp;
+-        }
+-
+-
+-
+-upstream isbchannelreal {
+-
+-#        server 101.78.133.212:7114 max_fails=1  fail_timeout=2s;
+-        server 205.177.199.12:7114 max_fails=1  fail_timeout=2s;
+-}
+-
+-server {
+-        #listen     443;
+-	    listen 80;
+-        server_name channel.isb.gameapi.me;
+-        index index.jsp index.html index.htm;
+-        charset utf-8;
+-        #ssl on;
+-        #ssl_certificate /usr/local/nginx/conf/ssl/ebetapi888.com/fullchain.pem;
+-        #ssl_certificate_key /usr/local/nginx/conf/ssl/ebetapi888.com/privkey.pem;
+-
+-        access_log  logs/channelreal.isb.ebetapi888.com.access.log main;
+-        location ~ ^/(WEB-INF)/ {
+-        deny all;
+-        }
+-
+-        location / {
+-            include /usr/local/nginx/conf.d/include/proxy.conf.globalebet.include;
+-	    proxy_http_version 1.1;
+-            proxy_set_header Upgrade $http_upgrade;
+-            proxy_set_header Connection "upgrade";
+-            proxy_pass http://isbchannelreal;
+-        }
+-
+-        error_page   404 404.jsp;
+-        error_page   500 502 503 500.jsp;
+-        }
+-upstream isbchannel {
+-
+-#        server 101.78.133.212:3100 max_fails=1  fail_timeout=2s;
+-        server 205.177.199.12:3100 max_fails=1  fail_timeout=2s;
+-}
+-
+-server {
+-        #listen     443;
+-	    listen 80;
+-        server_name channel.isb.ebetapi888.com;
+-        index index.jsp index.html index.htm;
+-        charset utf-8;
+-        #ssl on;
+-        #ssl_certificate /usr/local/nginx/conf/ssl/ebetapi888.com/fullchain.pem;
+-        #ssl_certificate_key /usr/local/nginx/conf/ssl/ebetapi888.com/privkey.pem;
+-
+-        access_log  logs/channel.isb.ebetapi888.com.access.log main;
+-        location ~ ^/(WEB-INF)/ {
+-        deny all;
+-        }
+-
+-        location / {
+-            include /usr/local/nginx/conf.d/include/proxy.conf.globalebet.include;
+-	    proxy_http_version 1.1;
+-            proxy_set_header Upgrade $http_upgrade;
+-            proxy_set_header Connection "upgrade";
+-            proxy_pass http://isbchannel;
+-        }
+-
+-        error_page   404 404.jsp;
+-        error_page   500 502 503 500.jsp;
+-        }
+-
+-upstream isboffice {
+-
+-#        server 101.78.133.212:9999 max_fails=1  fail_timeout=2s;
+-        server 205.177.199.12:9999 max_fails=1  fail_timeout=2s;
+-}
+-
+-
+-server {
+-        #listen     443;
+-	    listen 80;
+-        server_name office.isb.gameapi.me;
+-        index index.jsp index.html index.htm;
+-        charset utf-8;
+-        #ssl on;
+-        #ssl_certificate /usr/local/nginx/conf/ssl/ebetapi888.com/fullchain.pem;
+-        #ssl_certificate_key /usr/local/nginx/conf/ssl/ebetapi888.com/privkey.pem;
+-
+-        access_log  logs/office.isb.gameapi.me.access.log main;
+-        location ~ ^/(WEB-INF)/ {
+-        deny all;
+-        }
+-
+-        location / {
+-            include /usr/local/nginx/conf.d/include/proxy.conf.globalebet.include;
+-	    proxy_http_version 1.1;
+-            proxy_set_header Upgrade $http_upgrade;
+-            proxy_set_header Connection "upgrade";
+-            proxy_pass http://isboffice;
+-        }
+-
+-        error_page   404 404.jsp;
+-        error_page   500 502 503 500.jsp;
+-        }
+-
+-upstream isboffice99 {
+-
+-#        server 101.78.133.212:9999 max_fails=1  fail_timeout=2s;
+-        server 205.177.199.12:9999 max_fails=1  fail_timeout=2s;
+-}
+-
+-
+-server {
+-        #listen     443;
+-	    listen 80;
+-        server_name office99.isb.gameapi.me;
+-        index index.jsp index.html index.htm;
+-        charset utf-8;
+-        #ssl on;
+-        #ssl_certificate /usr/local/nginx/conf/ssl/ebetapi888.com/fullchain.pem;
+-        #ssl_certificate_key /usr/local/nginx/conf/ssl/ebetapi888.com/privkey.pem;
+-
+-        access_log  logs/office99.isb.gameapi.me.access.log main;
+-        location ~ ^/(WEB-INF)/ {
+-        deny all;
+-        }
+-
+-        location / {
+-            include /usr/local/nginx/conf.d/include/proxy.conf.globalebet.include;
+-	    proxy_http_version 1.1;
+-            proxy_set_header Upgrade $http_upgrade;
+-            proxy_set_header Connection "upgrade";
+-            proxy_pass http://isboffice99;
+-        }
+-
+-        error_page   404 404.jsp;
+-        error_page   500 502 503 500.jsp;
+-        }
+-
+ upstream subapiopus {
+ 
+ #        server 101.78.133.212:8804 max_fails=1  fail_timeout=2s;
+@@ -400,6 +203,7 @@
+         #ssl_certificate_key /usr/local/nginx/conf/ssl/ebetapi888.com/privkey.pem;
+ 
+         access_log  logs/sport.opusgm88.net.access.log main;
++        access_log  logs/sport.opusgm88.net.logstash.access.log logstash;
+         location ~ ^/(WEB-INF)/ {
+         deny all;
+         }
+@@ -413,136 +217,6 @@
+         }
+ 
+         error_page   404 404.jsp;
+-        error_page   500 502 503 500.jsp;
+-        }
+-
+-upstream isbchannel-eu {
+-
+-#        server 101.78.133.212:7403 max_fails=1  fail_timeout=2s;
+-        server 205.177.199.12:7403 max_fails=1  fail_timeout=2s;
+-}
+-
+-server {
+-        #listen     443;
+-	    listen 80;
+-        server_name channel.isb-eu.gameapi.me;
+-        index index.jsp index.html index.htm;
+-        charset utf-8;
+-        #ssl on;
+-        #ssl_certificate /usr/local/nginx/conf/ssl/ebetapi888.com/fullchain.pem;
+-        #ssl_certificate_key /usr/local/nginx/conf/ssl/ebetapi888.com/privkey.pem;
+-
+-        access_log  logs/channel.isb-eu.gameapi.me.access.log main;
+-        location ~ ^/(WEB-INF)/ {
+-        deny all;
+-        }
+-
+-        location / {
+-            include /usr/local/nginx/conf.d/include/proxy.conf.globalebet.include;
+-	    proxy_http_version 1.1;
+-            proxy_set_header Upgrade $http_upgrade;
+-            proxy_set_header Connection "upgrade";
+-            proxy_pass http://isbchannel-eu;
+-        }
+-
+-        error_page   404 404.jsp;
+-        error_page   500 502 503 500.jsp;
+-        }
+-upstream isbchannelreal-eu {
+-
+-#        server 101.78.133.212:3101 max_fails=1  fail_timeout=2s;
+-        server 205.177.199.12:3101 max_fails=1  fail_timeout=2s;
+-}
+-
+-server {
+-        #listen     443;
+-	    listen 80;
+-        server_name channel.isb-eu.ebetapi888.com;
+-        index index.jsp index.html index.htm;
+-        charset utf-8;
+-        #ssl on;
+-        #ssl_certificate /usr/local/nginx/conf/ssl/ebetapi888.com/fullchain.pem;
+-        #ssl_certificate_key /usr/local/nginx/conf/ssl/ebetapi888.com/privkey.pem;
+-
+-        access_log  logs/channel.isb-eu.ebetapi888.com.access.log main;
+-        location ~ ^/(WEB-INF)/ {
+-        deny all;
+-        }
+-
+-        location / {
+-            include /usr/local/nginx/conf.d/include/proxy.conf.globalebet.include;
+-	    proxy_http_version 1.1;
+-            proxy_set_header Upgrade $http_upgrade;
+-            proxy_set_header Connection "upgrade";
+-            proxy_pass http://isbchannelreal-eu;
+-        }
+-
+-        error_page   404 404.jsp;
+-        error_page   500 502 503 500.jsp;
+-        }
+-
+-upstream isbchannel-ruibo {
+-
+-#        server 101.78.133.212:7404 max_fails=1  fail_timeout=2s;
+-        server 205.177.199.12:7404 max_fails=1  fail_timeout=2s;
+-}
+-
+-server {
+-        #listen     443;
+-	    listen 80;
+-        server_name channel.isb-ruibo.gameapi.me;
+-        index index.jsp index.html index.htm;
+-        charset utf-8;
+-        #ssl on;
+-        #ssl_certificate /usr/local/nginx/conf/ssl/ebetapi888.com/fullchain.pem;
+-        #ssl_certificate_key /usr/local/nginx/conf/ssl/ebetapi888.com/privkey.pem;
+-
+-        access_log  logs/channel.isb-ruibo.gameapi.me.access.log main;
+-        location ~ ^/(WEB-INF)/ {
+-        deny all;
+-        }
+-
+-        location / {
+-            include /usr/local/nginx/conf.d/include/proxy.conf.globalebet.include;
+-	    proxy_http_version 1.1;
+-            proxy_set_header Upgrade $http_upgrade;
+-            proxy_set_header Connection "upgrade";
+-            proxy_pass http://isbchannel-ruibo;
+-        }
+-
+-        error_page   404 404.jsp;
+-        error_page   500 502 503 500.jsp;
+-        }
+-upstream isbchannelreal-ruibo {
+-
+-#        server 101.78.133.212:3102 max_fails=1  fail_timeout=2s;
+-        server 205.177.199.12:3102 max_fails=1  fail_timeout=2s;
+-}
+-
+-server {
+-        #listen     443;
+-	    listen 80;
+-        server_name channel.isb-ruibo.ebetapi888.com;
+-        index index.jsp index.html index.htm;
+-        charset utf-8;
+-        #ssl on;
+-        #ssl_certificate /usr/local/nginx/conf/ssl/ebetapi888.com/fullchain.pem;
+-        #ssl_certificate_key /usr/local/nginx/conf/ssl/ebetapi888.com/privkey.pem;
+-
+-        access_log  logs/channel.isb-ruibo.ebetapi888.com.access.log main;
+-        location ~ ^/(WEB-INF)/ {
+-        deny all;
+-        }
+-
+-        location / {
+-            include /usr/local/nginx/conf.d/include/proxy.conf.globalebet.include;
+-	    proxy_http_version 1.1;
+-            proxy_set_header Upgrade $http_upgrade;
+-            proxy_set_header Connection "upgrade";
+-            proxy_pass http://isbchannelreal-ruibo;
+-        }
+-
+-        error_page   404 404.jsp;
+         error_page   500 502 503 500.jsp;
+         }
+ 
+

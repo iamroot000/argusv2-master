@@ -1,0 +1,131 @@
+ESYNC_WORKER1_COMMAND_START
+[WARNING]: Invalid characters were found in group names but not replaced, use
+-vvvv to see details
+
+PLAY [om-test_nginx] ***********************************************************
+
+
+TASK [Gathering Facts] *********************************************************
+ok: [52.184.38.87]
+
+TASK [nginx_sync : Change python interpreter] **********************************
+skipping: [52.184.38.87]
+
+
+TASK [nginx_sync : change python interpreter] **********************************
+skipping: [52.184.38.87]
+
+TASK [nginx_sync : Notify] *****************************************************
+
+ok: [52.184.38.87] => {
+    "msg": "Syncing om-test_nginx"
+}
+
+TASK [nginx_sync : include_vars] ***********************************************
+
+ok: [52.184.38.87]
+
+TASK [nginx_sync : Synchronizing Nginx] ****************************************
+ok: [52.184.38.87] => (item=conf)
+changed: [52.184.38.87] => (item=conf.d)
+
+ok: [52.184.38.87] => (item=data)
+ok: [52.184.38.87] => (item=html)
+
+TASK [nginx_sync : Set HTML Dir to root] ***************************************
+ok: [52.184.38.87]
+
+
+TASK [all_servers : include_vars] **********************************************
+ok: [52.184.38.87]
+
+TASK [all_servers : Notify] ****************************************************
+
+ok: [52.184.38.87] => {
+    "msg": "Clearing Nginx Cache for om-test_nginx"
+}
+
+TASK [all_servers : Copying clear_nginxcache.sh to remote hosts] ***************
+
+ok: [52.184.38.87]
+
+TASK [all_servers : Nginx Clear Cache] *****************************************
+changed: [52.184.38.87]
+
+
+TASK [all_servers : debug] *****************************************************
+ok: [52.184.38.87] => {
+    "script_result.stdout_lines": [
+        "-----------------------------------------------------------", 
+        "|                 Checking Nginx Config                   |", 
+
+        "-----------------------------------------------------------", 
+        "", 
+        " nginx -t ", 
+        "", 
+        "-----------------------------------------------------------", 
+
+        "|                 Stopping Nginx Process                  |", 
+        "-----------------------------------------------------------", 
+        "", 
+        " /usr/bin/killall -9 nginx ", 
+        "", 
+
+        "-----------------------------------------------------------", 
+        "|                 Clearing Proxy Cache                    |", 
+        "-----------------------------------------------------------", 
+        "", 
+        " /bin/rm -rf /tmp/nginx_cache ", 
+
+        "", 
+        "-----------------------------------------------------------", 
+        "|                Restarting Nginx Process                 |", 
+        "-----------------------------------------------------------", 
+        "root       935  0.0  0.0 102956  3016 ?        Ss   Mar09   0:00 /sbin/dhclient -1 -q -lf /var/lib/dhclient/dhclient--eth0.lease -pf /var/run/dhclient-eth0.pid -H om-test_nginx1.hk.az.monaco1.me eth0", 
+
+        "root      1804  1.0  0.0 113304  2944 ?        S    21:55   0:00 /bin/bash /bak/bin/clear_nginxcache.sh", 
+        "root      1811  0.0  0.9 894384 37808 ?        Ss   21:55   0:00 nginx: master process /usr/local/nginx/sbin/nginx", 
+        "nobody    1812  0.0  1.0 1042884 43636 ?       S    21:55   0:00 nginx: worker process", 
+        "nobody    1814  0.0  1.0 1042884 42124 ?       S    21:55   0:00 nginx: worker process", 
+        "nobody    1815  0.0  1.1 1042884 45064 ?       S    21:55   0:00 nginx: worker process", 
+
+        "nobody    1816  0.0  1.0 1042884 43636 ?       S    21:55   0:00 nginx: worker process", 
+        "nobody    1817  0.0  0.9 1040956 39236 ?       S    21:55   0:00 nginx: cache manager process", 
+        "nobody    1818  0.0  0.9 1040956 39236 ?       S    21:55   0:00 nginx: cache loader process", 
+        "root      1820  0.0  0.0 112828  2192 ?        S    21:55   0:00 grep nginx", 
+        "              total        used        free      shared  buff/cache   available", 
+
+        "Mem:           3935         282        2573         185        1080        3214", 
+        "Swap:             0           0           0", 
+        "-----------------------------------------------------------", 
+        "|                     Reload SUCCESS!                     |", 
+        "-----------------------------------------------------------"
+
+    ]
+}
+
+PLAY [127.0.0.1] ***************************************************************
+
+
+TASK [sync_to_git : Synchronizing Nginx To GIT] ********************************
+changed: [127.0.0.1]
+
+TASK [sync_to_git : debug] *****************************************************
+ok: [127.0.0.1] => {
+
+    "msg": " [u'[master 858b923] adrian.chong', u' 3 files changed, 109 insertions(+)', u'Branch master set up to track remote branch master from origin.']"
+}
+
+PLAY [om-test_nginx] ***********************************************************
+
+
+PLAY [127.0.0.1] ***************************************************************
+
+PLAY RECAP *********************************************************************
+127.0.0.1                  : ok=2    changed=1    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0   
+52.184.38.87               : ok=10   changed=2    unreachable=0    failed=0    skipped=2    rescued=0    ignored=0   
+
+
+
+ESYNC_WORKER1_COMMAND_END
+MAX RETRIES EXECUTED, COMMAND NOT RESPONDING

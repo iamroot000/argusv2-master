@@ -1,0 +1,33 @@
+--- /ansible/nginx/hostgroups/om-test_nginx/nginx/conf.d/include/mailserver-web-test.include	2020-07-01 09:54:08.298143421 +0800
++++ /tmp/mailserver-web-test.include	2020-07-01 11:01:48.231880303 +0800
+@@ -50,10 +50,28 @@
+             proxy_set_header Host  $host;
+             proxy_set_header X-Forwarded-For  $remote_addr;
+             proxy_set_header X-Forwarded-Proto $scheme ;
+-	         proxy_pass http://$upstream;
++	         proxy_pass http://$mailserver-server;
+             #expires      2h;
+        }
+ 
++	location /server {
++            proxy_set_header Host  $host;
++            proxy_set_header X-Forwarded-For  $remote_addr;
++            proxy_set_header X-Forwarded-Proto $scheme ;
++	    proxy_pass http://$upstream;
++        }
++
++	location ~* .*\.(png|jpg|gif|jpeg|bmp|ico|css|js|json|exe)?$ {
++            proxy_next_upstream http_502 http_504 error timeout invalid_header;
++            #proxy_cache cache_after;
++            #proxy_cache_valid  200 304 12h;
++	         #proxy_cache_key $host$uri$query_string;
++            proxy_set_header Host  $host;
++            proxy_set_header X-Forwarded-For  $remote_addr;
++            proxy_set_header X-Forwarded-Proto $scheme ;
++	         proxy_pass http://$mailserver-server;
++            #expires      2h;
++       }
+ 
+ 
+ 
+

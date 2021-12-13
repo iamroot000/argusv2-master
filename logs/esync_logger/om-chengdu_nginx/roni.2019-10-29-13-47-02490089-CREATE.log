@@ -1,0 +1,35 @@
+--- /ansible/nginx/hostgroups/om-chengdu_nginx/nginx/conf.d/other/chengdutest.conf	2019-10-29 13:39:39.544879360 +0800
++++ /tmp/chengdutest.conf	2019-10-29 13:47:02.378879360 +0800
+@@ -1,19 +1,19 @@
+ upstream zentao{
+-             proxy_pass  zentao;
++             server  zentao.neweb.me:80;
+ }
+ server {
+              listen 90;
+   			server_name zentaocdt.neweb.me;
+-    access_log  /var/log/nginx/test.log  proxy;
++access_log /var/log/nginx/test.log main;
++error_log /var/log/nginx/test.err;
++  
++location / {
++proxy_pass http://zentao;
++proxy_set_header Host $host;
++proxy_set_header X-Real_IP $remote_addr;
++proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
++proxy_http_version 1.1;
++proxy_set_header Upgrade $http_upgrade;
++proxy_set_header Connection "upgrade";
+ }
+- http {
+-    log_format  main  '$remote_addr - $remote_user [$time_local] "$request" '
+-                      '$status $body_bytes_sent "$http_referer" '
+-                      '"$http_user_agent" "$http_x_forwarded_for"';
+-    sendfile            on;
+-    tcp_nopush          on;
+-    tcp_nodelay         on;
+-    keepalive_timeout   65;
+-    types_hash_max_size 2048;
+ }
+-
+

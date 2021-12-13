@@ -1,0 +1,68 @@
+--- /ansible/nginx/hostgroups/newpujing-ag_nginx/nginx/conf.d/other/ag.conf	2019-05-29 11:40:58.657002781 +0800
++++ /tmp/ag.conf	2019-05-29 11:41:07.253002781 +0800
+@@ -1,4 +1,64 @@
++server {
++        listen     81;
++        server_name gci.agapi.tech;
++        index index.jsp index.html index.htm;
++        charset utf-8;
+ 
++        access_log  logs/gci.agapi.tech.access.log main;
++        access_log  logs/gci.agapi.tech.logstash.access.log logstash;
++        error_log logs/gci.agapi.tech.error.log;
++
++        if ($request_method !~* GET|POST|HEAD) {
++                return 403;
++        }
++
++        location / {
++                proxy_redirect off;
++                proxy_set_header        Host            gci.agapi.tech;
++                proxy_set_header        X-Real-IP       $remote_addr;
++                proxy_set_header        X-Forwarded-For $proxy_add_x_forwarded_for;
++                client_max_body_size    10m;
++                client_body_buffer_size 128k;
++                proxy_connect_timeout   90;
++                proxy_send_timeout      90;
++                proxy_read_timeout      90;
++                proxy_buffers           32 4k;
++                proxy_pass http://207.174.181.119:81;
++        }
++        error_page   404 404.jsp;
++        error_page   500 502 503 500.jsp;
++} # server end
++
++server {
++        listen     81;
++        server_name gi.agapi.tech;
++        index index.jsp index.html index.htm;
++        charset utf-8;
++
++        access_log  logs/gi.agapi.tech.access.log main;
++        access_log  logs/gi.agapi.tech.logstash.access.log logstash;
++        error_log logs/gi.agapi.tech.error.log;
++
++        if ($request_method !~* GET|POST|HEAD) {
++                return 403;
++        }
++
++        location / {
++                proxy_redirect off;
++                proxy_set_header        Host            gi.agapi.tech;
++                proxy_set_header        X-Real-IP       $remote_addr;
++                proxy_set_header        X-Forwarded-For $proxy_add_x_forwarded_for;
++                client_max_body_size    10m;
++                client_body_buffer_size 128k;
++                proxy_connect_timeout   90;
++                proxy_send_timeout      90;
++                proxy_read_timeout      90;
++                proxy_buffers           32 4k;
++                proxy_pass http://207.174.176.6:81;
++        }
++        error_page   404 404.jsp;
++        error_page   500 502 503 500.jsp;
++} # server end
+ 
+ 
+ 
+

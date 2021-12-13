@@ -1,0 +1,77 @@
+---
+  - name: Removing old config                                     #removing old config on /etc/zabbix/
+    shell: rm -rfv /etc/zabbix/*
+  - name: Installing zabbix (rpm)                                 #rmp install
+    yum:
+      name: 'https://repo.zabbix.com/zabbix/4.0/rhel/7/x86_64/zabbix-release-4.0-1.el7.noarch.rpm'
+      state: present
+  - name: Updating packages                                       #updating the packages
+    yum:
+      name: "*"
+      state: latest
+      update_cache: yes
+  - name: Removing old zabbix                                     #removing old zabbix-agent
+    yum:
+      name: zabbix-agent
+      state: absent
+  - name: Installing new zabbix                                   #installing new zabbix-agent
+    yum:
+      name: zabbix-agent
+      state: present
+  - name: Configuring zabbix sudoers                              #Configuring zabbix sudoers
+    template:
+      src: zabbix.j2
+      dest: /etc/sudoers.d/zabbix
+  - name: Downloading zabbix_include                              #Download related config
+    get_url:
+      url: http://office.pc-setting.info/cyrus/zabbix_agent/cloud_nginx/zabbix_include.tar.gz
+      url_username: '{{ username }}'
+      url_password: '{{ pc_settings_password }}'
+      dest: /etc/zabbix
+      mode: '+x'
+  - name: Extract archive                                        #extract zabbix_include.tar.gz to /etc/zabbix
+    unarchive:
+      remote_src: yes
+      src: /etc/zabbix/zabbix_include.tar.gz
+      dest:  /etc/zabbix
+  - name: Changing permission                                    #changing permission
+    file:
+      path: /etc/zabbix/include
+      mode: '+x'
+      recurse: yes
+  - name: Configuring zabbix                                     #Configuring zabbix
+    template:
+      src: zabbix_agentd.conf.j2
+      dest: /etc/zabbix/zabbix_agentd.conf
+#  - name: Restarting zabbix-agent2                               #restarting zabbix-agent
+#    systemd:
+#      name: zabbix-agent
+#      state: restarted
+  - name: Execute python command                                 #changing TLSPSKIdentity on /etc/zabbix/zabbix_agentd.conf
+    shell: python -c 'import socket;hostname = socket.gethostname();print hostname.replace(".","").replace("-","").replace("_","").replace("monaco1me","")'
+    register: HN
+  - name: Creating keys directory                                #creating keys directory
+    file:
+     path: /etc/zabbix/keys
+     state: directory
+  - name: Downloading cloud-agent.psk                            #Downloading cloud-agent.psk
+    get_url:
+      url: http://office.pc-setting.info/cyrus/zabbix_agent/cloud_nginx/keys/cloud-agent.psk
+      url_username: '{{ username }}'
+      url_password: '{{ pc_settings_password }}'
+      dest: /etc/zabbix/keys
+  - name: Configuring zabbix_agentd.conf3                        #Configuring zabbix_agentd.conf
+    lineinfile:
+     dest: /etc/zabbix/zabbix_agentd.conf
+     line: '{{ item }}'
+     state: present
+     insertafter: EOF
+    with_items:
+      - 'TLSPSKIdentity={{ HN.stdout }}'
+      - 'TLSAccept=unencrypted,psk'
+      - 'TLSConnect=psk'
+      - 'TLSPSKFile=/etc/zabbix/keys/cloud-agent.psk'
+#  - name: Restarting zabbix-agent2                               #restarting zabbix-agent
+#    systemd:
+#      name: zabbix-agent
+#      state: restarted

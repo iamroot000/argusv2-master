@@ -1,0 +1,31 @@
+--- /ansible/nginx/hostgroups/om-test_nginx/nginx/conf.d/include/xjw3-jbl-test.include	2020-08-21 17:51:17.396005274 +0800
++++ /tmp/xjw3-jbl-test.include	2020-09-09 15:43:50.304180806 +0800
+@@ -39,7 +39,12 @@
+     index index.html;
+ }
+ if ($allowed_country = no ){ 
+-	set $test BLOCK; 
++		if ($allowed_ip = yes ){ 
++			set $test ALLOW; 
++		}
++		if ($allowed_ip = no){
++			set $test BLOCK;
++		}
+ }
+ 
+ if ($allowed_country = yes ){
+@@ -47,13 +52,6 @@
+ }
+ 
+ 
+-if ($allowed_ip = yes ){ 
+-	set $test ALLOW; 
+-}
+-if ($allowed_ip = no){
+-	set $test BLOCK;
+-}
+-
+ 
+ 
+ location /ipblock {
+

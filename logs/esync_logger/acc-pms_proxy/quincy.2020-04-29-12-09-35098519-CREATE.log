@@ -1,0 +1,35 @@
+--- /ansible/nginx/hostgroups/acc-pms_proxy/nginx/conf.d/other/payworld.site.conf	2020-02-04 10:06:36.833309695 +0800
++++ /tmp/payworld.site.conf	2020-04-29 12:09:35.014706232 +0800
+@@ -71,3 +71,31 @@
+         }
+ 
+ }
++
++
++
++server {
++        listen      443 ssl;
++        server_name api.payworld.site;
++        index   index.jsp index.html index.htm;
++        charset utf-8;
++  
++  		ssl on;
++    	ssl_certificate /usr/local/nginx/conf.d/ssl/payworld.site/fullchain.pem;
++    	ssl_certificate_key /usr/local/nginx/conf.d/ssl/payworld.site/privkey.pem;
++  
++        access_log  logs/api.payworld.site.access.log main;
++        access_log  logs/api.payworld.site.access.log logstash;
++  
++        location / {
++#                include /usr/local/nginx/conf.d/include/whitelistpayworldsite.include;
++				proxy_set_header        Host            $host; 
++				proxy_set_header        X-Real-IP       $remote_addr;
++				proxy_set_header        referer         "";
++				proxy_set_header        X-Forwarded-For $proxy_add_x_forwarded_for; 
++				proxy_connect_timeout   80; 
++				proxy_send_timeout      80; 
++				proxy_read_timeout      80; 
++            	proxy_pass http://pms2_9001;
++        }
++}
+

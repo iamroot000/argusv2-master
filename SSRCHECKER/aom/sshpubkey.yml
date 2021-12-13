@@ -1,0 +1,86 @@
+#created by: Yroll Jay-R Macalino
+---
+- hosts: 127.0.0.1
+  gather_facts: no
+  
+  vars_prompt:
+   - name: password
+     prompt: "Enter Office PC Settings Password"
+     private: yes
+   - name: env_name
+     prompt: "Environment Name"
+     private: no
+   - name: ssh_rsa
+     prompt: "PublicKey"
+     private: no
+
+  pre_tasks:
+  - name: Downloading authorized_keys...
+    get_url:
+     url: http://office.pc-setting.info/cyrus/authorized_keys
+     url_username: omadmin
+     url_password: '{{ password }}'
+     dest: ./
+
+
+  tasks:
+  - name: Checking your key...
+    command: cat authorized_keys
+    register: result
+    changed_when: false
+  - shell: echo " " >> authorized_keys
+    changed_when: false
+  - name: Adding Your keys
+    lineinfile:
+     dest: ./authorized_keys
+     regexp: '^environment="NAME={{ env_name }}"'
+     line: 'environment="NAME={{ env_name }}" {{ ssh_rsa  }}'
+     state: present
+    register: added
+    changed_when: '"{{ ssh_rsa }}" not in result.stdout'
+  - command: cat authorized_keys
+    register: keychanged
+    changed_when: false
+  - debug:
+     var: keychanged.stdout_lines
+
+
+
+- hosts: python_host
+  gather_facts: yes
+ 
+  pre_tasks:
+#  - name: Adding HGC IP
+#    shell: iptables -I INPUT -p tcp -s 175.100.204.34 -j ACCEPT
+#    become: true
+  - name: Installing libselinux-python
+    yum:
+     name:
+     - libselinux-python
+     state: present
+    become: true
+  - selinux: state=disabled
+    ignore_errors: yes
+
+  tasks:
+  - name: Uploading keys to SSR...
+    copy: 
+     src: ./authorized_keys
+     dest: .ssh/authorized_keys
+     owner: python_username
+     group: python_username
+     mode: "u+rw,g-rwx,o-rwx"
+  - name: Copying iptables rules
+    template:
+     src: iptables_ssr.sh.j2
+     dest: /bak/bin/iptables.sh
+     mode: '+x'
+    become: true
+
+  - name: Run iptables.
+    command: '{{ item }}'
+    with_items:
+     - /bak/bin/iptables.sh
+     - /etc/inid.d/iptables save
+    failed_when: false
+    become: true

@@ -1,0 +1,49 @@
+FILENAME: 80/neweb.me.conf
+-  
++  server {
++      listen 80;
++      server_name neweb.me www.newpujing-cstest.neweb.me;
++  
++      if ($http_host !~* 'www') {
++          rewrite ^(.*)$ http://www.$http_host$1 permanent;
++      }
++  
++      include /usr/local/nginx/conf.d/include/newpujing.include;
++  }
++  
++  
+
+FILENAME: 80-443/neweb.me.conf
+-  server {
+-      listen 80;
+-      server_name www.newpujing-cstest.neweb.me;
+-      rewrite ^(.*)$ https://www.newpujing-cstest.neweb.me$1 permanent;
+-  }
+-  
+-  
++  
+server {
+    listen 80;
+    server_name bbetasia-jshbw-cstest.neweb.me;
+    rewrite ^(.*)$ https://bbetasia-jshbw-cstest.neweb.me$1 permanent;
+}
+
+server {
+    listen 443;
+    server_name bbetasia-jshbw-cstest.neweb.me;
+    ssl on;
+    ssl_certificate /usr/local/nginx/conf.d/ssl/neweb.me/fullchain.pem;
+    ssl_certificate_key /usr/local/nginx/conf.d/ssl/neweb.me/privkey.pem;
+    include /usr/local/nginx/conf.d/include/bbetasia-jshbw-cstest.include;
+}
+
+server {
+    listen 443;
+    server_name www.newpujing-cstest.neweb.me;
+    ssl on;
+    ssl_certificate /usr/local/nginx/conf.d/ssl/neweb.me/fullchain.pem;
+    ssl_certificate_key /usr/local/nginx/conf.d/ssl/neweb.me/privkey.pem;
+    include /usr/local/nginx/conf.d/include/newpujing.include;
+}
+
+

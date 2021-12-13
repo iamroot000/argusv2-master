@@ -1,0 +1,71 @@
+server {
+        listen      443 ssl;
+        server_name qfgj.payworld.site;
+        index   index.jsp index.html index.htm;
+        charset utf-8;
+  
+  		ssl on;
+    	ssl_certificate /usr/local/nginx/conf.d/ssl/payworld.site/fullchain.pem;
+    	ssl_certificate_key /usr/local/nginx/conf.d/ssl/payworld.site/privkey.pem;
+  
+        access_log  logs/ivi-pms2-backgroud.access.log main;
+        access_log  logs/ivi-pms2-backgroud.logstash.access.log logstash;
+  
+        location / {
+#		   		include /usr/local/nginx/conf.d/global/whitelist_map2.conf;
+           		proxy_redirect          off; 
+				proxy_set_header        Host            $host; 
+				proxy_set_header        X-Real-IP       $remote_addr;
+				proxy_set_header        referer         "";
+				proxy_set_header        X-Forwarded-For $proxy_add_x_forwarded_for; 
+    			proxy_cache cache_after;
+        		proxy_cache_key    $uri$is_args$args;
+        		add_header X-Cache $upstream_cache_status;
+        		proxy_cache_valid 200 3d;
+        		proxy_cache_valid 301 302 1d;
+        		proxy_cache_valid any 3d;
+        		proxy_cache_use_stale error http_500 http_502 http_503 http_504;
+				proxy_connect_timeout   80; 
+				proxy_send_timeout      80; 
+				proxy_read_timeout      80; 
+				client_max_body_size    35m;
+				client_body_buffer_size 256k;
+				proxy_buffer_size       256k;
+				proxy_buffers           4 256k;
+				proxy_busy_buffers_size 256k;
+				proxy_temp_file_write_size      256k;
+            	proxy_pass http://pms2_web;
+        }
+}
+
+
+server {
+        listen      9001;
+        server_name qfgj.payworld.site;
+        index   index.jsp index.html index.htm;
+        charset utf-8;
+        access_log  logs/pms2-9001.access.log main;
+        access_log  logs/pms2-9001.logstash.access.log logstash;
+        location / {
+           proxy_redirect          off; 
+				proxy_set_header        Host            $host; 
+				proxy_set_header        X-Real-IP       $remote_addr;
+				proxy_set_header        referer         "";
+				proxy_set_header        X-Forwarded-For $proxy_add_x_forwarded_for; 
+				proxy_connect_timeout   80; 
+				proxy_send_timeout      80; 
+				proxy_read_timeout      80; 
+				client_max_body_size    35m;
+				client_body_buffer_size 256k;
+				proxy_buffer_size       256k;
+				proxy_buffers           4 256k;
+				proxy_busy_buffers_size 256k;
+				proxy_temp_file_write_size      256k;
+            proxy_pass http://pms2_9001;
+        }
+
+}
+
+
+
+

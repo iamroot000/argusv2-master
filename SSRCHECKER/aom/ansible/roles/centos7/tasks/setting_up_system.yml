@@ -1,0 +1,88 @@
+---
+  - name: Moving .bashrc to ommgr                                                       #Moving .bashrc to ommgr
+    command: mv /root/.bashrc /home/ommgr/bashrc-root.txt
+    failed_when: false
+  - name: Downloading root-bashrc                                                       #Downloading root-bashrc
+    get_url:
+     url: http://office.pc-setting.info/cyrus/root-bashrc.txt
+     url_username: '{{ username }}'
+     url_password: '{{ pc_settings_password }}'
+     dest: "{{ item }}"
+    with_items:
+     - /root/.bashrc
+     - /home/ommgr/root-bashrc.txt
+  - name: Adding file on tmp                                                           # Adding file on tmp
+    file:
+     path: /tmp/{{ item }}
+     state: touch
+    with_items:
+      - name0
+      - name1
+  - name: Copying .bashrc                                                               #Copying .bashrc
+    copy:
+     remote_src: yes
+     src: /home/ommgr/.bashrc
+     dest: /home/ommgr/bashrc-ommgr.txt
+  - name: Appending on .bashrc                                                          #Appending on .bashrc to /home/ommgr/.bashrc
+    lineinfile:
+     dest: /home/ommgr/.bashrc
+     line: 'export HISTTIMEFORMAT="%d/%m/%y %T "'
+     state: present
+     insertafter: EOF
+  - name: Executing a command                                                           #Executing a command
+    shell: source /root/.bashrc /home/ommgr/.bashrc && mv /etc/bashrc /home/ommgr/etc-bashrc.txt
+    failed_when: false
+  - name: Downloading root-etc-bashrc                                                   # Downloading root-etc-bashrc
+    get_url:
+     url: http://office.pc-setting.info/cyrus/root-etc-bashrc.txt
+     url_username: '{{ username }}'
+     url_password: '{{ pc_settings_password }}'
+     dest: /etc/bashrc
+  - name: Appending on rsyslog.conf                                                     #Appending on rsyslog.conf
+    lineinfile:
+     dest: /etc/rsyslog.conf
+     line: 'local2.info                                     -/var/log/tmp.log'
+     state: present
+     insertafter: EOF
+  - name: Adding file on /var/log/                                                      #Adding file on /var/log/
+    file:
+     path: /var/log/tmp.log
+     state: touch
+     mode: 600
+  - name: Restarting rsyslog service                                                    #Restarting rsyslog service
+    systemd:
+     name: rsyslog
+     state: restarted
+  - name: Enabling iptables                                                             #Enabling iptables
+    systemd:
+     name: iptables
+     enabled: yes
+  - name: Configuring iptables                                                          #Configuring iptables
+    file:
+     src: /usr/libexec/iptables/iptables.init
+     dest: /etc/init.d/iptables
+     state: link
+  - name: Configuring iptables2                                                         #Configuring iptables2
+    file:
+     path: /bak/bin
+     state: directory
+  - name: Downloading iptables.sh                                                       #Downloading iptables.sh
+    get_url:
+     url: http://office.pc-setting.info/cyrus/iptables.sh
+     url_username: '{{ username }}'
+     url_password: '{{ pc_settings_password }}'
+     dest: /bak/bin
+     mode: 0755
+  - name: Adding to rc.local                                                            #Adding iptables script to rc.local
+    lineinfile:
+     dest: /etc/rc.d/rc.local
+     line: 'sh /bak/bin/iptables.sh'
+     mode: "u+x"
+     state: present
+     insertafter: EOF
+  - name: Run iptables                                                                  #Run iptables
+    command: "{{ item }}"
+    with_items:
+     - /bak/bin/iptables.sh
+     - /etc/init.d/iptables save
+    ignore_errors: yes

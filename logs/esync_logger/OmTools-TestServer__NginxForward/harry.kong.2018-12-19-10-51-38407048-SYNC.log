@@ -1,0 +1,240 @@
+ESYNC_COMMAND_START
+
+PLAY [OmTools-TestServer__NginxForward] ****************************************
+
+TASK [nginx_sync : Notify] *****************************************************
+ok: [23.101.9.146] => {
+
+    "msg": "Syncing OmTools-TestServer__NginxForward"
+}
+ok: [47.52.158.87] => {
+    "msg": "Syncing OmTools-TestServer__NginxForward"
+}
+
+
+TASK [nginx_sync : include_vars] ***********************************************
+ok: [23.101.9.146]
+ok: [47.52.158.87]
+
+
+TASK [nginx_sync : Synchronizing Nginx] ****************************************
+ok: [47.52.158.87] => (item=conf)
+ok: [23.101.9.146] => (item=conf)
+changed: [47.52.158.87] => (item=conf.d)
+changed: [23.101.9.146] => (item=conf.d)
+
+ok: [47.52.158.87] => (item=data)
+ok: [23.101.9.146] => (item=data)
+ok: [47.52.158.87] => (item=html)
+ok: [23.101.9.146] => (item=html)
+
+
+TASK [all_servers : include_vars] **********************************************
+ok: [23.101.9.146]
+ok: [47.52.158.87]
+
+TASK [all_servers : Notify] ****************************************************
+
+ok: [23.101.9.146] => {
+    "msg": "Clearing Nginx Cache for OmTools-TestServer__NginxForward"
+}
+ok: [47.52.158.87] => {
+    "msg": "Clearing Nginx Cache for OmTools-TestServer__NginxForward"
+
+}
+
+TASK [all_servers : Copying clear_nginxcache.sh to remote hosts] ***************
+ok: [47.52.158.87]
+ok: [23.101.9.146]
+
+
+TASK [all_servers : Nginx Clear Cache] *****************************************
+changed: [47.52.158.87]
+changed: [23.101.9.146]
+
+
+TASK [all_servers : debug] *****************************************************
+ok: [23.101.9.146] => {
+    "script_result.stdout_lines": [
+        "-----------------------------------------------------------", 
+        "|                 Checking Nginx Config                   |", 
+
+        "-----------------------------------------------------------", 
+        "", 
+        " nginx -t ", 
+        "", 
+        "-----------------------------------------------------------", 
+
+        "|                 Stopping Nginx Process                  |", 
+        "-----------------------------------------------------------", 
+        "", 
+        " /usr/bin/killall -9 nginx ", 
+        "", 
+
+        "-----------------------------------------------------------", 
+        "|                 Clearing Proxy Cache                    |", 
+        "-----------------------------------------------------------", 
+        "", 
+        " /bin/rm -rf /tmp/nginx_cache ", 
+
+        "", 
+        "-----------------------------------------------------------", 
+        "|                Restarting Nginx Process                 |", 
+        "-----------------------------------------------------------", 
+        "root       2849  0.5  0.0 106116  1296 ?        S    10:51   0:00 /bin/bash /bak/bin/clear_nginxcache.sh", 
+
+        "root       2855  0.0  0.0 708168  4544 ?        Ss   10:51   0:00 nginx: master process /usr/local/nginx/sbin/nginx", 
+        "nobody     2856  0.0  0.1 712420  8976 ?        S    10:51   0:00 nginx: worker process      ", 
+        "nobody     2858  0.0  0.1 712420  8976 ?        S    10:51   0:00 nginx: worker process      ", 
+        "nobody     2859  0.0  0.1 712420  8976 ?        S    10:51   0:00 nginx: worker process      ", 
+        "nobody     2860  0.0  0.1 712420  8976 ?        S    10:51   0:00 nginx: worker process      ", 
+
+        "nobody     2861  0.0  0.0 708352  4992 ?        S    10:51   0:00 nginx: cache manager process", 
+        "nobody     2862  0.0  0.0 708352  4924 ?        S    10:51   0:00 nginx: cache loader process", 
+        "root       2864  0.0  0.0 103324   844 ?        S    10:51   0:00 grep nginx", 
+        "             total       used       free     shared    buffers     cached", 
+        "Mem:          7985        422       7562          3         17        163", 
+
+        "-/+ buffers/cache:        240       7744", 
+        "Swap:            0          0          0", 
+        "-----------------------------------------------------------", 
+        "|                     Reload SUCCESS!                     |", 
+        "-----------------------------------------------------------"
+
+    ]
+}
+ok: [47.52.158.87] => {
+    "script_result.stdout_lines": [
+        "-----------------------------------------------------------", 
+
+        "|                 Checking Nginx Config                   |", 
+        "-----------------------------------------------------------", 
+        "", 
+        " nginx -t ", 
+        "", 
+
+        "-----------------------------------------------------------", 
+        "|                 Stopping Nginx Process                  |", 
+        "-----------------------------------------------------------", 
+        "", 
+        " /usr/bin/killall -9 nginx ", 
+
+        "", 
+        "-----------------------------------------------------------", 
+        "|                 Clearing Proxy Cache                    |", 
+        "-----------------------------------------------------------", 
+        "", 
+
+        " /bin/rm -rf /tmp/nginx_cache ", 
+        "", 
+        "-----------------------------------------------------------", 
+        "|                Restarting Nginx Process                 |", 
+        "-----------------------------------------------------------", 
+
+        "root     10596  0.0  0.0 106080  1440 ?        S    10:51   0:00 /bin/bash /bak/bin/clear_nginxcache.sh", 
+        "root     10602  0.0  0.0 708148  4640 ?        Ss   10:51   0:00 nginx: master process /usr/local/nginx/sbin/nginx", 
+        "nobody   10603  0.0  0.1 712400  9072 ?        S    10:51   0:00 nginx: worker process      ", 
+        "nobody   10605  0.0  0.1 712400  9072 ?        S    10:51   0:00 nginx: worker process      ", 
+        "nobody   10606  0.0  0.1 712400  9072 ?        S    10:51   0:00 nginx: worker process      ", 
+
+        "nobody   10607  0.0  0.1 712400  9072 ?        S    10:51   0:00 nginx: worker process      ", 
+        "nobody   10608  0.0  0.0 708356  5088 ?        S    10:51   0:00 nginx: cache manager process", 
+        "nobody   10609  0.0  0.0 708356  5020 ?        S    10:51   0:00 nginx: cache loader process", 
+        "root     10611  0.0  0.0 103320   888 ?        S    10:51   0:00 grep nginx", 
+        "             total       used       free     shared    buffers     cached", 
+
+        "Mem:          8001        491       7510          3         31        242", 
+        "-/+ buffers/cache:        216       7784", 
+        "Swap:            0          0          0", 
+        "-----------------------------------------------------------", 
+        "|                     Reload SUCCESS!                     |", 
+
+        "-----------------------------------------------------------"
+    ]
+}
+
+PLAY [127.0.0.1] ***************************************************************
+
+
+TASK [sync_to_git : Synchronizing Nginx To GIT] ********************************
+changed: [127.0.0.1]
+
+TASK [sync_to_git : debug] *****************************************************
+
+ok: [127.0.0.1] => {
+    "script_result.stdout_lines": [
+        "[master 7d49964] harry.kong", 
+        " 46 files changed, 5031 insertions(+)", 
+        " create mode 100644 nginx/conf.d/include/baowang_bbet8_mobile.include", 
+
+        " create mode 100644 nginx/conf.d/include/baowang_bbetasia_mobile.include", 
+        " create mode 100644 nginx/conf.d/include/baowang_bbetasia_web.include", 
+        " create mode 100644 nginx/conf.d/include/baowang_eu_mobile.include", 
+        " create mode 100644 nginx/conf.d/include/baowang_haomen_mobile.include", 
+        " create mode 100644 nginx/conf.d/include/baowang_jinsheng_web.include", 
+
+        " create mode 100644 nginx/conf.d/include/baowang_ruibo_mobile.include", 
+        " create mode 100644 nginx/conf.d/include/bbet8-app.include", 
+        " create mode 100644 nginx/conf.d/include/bbet8-byh.include", 
+        " create mode 100644 nginx/conf.d/include/bbet8-proxy-cstest.include", 
+        " create mode 100644 nginx/conf.d/include/bbetasia-cdn.include", 
+
+        " create mode 100644 nginx/conf.d/include/bbetasia-cstest.include", 
+        " create mode 100644 nginx/conf.d/include/bbetasia-jshbw.include", 
+        " create mode 100644 nginx/conf.d/include/bbetasia-proxy-mobile-cstest.include", 
+        " create mode 100644 nginx/conf.d/include/bbetasia_ebetbw.include", 
+        " create mode 100644 nginx/conf.d/include/boyue-cstest.include", 
+
+        " create mode 100644 nginx/conf.d/include/boyuehui-cstest.include", 
+        " create mode 100644 nginx/conf.d/include/byh-proxy-cstest.include", 
+        " create mode 100644 nginx/conf.d/include/byhlite-cs-cstest.include", 
+        " create mode 100644 nginx/conf.d/include/bylbw_web_cstest.include", 
+        " create mode 100644 nginx/conf.d/include/cdn-bbet8-ng.include", 
+
+        " create mode 100644 nginx/conf.d/include/cstest-boyue-proxy.include", 
+        " create mode 100644 nginx/conf.d/include/eu-lite-cstest.include", 
+        " create mode 100644 nginx/conf.d/include/eu-ng-cdn-cstest.include", 
+        " create mode 100644 nginx/conf.d/include/eu-ng-fpms-cstest.include", 
+        " create mode 100644 nginx/conf.d/include/eu-ng-proxy-cstest.include", 
+
+        " create mode 100644 nginx/conf.d/include/eubw_web_cstest.include", 
+        " create mode 100644 nginx/conf.d/include/haomen-cdn-cstest.include", 
+        " create mode 100644 nginx/conf.d/include/haomen-proxy-cstest.include", 
+        " create mode 100644 nginx/conf.d/include/jinsheng-cstest.include", 
+        " create mode 100644 nginx/conf.d/include/newsystem-proxy.include", 
+
+        " create mode 100644 nginx/conf.d/include/proxy.mg.conf.include", 
+        " create mode 100644 nginx/conf.d/include/ruibo-branch-cstest.include", 
+        " create mode 100644 nginx/conf.d/include/ruibo-brsong-cstest.include", 
+        " create mode 100644 nginx/conf.d/include/ruibo-jblbw.include", 
+        " create mode 100644 nginx/conf.d/include/ruibo-pack1-cstest.include", 
+
+        " create mode 100644 nginx/conf.d/include/ruibo-pack2-cstest.include", 
+        " create mode 100644 nginx/conf.d/include/ruibo-ptsong-cstest.include", 
+        " create mode 100644 nginx/conf.d/include/ruibo-ptzhao-cstest.include", 
+        " create mode 100644 nginx/conf.d/include/ruibo-spzhao-cstest.include", 
+        " create mode 100644 nginx/conf.d/include/ruibo_ebetbw.include", 
+
+        " create mode 100644 nginx/conf.d/include/whitelistIP.conf.include", 
+        " create mode 100644 nginx/conf.d/include/xbet-cstest.include", 
+        " create mode 100644 nginx/conf.d/include/xbet-proxy.include", 
+        " create mode 120000 nginx/conf.d/ssl/cpms8.me", 
+        "Branch master set up to track remote branch master from origin."
+
+    ]
+}
+
+PLAY [OmTools-TestServer__NginxForward] ****************************************
+
+
+PLAY [127.0.0.1] ***************************************************************
+
+PLAY RECAP *********************************************************************
+127.0.0.1                  : ok=2    changed=1    unreachable=0    failed=0   
+23.101.9.146               : ok=8    changed=2    unreachable=0    failed=0   
+
+47.52.158.87               : ok=8    changed=2    unreachable=0    failed=0   
+
+
+ESYNC_COMMAND_END
+MAX RETRIES EXECUTED, COMMAND NOT RESPONDING

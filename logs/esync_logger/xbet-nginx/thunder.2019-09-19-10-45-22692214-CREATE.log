@@ -1,0 +1,24 @@
+FILENAME: 80-443/xbet.best.conf
+-  
++  server {
++      listen 80;
++      server_name xbet.best www.xbet.best;
++      rewrite ^(.*)$ https://www.xbet.best$1 permanent;
++  }
++  
++  server {
++      listen 443;
++      server_name xbet.best www.xbet.best;
++      ssl on;
++      ssl_certificate /usr/local/nginx/conf.d/ssl/xbet.best/fullchain.pem;
++      ssl_certificate_key /usr/local/nginx/conf.d/ssl/xbet.best/privkey.pem;
++  
++      if ($http_host !~* 'www') {
++          rewrite ^(.*)$ https://www.$http_host$1 permanent;
++      }
++  
++      include /usr/local/nginx/conf.d/include/xbet_proxy_official_masterconfig.include;
++  }
++  
++  
+

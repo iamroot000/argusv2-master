@@ -1,0 +1,24 @@
+FILENAME: 80-443/xyh1.site.conf
+-  
++  server {
++      listen 80;
++      server_name xyh1.site www.xyh1.site;
++      rewrite ^(.*)$ https://www.xyh1.site$1 permanent;
++  }
++  
++  server {
++      listen 443;
++      server_name xyh1.site www.xyh1.site;
++      ssl on;
++      ssl_certificate /usr/local/nginx/conf.d/ssl/xyh1.site/fullchain.pem;
++      ssl_certificate_key /usr/local/nginx/conf.d/ssl/xyh1.site/privkey.pem;
++  
++      if ($http_host !~* 'www') {
++          rewrite ^(.*)$ https://www.$http_host$1 permanent;
++      }
++  
++      include /usr/local/nginx/conf.d/include/xyh_official_masterconfig.include;
++  }
++  
++  
+

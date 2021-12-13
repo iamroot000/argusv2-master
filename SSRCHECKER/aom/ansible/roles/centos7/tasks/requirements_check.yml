@@ -1,0 +1,25 @@
+---
+  - name: Variable                                                                                    #variable for centos7 checking
+    shell: cat /etc/redhat-release | awk '{print $3}' | cut -d '.' -f1 2>&1
+    register: centos6
+  - name: Variable1                                                                                   #variable 2 for centos7 checking
+    shell: cat /etc/redhat-release | awk '{print $4}' | cut -d '.' -f1 2>&1
+    register: centos7
+  - name: Variable2                                                                                   #variable 3 for centos7 checking
+    shell: cat /etc/os-release 2>&1
+    register: ubuntu
+  - name: Requirements-good                                                                           #if good it will continue
+    debug:
+     msg: "Server meets script requirements"
+    when: 'centos7.stdout == "7"'
+  - name: Requirements-failed                                                                         #if failed it will break the process
+    fail:
+     msg: "Check server CentOS version, script is for CentOS7"
+    when: 'centos7.stdout != "7"'
+  - name: Check-if-root                                                                               #checking if user is root to continue the process
+    shell: whoami
+    register: checkroot
+  - name: Check-if-root1                                                                              #checking if user is root to continue the process
+    fail:
+     msg: "please run this script as root ."
+    when: 'checkroot.stdout != "root"'

@@ -1,0 +1,126 @@
+ESYNC_WORKER1_COMMAND_START
+
+PLAY [acc-midpay_nginx] ********************************************************
+
+TASK [nginx_sync : Notify] *****************************************************
+ok: [47.107.33.107] => {
+
+    "msg": "Syncing acc-midpay_nginx"
+}
+
+TASK [nginx_sync : include_vars] ***********************************************
+ok: [47.107.33.107]
+
+
+TASK [nginx_sync : Synchronizing Nginx] ****************************************
+changed: [47.107.33.107] => (item=conf)
+changed: [47.107.33.107] => (item=conf.d)
+ok: [47.107.33.107] => (item=data)
+
+ok: [47.107.33.107] => (item=html)
+
+TASK [all_servers : include_vars] **********************************************
+ok: [47.107.33.107]
+
+
+TASK [all_servers : Notify] ****************************************************
+ok: [47.107.33.107] => {
+    "msg": "Clearing Nginx Cache for acc-midpay_nginx"
+}
+
+
+TASK [all_servers : Copying clear_nginxcache.sh to remote hosts] ***************
+ok: [47.107.33.107]
+
+TASK [all_servers : Nginx Clear Cache] *****************************************
+changed: [47.107.33.107]
+
+
+TASK [all_servers : debug] *****************************************************
+ok: [47.107.33.107] => {
+    "script_result.stdout_lines": [
+        "-----------------------------------------------------------", 
+
+        "|                 Checking Nginx Config                   |", 
+        "-----------------------------------------------------------", 
+        "", 
+        " nginx -t ", 
+        "", 
+
+        "-----------------------------------------------------------", 
+        "|                 Stopping Nginx Process                  |", 
+        "-----------------------------------------------------------", 
+        "", 
+        " /usr/bin/killall -9 nginx ", 
+
+        "", 
+        "-----------------------------------------------------------", 
+        "|                 Clearing Proxy Cache                    |", 
+        "-----------------------------------------------------------", 
+        "", 
+
+        " /bin/rm -rf /tmp/nginx_cache ", 
+        "", 
+        "-----------------------------------------------------------", 
+        "|                Restarting Nginx Process                 |", 
+        "-----------------------------------------------------------", 
+
+        "root       927  0.0  0.0   9116   716 ?        Ss   Apr15   0:00 /sbin/dhclient -H midpay-nginx6 -1 -q -cf /etc/dhcp/dhclient-eth0.conf -lf /var/lib/dhclient/dhclient-eth0.leases -pf /var/run/dhclient-eth0.pid eth0", 
+        "root     25679  0.0  0.0 106080  1416 ?        S    14:23   0:00 /bin/bash /bak/bin/clear_nginxcache.sh", 
+        "root     25689  0.0  0.0 295220  1508 ?        Ss   14:23   0:00 nginx: master process /usr/local/nginx/sbin/nginx", 
+        "nobody   25690  0.0  0.7 322356 28832 ?        S    14:23   0:00 nginx: worker process      ", 
+        "nobody   25692  0.0  0.7 322356 28832 ?        S    14:23   0:00 nginx: worker process      ", 
+
+        "nobody   25693  0.0  0.7 322356 28832 ?        S    14:23   0:00 nginx: worker process      ", 
+        "nobody   25694  0.0  0.7 322356 28832 ?        S    14:23   0:00 nginx: worker process      ", 
+        "nobody   25695  0.0  0.7 322356 28832 ?        S    14:23   0:00 nginx: worker process      ", 
+        "nobody   25696  0.0  0.7 322356 28832 ?        S    14:23   0:00 nginx: worker process      ", 
+        "nobody   25697  0.0  0.7 322356 28832 ?        S    14:23   0:00 nginx: worker process      ", 
+
+        "nobody   25698  0.0  0.7 322356 28832 ?        S    14:23   0:00 nginx: worker process      ", 
+        "nobody   25699  0.0  0.0 295388  1924 ?        S    14:23   0:00 nginx: cache manager process", 
+        "nobody   25700  0.0  0.0 295388  1876 ?        S    14:23   0:00 nginx: cache loader process", 
+        "root     25702  0.0  0.0 103324   892 ?        S    14:23   0:00 grep nginx", 
+        "             total       used       free     shared    buffers     cached", 
+
+        "Mem:          3961       3715        245          1        148        296", 
+        "-/+ buffers/cache:       3270        691", 
+        "Swap:            0          0          0", 
+        "-----------------------------------------------------------", 
+        "|                     Reload SUCCESS!                     |", 
+
+        "-----------------------------------------------------------"
+    ]
+}
+
+PLAY [127.0.0.1] ***************************************************************
+
+
+TASK [sync_to_git : Synchronizing Nginx To GIT] ********************************
+changed: [127.0.0.1]
+
+TASK [sync_to_git : debug] *****************************************************
+
+ok: [127.0.0.1] => {
+    "script_result.stdout_lines": [
+        "[master 416a579] quincy", 
+        " 2 files changed, 1 insertion(+), 46 deletions(-)", 
+        " rewrite nginx/conf.d/other/weichat.conf (99%)", 
+
+        "Branch master set up to track remote branch master from origin."
+    ]
+}
+
+PLAY [acc-midpay_nginx] ********************************************************
+
+
+PLAY [127.0.0.1] ***************************************************************
+
+PLAY RECAP *********************************************************************
+127.0.0.1                  : ok=2    changed=1    unreachable=0    failed=0   
+
+47.107.33.107              : ok=8    changed=2    unreachable=0    failed=0   
+
+
+ESYNC_WORKER1_COMMAND_END
+MAX RETRIES EXECUTED, COMMAND NOT RESPONDING

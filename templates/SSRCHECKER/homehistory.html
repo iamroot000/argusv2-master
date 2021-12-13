@@ -1,0 +1,99 @@
+{% extends "base.html" %}
+{% block title %}SSR-Manager{% endblock %}
+{% block header %}
+SSR-Manager
+{% endblock %}
+{% block details %}
+SSR Servers History
+<!--DOWN = Port is down<br>-->
+<!--UNREACHABLE = Server is down<br>-->
+<!--TIMEOUT = Unable to connect to server<br>-->
+<!--OK = Normal-->
+{% endblock %}
+{% block action %}
+{% if logs_recap is not True %}
+    <p align="right"><button type="submit" class="btn btn-success" disabled><span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>Initializing...</button></p>
+{% else %}
+    <p align="right"> <a href="{% url 'SSR_home' %}"><button type="submit" class="btn btn-success"><span class="glyphicon glyphicon-arrow-left"></span> Back</button></a></p>
+{% endif %}
+{% endblock %}
+{% block content %}
+<div class="row border-bottom white-bg dashboard-header">
+        <div class="row-2 mb-3">
+            <h1 class="display-3">History:</h1>
+              <div class="col-sm">
+                  <table class="table table-sm table-striped table-bordered" id="mydatatable3" style="width: 100%">
+                        <col width="130">
+                        <col width="80">
+                    <thead>
+                        <tr class="thead-default">
+                            <th align="center" scope="col">USERNAME</th>
+                            <th align="center" scope="col">IP ADDRESS</th>
+                            <th align="center" scope="col">STATUS</th>
+                            <th align="center" scope="col">IDC</th>
+                            <th align="center" scope="col">ACTION</th>
+                            <th align="center" scope="col">DATE</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    {% for ssrdata in ssrhistory %}
+                        <tr>
+                                <td align="center" width="8%">{{ ssrdata.USERNAME }}</td>
+                                <td align="center" width="5%">{{ ssrdata.IP }}</td>
+                                {% if ssrdata.STATUS == "OK" %}
+                                <td align="center" width="5%">
+                                    <span class="badge badge-info">{{ ssrdata.STATUS }}</span>
+                                </td>
+                                {% elif ssrdata.STATUS == "ERROR" or ssrdata.STATUS == "FAILED" or ssrdata.STATUS == "UNREACHABLE" or ssrdata.STATUS == "DOWN" %}
+                                <td align="center" width="5%">
+                                    <span class="badge badge-danger">{{ ssrdata.STATUS }}</span>
+                                </td>
+                                {% elif ssrdata.STATUS == "TIMEOUT" %}
+                                <td align="center" width="5%">
+                                    <span class="badge badge-warning">{{ ssrdata.STATUS }}</span>
+                                </td>
+                                {% else %}
+                                <td align="center" width="5%">
+                                    <span class="badge badge-secondary">{{ ssrdata.STATUS }}</span>
+                                </td>
+                                {% endif %}
+                                <td align="center" width="5%">{{ ssrdata.IDC }}</td>
+                                {% if ssrdata.ACTION == "Add" %}
+                                <td align="center" width="10%"><h4><p class="text-success">{{ ssrdata.ACTION }}</p></h4></td>
+                                {% elif ssrdata.ACTION == "Delete" %}
+                                <td align="center" width="10%"><h4><p class="text-danger">{{ ssrdata.ACTION }}</p></h4></td>
+                                {% else %}
+                                <td align="center" width="10%"><h4><p class="text-info">{{ ssrdata.ACTION }}</p></h4></td>
+                                {% endif %}
+                                <td align="center" width="10%">{{ ssrdata.DATE }}</td>
+
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                    <tfoot>
+                    </tfoot>
+                </table>
+              </div>
+
+        </div>
+</div>
+<script src="https://code.jquery.com/jquery-3.3.1.js"></script>
+<script src="https://cdn.datatables.net/1.10.20/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.10.20/js/dataTables.bootstrap4.min.js"></script>
+<script>
+        $(document).ready(function() {
+            var table = $('#mydatatable3').DataTable({
+                            "order": [[ 5, "desc" ]], //or desc (for descending)
+                            "columnDefs" : [{"targets":1, "type":"date"}],
+                        });
+        } );
+</script>
+<script>
+        $(document).ready(function() {
+            var table = $('#mydatatable').DataTable({
+                            "order": [[ 5, "desc" ]], //or desc (for descending)
+                            "columnDefs" : [{"targets":1, "type":"date"}],
+                        });
+        } );
+</script>
+{% endblock %}

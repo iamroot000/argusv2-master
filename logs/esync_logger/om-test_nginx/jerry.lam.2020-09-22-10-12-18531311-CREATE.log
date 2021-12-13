@@ -1,0 +1,45 @@
+--- /ansible/nginx/hostgroups/om-test_nginx/nginx/conf.d/include/kpi-system-web.include	2020-09-21 17:49:31.008436696 +0800
++++ /tmp/kpi-system-web.include	2020-09-22 10:12:18.508134473 +0800
+@@ -42,27 +42,23 @@
+ 
+ 
+ 	location / {
+-            proxy_set_header Host  $host;
+-            proxy_set_header X-Forwarded-For  $remote_addr;
+-            proxy_set_header X-Forwarded-Proto $scheme ;
+-	    proxy_pass http://$upstream;
++  
++           		try_files $uri $uri/ /index.html;
++                if ($request_filename ~* ^.*?\.(csv)$){
++                        add_header Content-Disposition: 'attachment;';
++                }
++
+         }
+ 
+-       location /websocket {
+-            proxy_set_header            X-Forwarded-For $proxy_add_x_forwarded_for;
+-            #proxy_set_header X-Forwarded-For  $remote_addr;
+-            proxy_set_header        X-Real-IP       $remote_addr;
+-            proxy_next_upstream http_502 http_504 http_404 error timeout invalid_header;
+-            proxy_set_header Host $host:$server_port;
+-            proxy_http_version 1.1;
+-            proxy_set_header Upgrade $http_upgrade;
+-            proxy_set_header Connection $connection_upgrade;
+-            #proxy_pass http://9288;
+-  				# if ($http_host = 'xjw2-xpj.neweb.me' ){
+-            proxy_pass http://9288;
+- 				# }
+-            #proxy_pass http://dev9280;
++       location /api {
+             
++           		proxy_pass http://localhost:5000;
++                proxy_http_version 1.1;
++                proxy_set_header Upgrade $http_upgrade;
++                proxy_set_header Connection 'upgrade';
++                proxy_set_header Host $host;
++                proxy_cache_bypass $http_upgrade;
++
+         }
+ 
+ 	location ~* .*\.(png|jpg|gif|jpeg|bmp|ico|css|js|json|exe)?$ {
+

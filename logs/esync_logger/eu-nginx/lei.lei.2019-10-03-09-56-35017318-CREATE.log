@@ -1,0 +1,26 @@
+--- /ansible/nginx/hostgroups/eu-nginx/nginx/conf.d/other/euapp.yanguanghui.com.conf	2019-10-03 09:56:01.748704108 +0800
++++ /tmp/euapp.yanguanghui.com.conf	2019-10-03 09:56:34.894704108 +0800
+@@ -1,3 +1,22 @@
++ server {
++    listen 80;
++    server_name 168eu.com www.168eu.com;
++    rewrite ^(.*)$ https://www.168eu.com$1 permanent;
++}
++
++server {
++    listen 443;
++    server_name 168eu.com www.168eu.com;
++    ssl on;
++    ssl_certificate /usr/local/nginx/conf.d/ssl/168eu.com/fullchain.pem;
++    ssl_certificate_key /usr/local/nginx/conf.d/ssl/168eu.com/privkey.pem;
++
++    if ($http_host !~* 'www') {
++        rewrite ^(.*)$ https://www.$http_host$1 permanent;
++    }
++
++    include /usr/local/nginx/conf.d/include/eu_official_masterconfig.include;
++}
+ 
+ 
+ 
+

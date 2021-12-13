@@ -1,0 +1,55 @@
+---
+
+- name: Downloading v2ray
+
+  copy:
+
+    src: "{{ item.src }}"
+
+    dest: "{{ item.dest }}"
+
+  with_items:
+
+    - { src: 'v2ray.zip', dest: '/etc/' }
+
+    - { src: 'v2ray_config.zip', dest: '/tmp/' }
+
+
+
+- name: Creating v2ray dir
+
+  file:
+
+    path: '{{ item }}'
+
+    state: directory
+
+  with_items:
+
+    - /usr/bin/v2ray
+
+    - /var/log/v2ray
+
+    - /etc/v2ray
+
+    - /tmp/v2ray
+
+
+
+- name: Extracting v2ray
+
+  unarchive:
+
+    remote_src: yes
+
+    src: "{{ item.src }}"
+
+    dest: "{{ item.dest }}"
+
+  with_items:
+
+    - { src: '/etc/v2ray.zip', dest: '/etc/' }
+
+    - { src: '/tmp/v2ray_config.zip', dest: '/tmp/v2ray/' }
+
+    - { src: '/tmp/v2ray_config.zip', dest: '/usr/bin/v2ray' }

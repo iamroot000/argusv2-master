@@ -1,0 +1,81 @@
+--- /ansible/nginx/hostgroups/xbet-nginx/nginx/conf.d/include/proxy-xuanchuan-xbet.include	2020-05-27 16:15:57.902287504 +0800
++++ /tmp/proxy-xuanchuan-xbet.include	2020-05-27 16:16:37.789758753 +0800
+@@ -1,3 +1,77 @@
++index   index.jsp index.html index.htm;
++access_log  logs/xbet.access.log main;
++access_log  logs/xbet.logstash.access.log logstash;
++
++if ($http_user_agent ~* "(iPhone|iPad|iPod|Linux|android|Android|bb\d+|meego).+mobile|Android|MobileSafari|iPhone|iPad|iPod|Linux|android|avantgo|bada\/|blackberry|blazer|compal|elaine|fennec|hiptop|iemobile|ip(hone|od)|iris|kindle|lge |maemo|midp|mmp|netfront|opera m(ob|in)i|palm( os)?|phone|p(ixi|re)\/|plucker|pocket|psp|series(4|6)0|symbian|treo|up\.(browser|link)|vodafone|wap|windows (ce|phone)|xda|xiino|android 3.0") {
++	set $mobile_rewrite perform;
++   }
++
++
++if ( $mobile_rewrite = perform ){
++  	set $upstream proxy-xuanchuan-xbet; 
++}
++
++if ($http_user_agent ~* "(X11)")
++{ set $mobile_rewrite per;  }
++
++if ( $mobile_rewrite != perform ){
++  	set $upstream proxy-xuanchuan-xbe; 
++}
++
++if ($host ~* pc\.(.*))
++{ set $upstream proxy-xuanchuan-xbe; }
++
++
++
++######################### BLOCKING
++if ($request_method !~* GET|POST|HEAD){
++    return 403;
++}
++
++location /mstest/ {
++  		return 404;
++}
++
++error_page 403 302 /iph;
++location  /iph {
++	alias html/xbet;
++    allow all;
++    index index.html;
++}
++location /blocked {
++	root /usr/local/nginx/html/;
++	allow all;
++}
++
++if ($allowed_country = yes ){ 
++  set $test ALLOW; 
++}
++
++if ($allowed_country = no ){
++		set $test BLOCK; }
++
++if ($allowed_ip = yes ){ 
++  set $test ALLOW; 
++}
++
++limit_req zone=anti_spider burst=5 nodelay;
++if ($http_user_agent ~* "baiduspider") {
++    set $anti_spider $http_user_agent;
++}
++
++location ~ /\.
++{ return 444; }
++
++location / {
++	if ( $test = BLOCK ){
++		return 403;
++	}
++	proxy_set_header Host  $host;
++	proxy_set_header X-Forwarded-For  $remote_addr;
++	proxy_pass http://$upstream;
++
++}
++
+ 
+ 
+ 
+

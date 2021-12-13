@@ -1,0 +1,50 @@
+server {
+    listen       80;#HTTP Port
+    server_name  .xbetgirls.com;
+    rewrite     ^(.*)   https://$host$1;
+}
+
+server {
+  	###ARGUS: XbetGIRL
+    listen       443;#HTTP Port
+    server_name  www.xbetgirls.com xbetgirls.com;
+    ssl on;
+    ssl_certificate /usr/local/nginx/conf.d/ssl/xbetgirls.com/fullchain.pem;
+    ssl_certificate_key /usr/local/nginx/conf.d/ssl/xbetgirls.com/privkey.pem;
+
+    index   index.html;
+    access_log  logs/xbetgirls.com.access.log main;
+
+    if ($request_method !~* GET|POST|HEAD) {
+        return 403;
+    }
+
+    error_page 403 /ip.html;
+    location = /ip.html {
+    root   /usr/local/nginx/html/;
+    allow all;
+    }
+
+    if ($allowed_country ~ "no" ){
+        set $test BLOCK;
+    }
+
+    if ($allowed_country ~ "yes" ){
+        set $test ALLOW;
+    }
+
+    if ($allowed_ip ~ "yes" ){
+        set $test ALLOW;
+    }
+
+
+
+    location / {
+        if ( $test = "BLOCK" ) { return 403;  }
+        proxy_set_header Host  $host;
+        proxy_set_header X-Forwarded-For  $remote_addr;
+        alias /var/ftp/xbetgirl/;
+    }
+
+}
+

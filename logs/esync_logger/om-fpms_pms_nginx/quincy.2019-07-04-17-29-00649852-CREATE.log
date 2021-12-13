@@ -1,0 +1,31 @@
+--- /ansible/nginx/hostgroups/om-fpms_pms_nginx/nginx/conf.d/other/sms-ws.conf	2019-07-04 17:25:21.608188929 +0800
++++ /tmp/sms-ws.conf	2019-07-04 17:29:00.541188929 +0800
+@@ -1,12 +1,19 @@
+ server {
+-    listen 443 default_server;
+-    server_name _;
+-    charset utf-8;
+-    ssl on;
+-    ssl_certificate /usr/local/nginx/conf.d/ssl/nunau.com/fullchain.pem;
+-    ssl_certificate_key /usr/local/nginx/conf.d/ssl/nunau.com/privkey.pem;
+-    location /version.txt {
+-        root /usr/local/nginx/html;
++    listen 80;
++    server_name sms.fpms8.me;
++    location / {
++        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
++	proxy_set_header X-Real-IP  $remote_addr;
++	proxy_next_upstream http_502 http_504 http_404 error timeout invalid_header;
++	proxy_set_header Host $host:$server_port;
++	proxy_http_version 1.1;
++	proxy_set_header Upgrade $http_upgrade;
++	proxy_set_header Connection $connection_upgrade;
++	proxy_connect_timeout   1800;
++	proxy_send_timeout      1800;
++	proxy_read_timeout      1800;
++
++	proxy_pass http://sms-ws;
+         }
+ }
+ 
+

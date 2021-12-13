@@ -1,0 +1,100 @@
+ESYNC_COMMAND_START
+
+PLAY [Aaron-TEST__NginxForward] ************************************************
+
+TASK [nginx_sync : Notify] *****************************************************
+ok: [192.168.11.126] => {
+
+    "msg": "Syncing Aaron-TEST__NginxForward"
+}
+
+TASK [nginx_sync : include_vars] ***********************************************
+ok: [192.168.11.126]
+
+
+TASK [nginx_sync : Synchronizing Nginx] ****************************************
+ok: [192.168.11.126] => (item=conf)
+ok: [192.168.11.126] => (item=conf.d)
+ok: [192.168.11.126] => (item=data)
+
+ok: [192.168.11.126] => (item=html)
+
+TASK [all_servers : include_vars] **********************************************
+ok: [192.168.11.126]
+
+
+TASK [all_servers : Notify] ****************************************************
+ok: [192.168.11.126] => {
+    "msg": "Clearing Nginx Cache for Aaron-TEST__NginxForward"
+}
+
+
+TASK [all_servers : Copying clear_nginxcache.sh to remote hosts] ***************
+changed: [192.168.11.126]
+
+TASK [all_servers : Nginx Clear Cache] *****************************************
+changed: [192.168.11.126]
+
+
+TASK [all_servers : debug] *****************************************************
+ok: [192.168.11.126] => {
+    "script_result.stdout_lines": [
+        "-----------------------------------------------------------", 
+
+        "|                 Checking Nginx Config                   |", 
+        "-----------------------------------------------------------", 
+        "", 
+        " nginx -t ", 
+        "", 
+
+        "-----------------------------------------------------------", 
+        "|                 Stopping Nginx Process                  |", 
+        "-----------------------------------------------------------", 
+        "", 
+        " /usr/bin/killall -9 nginx ", 
+
+        "", 
+        "-----------------------------------------------------------", 
+        "|                 Clearing Proxy Cache                    |", 
+        "-----------------------------------------------------------", 
+        "", 
+
+        " /bin/rm -rf /tmp/nginx_cache ", 
+        "", 
+        "-----------------------------------------------------------", 
+        "|                Restarting Nginx Process                 |", 
+        "-----------------------------------------------------------", 
+
+        "root     23317  0.0  0.0 106116  1276 ?        S    17:46   0:00 /bin/bash /bak/bin/clear_nginxcache.sh", 
+        "root     23323  0.0  0.2 389948  3104 ?        Ss   17:46   0:00 nginx: master process /usr/local/nginx/sbin/nginx", 
+        "nobody   23325  0.0  0.5 394200  7916 ?        S    17:46   0:00 nginx: worker process      ", 
+        "nobody   23326  0.0  0.5 394200  7916 ?        S    17:46   0:00 nginx: worker process      ", 
+        "nobody   23327  0.0  0.5 394200  7916 ?        S    17:46   0:00 nginx: worker process      ", 
+
+        "nobody   23328  0.0  0.5 394200  7928 ?        S    17:46   0:00 nginx: worker process      ", 
+        "nobody   23329  0.0  0.2 390096  3904 ?        S    17:46   0:00 nginx: cache manager process", 
+        "nobody   23330  0.0  0.2 390096  3860 ?        S    17:46   0:00 nginx: cache loader process", 
+        "root     23332  0.0  0.0 103272   832 ?        S    17:46   0:00 grep nginx", 
+        "-----------------------------------------------------------", 
+
+        "|                     Reload SUCCESS!                     |", 
+        "-----------------------------------------------------------"
+    ]
+}
+
+
+PLAY [127.0.0.1] ***************************************************************
+
+TASK [sync_to_git : Synchronizing Nginx To GIT] ********************************
+fatal: [127.0.0.1]: FAILED! => {"changed": true, "cmd": "git add .\n git commit -m \"aaron.navarro\"\n git push\n git push -u origin master", "delta": "0:00:00.176286", "end": "2018-09-24 17:46:21.013945", "msg": "non-zero return code", "rc": 128, "start": "2018-09-24 17:46:20.837659", "stderr": "fatal: Not a git repository (or any of the parent directories): .git\nfatal: Not a git repository (or any of the parent directories): .git\nfatal: Not a git repository (or any of the parent directories): .git\nfatal: Not a git repository (or any of the parent directories): .git", "stderr_lines": ["fatal: Not a git repository (or any of the parent directories): .git", "fatal: Not a git repository (or any of the parent directories): .git", "fatal: Not a git repository (or any of the parent directories): .git", "fatal: Not a git repository (or any of the parent directories): .git"], "stdout": "", "stdout_lines": []}
+	to retry, use: --limit @/ansible/nginx/site.retry
+
+
+PLAY RECAP *********************************************************************
+127.0.0.1                  : ok=0    changed=0    unreachable=0    failed=1   
+192.168.11.126             : ok=8    changed=2    unreachable=0    failed=0   
+
+
+
+ESYNC_COMMAND_END
+MAX RETRIES EXECUTED, COMMAND NOT RESPONDING

@@ -1,0 +1,39 @@
+--- /ansible/nginx/hostgroups/acc-midpay_nginx/nginx/conf.d/other/weichat.conf	2019-05-17 13:36:14.118050692 +0800
++++ /tmp/weichat.conf	2019-05-17 14:22:35.004050692 +0800
+@@ -1,35 +1 @@
+-server {
+-        listen       80;#HTTP Port
+-        server_name .weichatpay.com;
+-        index   index.jsp index.html index.htm;
+-        access_log  logs/weichat.access.log main;
+-	if ($request_method !~* GET|POST|HEAD) {
+-                return 403;
+-        }
+-
+-	location / {
+-            proxy_next_upstream http_502 http_504 error timeout invalid_header;
+-            proxy_cache_valid  200 304 12h;
+-            proxy_cache_key $uri$is_args$args;
+-            proxy_set_header Host  $host;
+-            proxy_set_header X-Forwarded-For  $remote_addr;
+-            proxy_set_header X-Forwarded-Proto "http";
+-            expires      2h;
+-            proxy_pass http://weichat;
+-
+-        }
+-
+-        location ~* .*\.(png|jpg|gif|jpeg|bmp|ico|css|js|json|exe)?$ {
+-            proxy_next_upstream http_502 http_504 error timeout invalid_header;
+-            proxy_cache cache_after;
+-            proxy_cache_valid  200 304 12h;
+-            proxy_ignore_client_abort on;
+-            proxy_cache_key $uri$is_args$args;
+-            proxy_set_header Host  $host;
+-            proxy_set_header        referer         $http_referer;
+-            proxy_set_header X-Forwarded-For  $remote_addr;
+-            proxy_pass http://weichat;
+-            expires      1d;
+-       }
+-}
+ 
+

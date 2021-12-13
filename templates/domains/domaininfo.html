@@ -1,0 +1,494 @@
+{% load tags %}
+
+<!DOCTYPE html>
+<html>
+
+<head>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>{{ domain }} DNS Records</title>
+    {% block style %}
+    <link href="/static/css/bootstrap.min.css" rel="stylesheet">
+    <link href="/static/css/plugins/toastr/toastr.min.css" rel="stylesheet">
+    <link href="/static/font-awesome/css/font-awesome.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.5.0/css/all.css" integrity="sha384-B4dIYHKNBt8Bc12p+WXckhzcICo0wtJAoU8YZTY5qE0Id1GSseTk6S+L3BlXeVIU" crossorigin="anonymous">
+
+
+    <link href="/static/css/plugins/iCheck/custom.css" rel="stylesheet">
+    <link href="/static/css/animate.css" rel="stylesheet">
+    <link href="/static/css/style.css" rel="stylesheet">
+    <link href="/static/css/plugins/dataTables/dataTables.bootstrap.css" rel="stylesheet">
+    <link href="/static/css/plugins/dataTables/dataTables.responsive.css" rel="stylesheet">
+    <link href="/static/css/plugins/dataTables/dataTables.tableTools.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="/static/js/select2/select2.min.css">
+    {% endblock %}
+
+    <style>
+
+        
+    </style>
+</head>
+
+<body>
+    <div class="row wrapper border-bottom white-bg page-heading" style="padding-left:50px;padding-right:50px">
+
+        <div class="row">
+            <h2>{{ domain }} {{ ssltest }}<button class="btn btn-primary pull-right" id="save" onclick="submitChanges()"><i class="fa fa-share-square"></i> Submit Changes</button></h2>
+        </div>
+
+        <div class="row" id="loadingimg" style="display:none">
+            <center><img src="/static/img/fluid-loader.gif"></center>
+        </div>
+        <div id='domainrecords' >
+            <div class="row" id='alertrow'></div>
+            <hr/>
+            <h3>Nameservers</h3>
+            <table class="table table-responsive table-striped" id="newrecord">
+                <thead>
+                        <th>Record</th>
+                </thead>
+
+                <tbody>
+                    {% for ns in nameservers %}
+                    <tr>
+                        <td><p>{{ ns }}</p></td>
+                    </tr>
+                    {% endfor %}
+                    
+                </tbody>
+            </table>
+       
+            <hr/>
+            <h3>Add New Record <button class="btn btn-primary pull-right btn-sm" id="addnewrow" onclick="addnewrow()"><i class="fa fa-plus"></i> Add Row</button></h3>
+            <table class="table table-responsive table-striped" id="newrecord">
+                <thead>
+                        <th>Type</th>
+                        <th>Host</th>
+                        <th>Value</th>
+                        <th>TTL</th>
+                        <th>Actions</th>
+                </thead>
+                <tbody id="newrowsbody"></tbody>
+            </table>
+            <hr/>
+            <h3>DNS Records</h3>
+            <table class="table table-responsive table-striped table-bordered" id="domaininfo"  width="100%">
+                <thead>
+                        <th>Type</th>
+                        <th>Host</th>
+                        <th>Value</th>
+                        <th>TTL</th>
+                        <th>Actions</th>
+        
+                </thead>
+
+                <tbody>
+                    {% for row in data %}
+                    <tr id="{{ row.recordid }}">
+                        <td><p class="{{ row.recordid }}" recordid="{{ row.recordid }}" rtype="type" value={{ row.type }}>{{ row.type }}</p></td>
+                        <td><p class="{{ row.recordid }}" recordid="{{ row.recordid }}" rtype="host" value={{ row.host }}>{{ row.host }}</p></td>
+                        <td><p class="{{ row.recordid }}" recordid="{{ row.recordid }}" rtype="value" value={{ row.value }}>{{ row.value }}</p></td>
+                        <td><p class="{{ row.recordid }}" recordid="{{ row.recordid }}" rtype="ttl" value={{ row.ttl }}>{{ row.ttl }}</p></td>
+                        <td><button class="btn btn-xs btn-primary" value="{{ row.recordid }}" onclick="editrow(this.value)">Edit</button> <button class="btn btn-xs btn-danger" value="{{ row.recordid }}" onclick="deleterow(this.value)">Delete</button> 
+                            {% if  row.type == 'A' %}
+                            {% if row.host != '@' %}
+                            <form class="form-group mb-0 mt-0" id="tossl">
+                            <button class="btn btn-xs btn-primary" value="{{ row.host }}.{{ domain }}" name="get_domain" id="get_domain" type="submit" >SSL-Check</button>
+                            </form>
+                            {% endif %}
+                            {% endif %}
+                        </td>
+                    </tr>
+
+
+                    {% endfor %}
+
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+
+    <!-- Mainly scripts -->
+    {% block js %}
+    <script src="/static/js/jquery-2.1.1.js"></script>
+    <script src="/static/js/bootstrap.min.js"></script>
+    <script src="/static/js/plugins/metisMenu/jquery.metisMenu.js"></script>
+    <script src="/static/js/plugins/slimscroll/jquery.slimscroll.min.js"></script>
+    <script src="/static/js/inspinia.js"></script>
+    <script src="/static/js/plugins/pace/pace.min.js"></script>
+    <script src="/static/js/plugins/dataTables/jquery.dataTables.js"></script>
+    <script src="/static/js/plugins/dataTables/dataTables.bootstrap.js"></script>
+    <script src="/static/js/plugins/dataTables/dataTables.responsive.js"></script>
+    <script src="/static/js/plugins/dataTables/dataTables.tableTools.min.js"></script>
+    <script src="/static/fa/js/fontawesome-all.js"></script>
+
+
+
+    <script>
+
+    String.prototype.format = function () {
+        var args = [].slice.call(arguments);
+        return this.replace(/(\{\d+\})/g, function (a){
+            return args[+(a.substr(1,a.length-2))||0];
+        });
+    };
+
+
+    tablez = $('#domaininfo').DataTable({
+        pageLength: -1,
+        bDestroy:true,
+    });
+
+    newrows=0
+
+    recordtypes=['A','CNAME','MX','TXT']
+
+    temprows={}
+    function addnewrow(){
+        var newrowsbody = document.getElementById('newrowsbody')
+        newrows ++
+
+
+        var tr = document.createElement('tr')
+        tr.id = 'new-{0}'.format(newrows)
+        var cell = document.createElement('td')
+        var select = document.createElement('select')
+        select.className = 'form-control input-sm newrecord'
+        select.setAttribute('rtype','type')
+        select.setAttribute('in',newrows)
+        for (var o = 0; o < recordtypes.length; o++) {
+            var option = document.createElement("option");
+            option.value = recordtypes[o].toLowerCase();
+            option.text = recordtypes[o];
+            select.appendChild(option);
+        }
+        cell.appendChild(select)
+        tr.appendChild(cell)
+
+        var cell = document.createElement('td')
+        var input = document.createElement('input')
+        input.className = 'form-control input-sm newrecord'
+        input.setAttribute('rtype','host')
+        input.setAttribute('in',newrows)
+        cell.appendChild(input)
+        tr.appendChild(cell)
+
+        var cell = document.createElement('td')
+        var input = document.createElement('input')
+        input.className = 'form-control input-sm newrecord'
+        input.setAttribute('rtype','value')
+        input.setAttribute('in',newrows)
+        cell.appendChild(input)
+        tr.appendChild(cell)
+
+        var cell = document.createElement('td')
+        var input = document.createElement('input')
+        input.className = 'form-control input-sm newrecord'
+        input.setAttribute('rtype','ttl')
+        input.setAttribute('in',newrows)
+        cell.appendChild(input)
+        tr.appendChild(cell)
+
+        var cell = document.createElement('td')
+        var remove = document.createElement('button')
+        remove.className = 'btn btn-sm btn-default'
+        remove.innerHTML = 'Remove'
+        remove.setAttribute('value','new-{0}'.format(newrows))
+        remove.setAttribute('onclick','removerow(this.value)')
+        cell.appendChild(remove)
+        tr.appendChild(cell)
+
+
+
+        newrowsbody.appendChild(tr)
+    }
+
+    function removerow(recordid){
+        var row = document.getElementById(recordid)
+        row.outerHTML = ''
+
+    }
+    function editrow(recordid){
+        var trow = document.getElementById(recordid)
+        var row = trow.getElementsByClassName(recordid)
+        trow.style.backgroundColor='grey'
+        var temp = []
+        for(var i = 0; i < row.length; i++){
+            var rtype = row.item(i).getAttribute('rtype')
+            var td = document.createElement("td");
+            if(rtype == 'type'){
+                var elem = document.createElement("select");
+                for (var o = 0; o < recordtypes.length; o++) {
+                    var option = document.createElement("option");
+                    option.value = recordtypes[o].toLowerCase();
+                    option.text = recordtypes[o];
+                    if (option.value == row.item(i).innerHTML.toLowerCase()){
+                        option.setAttribute('selected', 'selected')
+                    }
+                    elem.appendChild(option);
+                }
+            }
+            else{
+                var elem = document.createElement("input");
+                elem.value = row.item(i).innerHTML
+
+            }
+            if(!temprows.hasOwnProperty(recordid)){
+                temprows[recordid]={}
+            }
+            temprows[recordid][rtype]=row.item(i).innerHTML
+            
+
+
+            elem.className = "form-control input-sm editedrecord "+recordid;
+            elem.setAttribute('rtype',rtype)
+            elem.setAttribute('recordid',recordid)
+
+            td.appendChild(elem)
+            temp.push(td)
+        }
+        trow.innerHTML =''
+        for(var i = 0; i < temp.length; i++){
+            trow.appendChild(temp[i])
+        }
+
+        var cancel = document.createElement("button");
+        cancel.className = 'btn btn-xs btn-default '+ recordid
+        cancel.value=recordid
+        cancel.setAttribute('onclick','cancelRow(this.value)')
+        cancel.innerHTML='Cancel'
+        var td = document.createElement("td");
+        td.appendChild(cancel)
+        trow.appendChild(td)
+    }
+
+    function deleterow(recordid){
+        var trow = document.getElementById(recordid)
+        var row = trow.getElementsByClassName(recordid)
+
+        for(var i = 0; i < row.length; i++){
+            var rtype = row.item(i).getAttribute('rtype')
+            row[i].className = row[i].className + ' deletedrercord'
+            if(!temprows.hasOwnProperty(recordid)){
+                temprows[recordid]={}
+            }
+            temprows[recordid][rtype]=row.item(i).innerHTML
+        }
+
+        trow.style.backgroundColor='#ed5565'
+        trow.style.color='white'
+
+        var btncell = $('#'+recordid).find('td:last')
+        var cancel = document.createElement("button");
+        cancel.className = 'btn btn-xs btn-default '+ recordid
+        cancel.value=recordid
+        cancel.setAttribute('onclick','cancelRow(this.value)')
+        cancel.innerHTML='Cancel'
+
+        btncell.html(cancel.outerHTML)
+
+    }
+
+    function cancelRow(recordid){
+        var trow = document.getElementById(recordid)
+        trow.innerHTML = ''
+
+        var row = '<td><p class="'+recordid+'" rtype="type" value="'+ temprows[recordid]["type"] +'">'+ temprows[recordid]["type"] +'</p></td>'
+        row=row+'<td><p class="'+recordid+'" rtype="host" value="'+ temprows[recordid]["host"] +'">'+ temprows[recordid]["host"] +'</p></td>'
+        row=row+'<td><p class="'+recordid+'" rtype="value" value="'+ temprows[recordid]["value"] +'">'+ temprows[recordid]["value"] +'</p></td>'
+        row=row+'<td><p class="'+recordid+'" rtype="ttl" value="'+ temprows[recordid]["ttl"] +'">'+ temprows[recordid]["ttl"] +'</p></td>'
+        row=row+'<td><button class="btn btn-xs btn-primary" value="'+recordid+'" onclick="editrow(this.value)">Edit</button> <button class="btn btn-xs btn-danger" value="'+recordid+'" onclick="deleterow(this.value)">Delete</button></td>'
+
+        trow.innerHTML = row
+        trow.removeAttribute('style')
+        delete temprows[recordid]
+
+    }
+
+    function submitChanges(){
+
+        function ValidateIPaddress(ipaddress) {  
+          if (/^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/.test(ipaddress)) {  
+            return (true)  
+          }  
+          return (false)  
+        }
+        function ValidateHostname(hostname) {  
+          if (/[!#$%^&*\(\)+=\[\]~\{\}\\;:'"<,>\?/]/.test(hostname)) {
+            return (false)  
+          }  
+          return (true)  
+        }
+        function ValidateTTL(ttl) {  
+          if (/^\d+$/.test(ttl)) {  
+            return (true)  
+          }  
+          return (false)  
+        }  
+
+        var edited = document.getElementsByClassName('editedrecord')
+        var newrecord = document.getElementsByClassName('newrecord')
+        var deleted = document.getElementsByClassName('deletedrercord')
+
+
+        var rbody = {
+            'add':{},
+            'edit':{},
+            'delete':{}
+        }
+
+        for (var i=0;i<newrecord.length;i++){
+            var inr = 'new-{0}'.format(newrecord[i].getAttribute('in'))
+            var rtype = newrecord[i].getAttribute('rtype')
+            if(!rbody['add'].hasOwnProperty(inr)){
+                rbody['add'][inr]={}
+            }
+            rbody['add'][inr][rtype] = newrecord[i].value
+        }
+
+        for (var i=0;i<edited.length;i++){
+            var inr = edited[i].getAttribute('recordid')
+            var rtype = edited[i].getAttribute('rtype')
+            if(!rbody['edit'].hasOwnProperty(inr)){
+                rbody['edit'][inr]={}
+            }
+            rbody['edit'][inr][rtype] = edited[i].value
+        }
+
+        for (var i=0;i<deleted.length;i++){
+            var inr = deleted[i].getAttribute('recordid')
+            var rtype = deleted[i].getAttribute('rtype')
+            if(!rbody['delete'].hasOwnProperty(inr)){
+                rbody['delete'][inr]={}
+            }
+            rbody['delete'][inr][rtype] = deleted[i].innerHTML
+        }
+
+        console.log(rbody['add'])
+        console.log(rbody['edit'])
+        console.log(rbody['delete'])
+        
+        //VALIDATE INPUT
+        var ern = []
+        for (var k in rbody){
+            if (k != 'delete'){
+                for(var p in rbody[k]){
+                    var msg = null
+                    var valuee = rbody[k][p]['value'].replace(/^\s+/, '').replace(/\s+$/, '');
+                    var ttl = rbody[k][p]['ttl'].replace(/^\s+/, '').replace(/\s+$/, '');
+                    if(valuee == ''){
+                        msg = 'Record Value cannot be empty for host "{0}"'.format(rbody[k][p]['host'])
+                    }
+                    else if (rbody[k][p]['host'] == '*'){
+                        msg = null
+                    }
+                    else if (ValidateHostname(rbody[k][p]['host']) != true){
+                        console.log(k,p,rbody[k][p]['host'])
+                        msg = 'Host record must not have special characters "{0}"'.format(rbody[k][p]['host'])
+                    }
+
+                    else if (rbody[k][p]['type'] == 'a' && ValidateIPaddress(valuee) != true){
+                        msg = 'Record Type A must have a valid IP Address value for host "{0}"'.format(rbody[k][p]['host'])
+                    }
+
+                    else if (rbody[k][p]['type'] == 'cname' && ValidateHostname(valuee) != true && ValidateIPaddress(valuee) == true){
+                        msg = 'Record Type CNAME must have a Hostname value for host "{0}"'.format(rbody[k][p]['host'])
+                    }
+
+                    else if (ttl != '' && ValidateTTL(ttl) != true){
+                        msg = 'TTL must be an integer value "{0}"'.format(rbody[k][p]['host'])
+                    }
+
+                    if (msg != null){
+                        var t = {}
+                        t[p]=msg
+                        ern.push(t)
+                    }
+                }
+            }
+        }
+
+        if(ern.length != 0){
+            console.log(ern)
+            var alertrow = document.getElementById('alertrow')
+            var alertw = '<div class="widget red-bg p-lg text-center">'
+            alertw = alertw + '    <div class="m-b-md">'
+            alertw = alertw + '        <i class="fa fa-bell fa-4x"></i>'
+            alertw = alertw + '        <h3 class="font-bold no-margins">'
+            alertw = alertw + '            Error'
+            alertw = alertw + '        </h3>'
+
+            for (var i=0;i<ern.length;i++){
+                for (var a in ern[i]){
+                    alertw = alertw + '<h4>'+ ern[i][a] +'</h4>'
+                }
+
+                document.getElementById(a).style.backgroundColor='yellow'
+
+            }
+            
+            alertw = alertw + '    </div>'
+            alertw = alertw + '</div>'
+
+            alertrow.innerHTML = alertw
+        }
+        else{
+            document.getElementById('domainrecords').style.display='none'
+            document.getElementById('loadingimg').style.display='block'
+            
+            $.ajax({
+                type: "POST",
+                dataType: "json",
+                url: window.location+'/process',
+                data: JSON.stringify(rbody),
+                success: function(result) {
+                    console.log('Submit')
+                },
+
+                error: function(err) {
+                    alert(err)
+                },
+                complete: function(){
+                    alert("Changes Saved, reloading page")
+                    location.reload();
+
+                }
+            });
+
+
+        }
+
+        
+    }
+
+
+    $(':input').keypress(function(e) {
+        if(e.which == 32) {
+            return false 
+        }
+    });
+
+    $(document).on('submit','#tossl',function(e){
+            e.preventDefault();
+
+            $.ajax({
+                type:'POST',
+                url:"{% url 'addSSLChecker' %}",
+                data:{
+                    get_domain:$('#get_domain').val(),
+                },
+                success:function(){
+                    alert("Successfully Added!!")
+                }
+            });
+    });
+
+    </script>
+    {% endblock %}
+</body>
+
+</html>
+

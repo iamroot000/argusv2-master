@@ -1,0 +1,140 @@
+ESYNC_COMMAND_START
+
+PLAY [Product-BAOWANG-FWD__NginxForward] ***************************************
+
+TASK [nginx_sync : Notify] *****************************************************
+ok: [203.60.2.4] => {
+
+    "msg": "Syncing Product-BAOWANG-FWD__NginxForward"
+}
+ok: [65.52.179.46] => {
+    "msg": "Syncing Product-BAOWANG-FWD__NginxForward"
+}
+
+
+TASK [nginx_sync : include_vars] ***********************************************
+ok: [203.60.2.4]
+ok: [65.52.179.46]
+
+
+TASK [nginx_sync : Synchronizing Nginx] ****************************************
+changed: [65.52.179.46] => (item=conf)
+changed: [65.52.179.46] => (item=conf.d)
+ok: [65.52.179.46] => (item=data)
+ok: [65.52.179.46] => (item=html)
+
+changed: [203.60.2.4] => (item=conf)
+failed: [203.60.2.4] (item=conf.d) => {"changed": false, "cmd": "/usr/bin/rsync --delay-updates -F --compress --delete-after --copy-links --archive --rsh=/usr/bin/ssh -S none -o Port=2556 -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null --out-format=<<CHANGED>>%i %n%L /srv/Product-BAOWANG-FWD__NginxForward/nginx/conf.d/ root@203.60.2.4:/usr/local/nginx/conf.d/", "item": "conf.d", "msg": "ssh: connect to host 203.60.2.4 port 2556: Connection timed out\r\nrsync: connection unexpectedly closed (0 bytes received so far) [sender]\nrsync error: unexplained error (code 255) at io.c(226) [sender=3.1.2]\n", "rc": 255}
+ok: [203.60.2.4] => (item=data)
+failed: [203.60.2.4] (item=html) => {"changed": false, "cmd": "/usr/bin/rsync --delay-updates -F --compress --delete-after --copy-links --archive --rsh=/usr/bin/ssh -S none -o Port=2556 -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null --out-format=<<CHANGED>>%i %n%L /srv/Product-BAOWANG-FWD__NginxForward/nginx/html/ root@203.60.2.4:/usr/local/nginx/html/", "item": "html", "msg": "ssh: connect to host 203.60.2.4 port 2556: Connection timed out\r\nrsync: connection unexpectedly closed (0 bytes received so far) [sender]\nrsync error: unexplained error (code 255) at io.c(226) [sender=3.1.2]\n", "rc": 255}
+
+
+TASK [all_servers : include_vars] **********************************************
+ok: [65.52.179.46]
+
+TASK [all_servers : Notify] ****************************************************
+ok: [65.52.179.46] => {
+
+    "msg": "Clearing Nginx Cache for Product-BAOWANG-FWD__NginxForward"
+}
+
+TASK [all_servers : Copying clear_nginxcache.sh to remote hosts] ***************
+ok: [65.52.179.46]
+
+
+TASK [all_servers : Nginx Clear Cache] *****************************************
+changed: [65.52.179.46]
+
+TASK [all_servers : debug] *****************************************************
+
+ok: [65.52.179.46] => {
+    "script_result.stdout_lines": [
+        "-----------------------------------------------------------", 
+        "|                 Checking Nginx Config                   |", 
+        "-----------------------------------------------------------", 
+
+        "", 
+        " nginx -t ", 
+        "", 
+        "-----------------------------------------------------------", 
+        "|                 Stopping Nginx Process                  |", 
+
+        "-----------------------------------------------------------", 
+        "", 
+        " /usr/bin/killall -9 nginx ", 
+        "", 
+        "-----------------------------------------------------------", 
+
+        "|                 Clearing Proxy Cache                    |", 
+        "-----------------------------------------------------------", 
+        "", 
+        " /bin/rm -rf /tmp/nginx_cache ", 
+        "", 
+
+        "-----------------------------------------------------------", 
+        "|                Restarting Nginx Process                 |", 
+        "-----------------------------------------------------------", 
+        "root      48684  0.0  0.0 106116  1284 ?        S    18:32   0:00 /bin/bash /bak/bin/clear_nginxcache.sh", 
+        "root      48690  0.0  0.0 359412  3396 ?        Ss   18:33   0:00 nginx: master process /usr/local/nginx/sbin/nginx", 
+
+        "nobody    48691  0.0  0.0 363664  7840 ?        S    18:33   0:00 nginx: worker process      ", 
+        "nobody    48693  0.0  0.0 363664  7840 ?        S    18:33   0:00 nginx: worker process      ", 
+        "nobody    48694  0.0  0.0 363664  7840 ?        S    18:33   0:00 nginx: worker process      ", 
+        "nobody    48695  0.0  0.0 363664  7840 ?        S    18:33   0:00 nginx: worker process      ", 
+        "nobody    48696  0.0  0.0 359412  3828 ?        S    18:33   0:00 nginx: cache manager process", 
+
+        "nobody    48697  0.0  0.0 359412  3776 ?        S    18:33   0:00 nginx: cache loader process", 
+        "root      48699  0.0  0.0 103328   856 ?        S    18:33   0:00 grep nginx", 
+        "             total       used       free     shared    buffers     cached", 
+        "Mem:          7985        717       7267          1         47        435", 
+        "-/+ buffers/cache:        234       7750", 
+
+        "Swap:            0          0          0", 
+        "-----------------------------------------------------------", 
+        "|                     Reload SUCCESS!                     |", 
+        "-----------------------------------------------------------"
+    ]
+
+}
+
+PLAY [127.0.0.1] ***************************************************************
+
+TASK [sync_to_git : Synchronizing Nginx To GIT] ********************************
+
+changed: [127.0.0.1]
+
+TASK [sync_to_git : debug] *****************************************************
+ok: [127.0.0.1] => {
+    "script_result.stdout_lines": [
+
+        "[master 26ffe90] ben.tian", 
+        " 9 files changed, 152 insertions(+), 164 deletions(-)", 
+        " create mode 100644 nginx/conf.d/80-443/by888103.com.conf", 
+        " create mode 100644 nginx/conf.d/80-443/by888106.com.conf", 
+        " rewrite nginx/conf.d/global/_default.conf (93%)", 
+
+        " rewrite nginx/conf.d/global/upstream.conf (91%)", 
+        " create mode 100644 nginx/conf.d/include/boyue_official_masterconfig.include", 
+        " create mode 120000 nginx/conf.d/ssl/by1688.vip", 
+        " create mode 120000 nginx/conf.d/ssl/by888103.com", 
+        " create mode 120000 nginx/conf.d/ssl/by888106.com", 
+
+        "Branch master set up to track remote branch master from origin."
+    ]
+}
+
+PLAY [Product-BAOWANG-FWD__NginxForward] ***************************************
+
+
+PLAY [127.0.0.1] ***************************************************************
+	to retry, use: --limit @/ansible/nginx/site.retry
+
+PLAY RECAP *********************************************************************
+
+127.0.0.1                  : ok=2    changed=1    unreachable=0    failed=0   
+203.60.2.4                 : ok=2    changed=0    unreachable=0    failed=1   
+65.52.179.46               : ok=8    changed=2    unreachable=0    failed=0   
+
+
+ESYNC_COMMAND_END
+MAX RETRIES EXECUTED, COMMAND NOT RESPONDING

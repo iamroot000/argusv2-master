@@ -1,0 +1,45 @@
+--- /ansible/nginx/hostgroups/dev-mmvpn/nginx/conf.d/other/mmexy.com.conf	2020-06-17 13:18:41.198618234 +0800
++++ /tmp/mmexy.com.conf	2020-08-12 17:41:42.209942007 +0800
+@@ -247,6 +247,41 @@
+ }
+ 
+ 
++server {
++    listen       80;
++    server_name v1g9.cn www.v1g9.cn;
++    rewrite  ^(.*)$  https://$http_host$1;
++}
++
++
++
++server {
++  listen       443;
++  server_name  v1g9.cn www.v1g9.cn;
++
++        #charset koi8-r;
++  ssl on;
++  ssl_certificate /usr/local/nginx/conf.d/ssl/v1g9.cn/fullchain.pem;
++  ssl_certificate_key /usr/local/nginx/conf.d/ssl/v1g9.cn/privkey.pem;
++
++  access_log  logs/access.log  main;
++  if ($http_host !~* 'www') {
++    rewrite ^(.*)$ https://www.$http_host$1 permanent;
++  }
++
++  location / {
++            #root   html/booster/;
++    root   /var/ftp/booster/mmexy/;
++    index  index.html index.htm;
++  }
++
++  error_page   500 502 503 504  /50x.html;
++  location = /50x.html {
++    root   html;
++  }
++
++}
++
+ 
+ 
+ 
+

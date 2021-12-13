@@ -1,0 +1,77 @@
+--- /ansible/nginx/hostgroups/om-clientgamecalled_nginx/nginx/conf.d/other/gapi.conf	2019-08-30 11:15:59.266082747 +0800
++++ /tmp/gapi.conf	2020-11-05 15:22:03.180560873 +0800
+@@ -48,30 +48,30 @@
+ 
+     }
+ 
+-upstream  ipmfirst_backend  {
+-        server   ruibo.sbws.imapi.net:80 max_fails=2  fail_timeout=10s; #
+-}
+-
+-server {
+-        listen       80; #HTTP Port
+-        server_name  ruibo.sbws.imapi.net;
++#upstream  ipmfirst_backend  {
++#        server   ruibo.sbws.imapi.net:80 max_fails=2  fail_timeout=10s; #
++#}
+ 
+-        charset utf-8;
+-        access_log  logs/IPM.access.log main;
+-        access_log  logs/IPM.logstash.access.log logstash;
+-        error_log  logs/IPM.error.log  ;          
++#server {
++#        listen       80; #HTTP Port#
++#        server_name  ruibo.sbws.imapi.net;
++#
++#        charset utf-8;
++#        access_log  logs/IPM.access.log main;
++#        access_log  logs/IPM.logstash.access.log logstash;
++#        error_log  logs/IPM.error.log  ;          
+ 
+-        if ($request_method !~* GET|POST|HEAD) {
+-                return 403;
+-        }   
++#        if ($request_method !~* GET|POST|HEAD) {
++#                return 403;
++#        }   
+ 
+-        location / {
+-        include /usr/local/nginx/conf.d/include/whitelistIP.include;
+-	include /usr/local/nginx/conf.d/include/proxy.conf.fwd.include ;
+-                proxy_pass http://ipmfirst_backend;
+-        }
++#        location / {
++#        include /usr/local/nginx/conf.d/include/whitelistIP.include;
++#	include /usr/local/nginx/conf.d/include/proxy.conf.fwd.include ;
++#                proxy_pass http://ipmfirst_backend;
++#        }
+ 
+-    }
++#    }
+ 
+ upstream  hg_backend  {
+         server   webapi-asia.hointeractive.com:80 max_fails=2  fail_timeout=10s; #
+@@ -436,5 +436,22 @@
+ 
+     }
+ 
++#EBET-GAPI-LISBOA-CORE
++upstream ebet-gapi-lisboa {
++	server 202.155.246.243:7473 max_fails=2  fail_timeout=30s;
++	server 59.148.22.111:7473 max_fails=2  fail_timeout=30s;
++}
+ 
++server {
++        server_name ebet.lisboa.gapi.cpms8.me;
++  if ($time_iso8601 ~ "^(\d{4})-(\d{2})-(\d{2})T(\d{2})") {set $year $1;set $month $2;set $day $3;set $hour $4;}
++        access_log logs/ebet.lisboa.gapi.cpms8.me.access.log.$year-$month-$day-$hour main;
++        location ~ ^/(WEB-INF)/ {
++                deny all;
++        }
++        location / {
++                include include /usr/local/nginx/conf.d/include/proxy.conf.fwd.include;
++                proxy_pass http://ebet-gapi-lisboa;
++        }
++}
+ 
+

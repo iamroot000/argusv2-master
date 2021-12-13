@@ -1,0 +1,98 @@
+index   index.jsp index.html index.htm;
+access_log  logs/bbetasia.access.log main;
+access_log  logs/bbetasia.logstash.access.log logstash;
+
+if ($http_user_agent ~* "qihu|360|360se|360ee|QIHU 360SE|(iPhone|iPad|iPod|Linux|android|Android|bb\d+|meego).+mobile|Android|MobileSafari|iPhone|iPad|iPod|Linux|android|avantgo|bada\/|blackberry|blazer|compal|elaine|fennec|hiptop|iemobile|ip(hone|od)|iris|kindle|lge |maemo|midp|mmp|netfront|opera m(ob|in)i|palm( os)?|phone|p(ixi|re)\/|plucker|pocket|psp|series(4|6)0|symbian|treo|up\.(browser|link)|vodafone|wap|windows (ce|phone)|xda|xiino|android 3.0") {
+set $mobile_rewrite perform;
+}
+
+if ( $mobile_rewrite = perform )
+{ set $upstream xjw3-jsh-pro-h5; }
+
+if ($http_user_agent ~* "(X11)")
+{ set $mobile_rewrite per;  }
+
+if ( $mobile_rewrite != perform )
+{ set $upstream xjw3-jsh-pro-web; }
+
+if ($host ~* pc\.(.*))
+{ set $upstream xjw3-jsh-pro-web; }
+
+if ($http_user_agent ~* "qihoobot|Yahoo! Slurp|Yahoo! Slurp China|YoudaoBot|Sosospider|Sogou spider|Sogou web spider|MSNBot|ia_archiver|Tomato Bot")
+{
+	return 403;
+}
+limit_req zone=anti_spider burst=5 nodelay;
+if ($http_user_agent ~* "baiduspider") {
+set $anti_spider $http_user_agent;
+}
+
+if ($request_method !~* GET|POST|HEAD) {
+return 403;
+}
+
+location ~ /\.
+{ return 444; }
+
+location /mstest/ {
+  return 404;
+}
+
+error_page 403 302 /iph;
+location  /iph {
+	alias html/jsh;
+    allow all;
+    index index.html;
+}
+
+location  ~/loginCpmsOpus.do {
+	if ($host ~ "opusgm888.com|opusgm888.net"){
+		access_log  logs/bbetasia_opuslogin.access.log main;
+		access_log  logs/bbetasia_opuslogin.logstash.access.log logstash;
+		proxy_pass http://clientgamecalled;
+	}
+}
+
+if ($allowed_country = no )
+{ set $test BLOCK; }
+
+if ($allowed_country = yes ) 
+{ set $test ALLOW; }
+
+if ($allowed_ip = yes ){ 
+set $test ALLOW; 
+}
+
+location / {
+	if ( $test = BLOCK ) { 
+		return 403;  
+	}
+	proxy_set_header Host  $host;
+	proxy_set_header X-Forwarded-For  $remote_addr;
+	proxy_pass http://$upstream;
+
+}
+
+
+
+location /websocket {
+	proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+	proxy_set_header X-Real-IP  $remote_addr;
+	proxy_next_upstream http_502 http_504 http_404 error timeout invalid_header;
+	proxy_set_header Host $host:$server_port;
+	proxy_http_version 1.1;
+	proxy_set_header Upgrade $http_upgrade;
+	proxy_set_header Connection $connection_upgrade;
+	proxy_connect_timeout   1800;
+	proxy_send_timeout      1800;
+	proxy_read_timeout      1800;
+	proxy_pass http://9280;
+}
+
+
+
+
+
+
+
+

@@ -1,0 +1,25 @@
+--- /ansible/nginx/hostgroups/eu-nginx/nginx/conf.d/other/euappsocket.conf	2019-08-08 18:16:05.016655518 +0800
++++ /tmp/euappsocket.conf	2019-08-08 18:17:08.809655518 +0800
+@@ -31,15 +31,18 @@
+   set $test ALLOW; 
+ }
+     
+-if($http_x_forwarded_for = '175.100.204.34'){
+-    set $test BLOCK;
+-}  
++#if($http_x_forwarded_for = '175.100.204.34'){
++#    set $test BLOCK;
++#}  
+   
+   
+ 
+ location / {
+ #    deny 211.24.96.55;
+ #    deny 175.100.204.34;
++    if($http_x_forwarded_for = '175.100.204.34'){
++    set $test BLOCK;
++} 
+     if ( $test = "BLOCK" ) { return 403;  }
+ 	proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+ 	proxy_set_header X-Real-IP  $remote_addr;
+

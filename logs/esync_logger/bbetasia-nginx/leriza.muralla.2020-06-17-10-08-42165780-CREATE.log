@@ -1,0 +1,24 @@
+FILENAME: 80-443/pt8.news.conf
+-  
++  server {
++      listen 80;
++      server_name pt8.news www.pt8.news;
++      rewrite ^(.*)$ https://www.pt8.news$1 permanent;
++  }
++  
++  server {
++      listen 443;
++      server_name pt8.news www.pt8.news;
++      ssl on;
++      ssl_certificate /usr/local/nginx/conf.d/ssl/pt8.news/fullchain.pem;
++      ssl_certificate_key /usr/local/nginx/conf.d/ssl/pt8.news/privkey.pem;
++  
++      if ($http_host !~* 'www') {
++          rewrite ^(.*)$ https://www.$http_host$1 permanent;
++      }
++  
++      include /usr/local/nginx/conf.d/include/bbetasia_official_masterconfig.include;
++  }
++  
++  
+

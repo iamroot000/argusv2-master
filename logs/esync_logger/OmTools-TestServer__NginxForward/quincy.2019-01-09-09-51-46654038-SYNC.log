@@ -1,0 +1,187 @@
+ESYNC_COMMAND_START
+
+PLAY [OmTools-TestServer__NginxForward] ****************************************
+
+TASK [nginx_sync : Notify] *****************************************************
+ok: [23.101.9.146] => {
+
+    "msg": "Syncing OmTools-TestServer__NginxForward"
+}
+ok: [47.52.158.87] => {
+    "msg": "Syncing OmTools-TestServer__NginxForward"
+}
+
+
+TASK [nginx_sync : include_vars] ***********************************************
+ok: [23.101.9.146]
+ok: [47.52.158.87]
+
+
+TASK [nginx_sync : Synchronizing Nginx] ****************************************
+ok: [47.52.158.87] => (item=conf)
+changed: [23.101.9.146] => (item=conf)
+changed: [47.52.158.87] => (item=conf.d)
+changed: [23.101.9.146] => (item=conf.d)
+
+ok: [47.52.158.87] => (item=data)
+ok: [23.101.9.146] => (item=data)
+ok: [47.52.158.87] => (item=html)
+ok: [23.101.9.146] => (item=html)
+
+
+TASK [all_servers : include_vars] **********************************************
+ok: [23.101.9.146]
+ok: [47.52.158.87]
+
+TASK [all_servers : Notify] ****************************************************
+
+ok: [23.101.9.146] => {
+    "msg": "Clearing Nginx Cache for OmTools-TestServer__NginxForward"
+}
+ok: [47.52.158.87] => {
+    "msg": "Clearing Nginx Cache for OmTools-TestServer__NginxForward"
+
+}
+
+TASK [all_servers : Copying clear_nginxcache.sh to remote hosts] ***************
+ok: [47.52.158.87]
+ok: [23.101.9.146]
+
+
+TASK [all_servers : Nginx Clear Cache] *****************************************
+changed: [47.52.158.87]
+changed: [23.101.9.146]
+
+
+TASK [all_servers : debug] *****************************************************
+ok: [23.101.9.146] => {
+    "script_result.stdout_lines": [
+        "-----------------------------------------------------------", 
+        "|                 Checking Nginx Config                   |", 
+
+        "-----------------------------------------------------------", 
+        "", 
+        " nginx -t ", 
+        "", 
+        "-----------------------------------------------------------", 
+
+        "|                 Stopping Nginx Process                  |", 
+        "-----------------------------------------------------------", 
+        "", 
+        " /usr/bin/killall -9 nginx ", 
+        "", 
+
+        "-----------------------------------------------------------", 
+        "|                 Clearing Proxy Cache                    |", 
+        "-----------------------------------------------------------", 
+        "", 
+        " /bin/rm -rf /tmp/nginx_cache ", 
+
+        "", 
+        "-----------------------------------------------------------", 
+        "|                Restarting Nginx Process                 |", 
+        "-----------------------------------------------------------", 
+        "root      80573  0.5  0.0 106116  1292 ?        S    09:51   0:00 /bin/bash /bak/bin/clear_nginxcache.sh", 
+
+        "root      80579  0.0  0.2 724976 19800 ?        Ss   09:51   0:00 nginx: master process /usr/local/nginx/sbin/nginx", 
+        "nobody    80580  0.0  0.2 726904 23512 ?        S    09:51   0:00 nginx: worker process      ", 
+        "nobody    80582  0.0  0.3 726904 24592 ?        S    09:51   0:00 nginx: worker process      ", 
+        "nobody    80583  0.0  0.2 726904 23512 ?        S    09:51   0:00 nginx: worker process      ", 
+        "nobody    80584  0.0  0.3 726904 24752 ?        S    09:51   0:00 nginx: worker process      ", 
+
+        "nobody    80585  0.0  0.2 724976 20248 ?        S    09:51   0:00 nginx: cache manager process", 
+        "nobody    80586  0.0  0.2 724976 20180 ?        S    09:51   0:00 nginx: cache loader process", 
+        "root      80590  0.0  0.0 103324   844 ?        S    09:52   0:00 grep nginx", 
+        "             total       used       free     shared    buffers     cached", 
+        "Mem:          7985       7757        227          3        160        601", 
+
+        "-/+ buffers/cache:       6995        989", 
+        "Swap:            0          0          0", 
+        "-----------------------------------------------------------", 
+        "|                     Reload SUCCESS!                     |", 
+        "-----------------------------------------------------------"
+
+    ]
+}
+ok: [47.52.158.87] => {
+    "script_result.stdout_lines": [
+        "-----------------------------------------------------------", 
+
+        "|                 Checking Nginx Config                   |", 
+        "-----------------------------------------------------------", 
+        "", 
+        " nginx -t ", 
+        "", 
+
+        "-----------------------------------------------------------", 
+        "|                 Stopping Nginx Process                  |", 
+        "-----------------------------------------------------------", 
+        "", 
+        " /usr/bin/killall -9 nginx ", 
+
+        "", 
+        "-----------------------------------------------------------", 
+        "|                 Clearing Proxy Cache                    |", 
+        "-----------------------------------------------------------", 
+        "", 
+
+        " /bin/rm -rf /tmp/nginx_cache ", 
+        "", 
+        "-----------------------------------------------------------", 
+        "|                Restarting Nginx Process                 |", 
+        "-----------------------------------------------------------", 
+
+        "root     11413  0.0  0.0 106080  1436 ?        S    09:51   0:00 /bin/bash /bak/bin/clear_nginxcache.sh", 
+        "root     11419  0.0  0.2 724976 19864 ?        Ss   09:51   0:00 nginx: master process /usr/local/nginx/sbin/nginx", 
+        "nobody   11420  0.0  0.2 726904 23504 ?        S    09:51   0:00 nginx: worker process      ", 
+        "nobody   11422  0.0  0.2 726904 24256 ?        S    09:51   0:00 nginx: worker process      ", 
+        "nobody   11423  0.0  0.3 726904 24752 ?        S    09:51   0:00 nginx: worker process      ", 
+
+        "nobody   11424  0.0  0.2 726904 23492 ?        S    09:51   0:00 nginx: worker process      ", 
+        "nobody   11425  0.0  0.2 724976 20312 ?        S    09:51   0:00 nginx: cache manager process", 
+        "nobody   11426  0.0  0.2 724976 20244 ?        S    09:51   0:00 nginx: cache loader process", 
+        "root     11432  0.0  0.0 103320   888 ?        S    09:52   0:00 grep nginx", 
+        "             total       used       free     shared    buffers     cached", 
+
+        "Mem:          8001       7836        165          3        140        578", 
+        "-/+ buffers/cache:       7117        883", 
+        "Swap:            0          0          0", 
+        "-----------------------------------------------------------", 
+        "|                     Reload SUCCESS!                     |", 
+
+        "-----------------------------------------------------------"
+    ]
+}
+
+PLAY [127.0.0.1] ***************************************************************
+
+
+TASK [sync_to_git : Synchronizing Nginx To GIT] ********************************
+changed: [127.0.0.1]
+
+TASK [sync_to_git : debug] *****************************************************
+
+ok: [127.0.0.1] => {
+    "script_result.stdout_lines": [
+        "[master d43f26f] quincy", 
+        " 1 file changed, 1 insertion(+)", 
+        " create mode 120000 nginx/conf.d/ssl/cmb111.com", 
+
+        "Branch master set up to track remote branch master from origin."
+    ]
+}
+
+PLAY [OmTools-TestServer__NginxForward] ****************************************
+
+
+PLAY [127.0.0.1] ***************************************************************
+
+PLAY RECAP *********************************************************************
+127.0.0.1                  : ok=2    changed=1    unreachable=0    failed=0   
+
+23.101.9.146               : ok=8    changed=2    unreachable=0    failed=0   
+47.52.158.87               : ok=8    changed=2    unreachable=0    failed=0   
+
+
+ESYNC_COMMAND_END
+MAX RETRIES EXECUTED, COMMAND NOT RESPONDING

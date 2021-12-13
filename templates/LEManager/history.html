@@ -1,0 +1,85 @@
+{% extends "base.html" %}
+
+{% block js %}
+    {{ block.super }} {# includes previous content in block #}
+
+   <script>
+
+       table = $('#history').DataTable({
+        autoWidth: false,
+        pageLength: 100,
+        bLengthChange: false,
+        "columnDefs": [
+                { "type": "date-de", targets: 3 },
+                {
+                    targets: [3],
+                    width: "8%",
+                },
+                {
+                    targets: [0],
+                    width: "8%",
+                },
+            ],
+        aaSorting: [[3,'desc']],
+
+    });
+
+   </script>
+
+{% endblock %}
+
+{% block title %}
+{% block header %}
+{{ CN }} activity logs
+{% endblock %}
+{% endblock %}
+
+{% block content %}
+ <meta http-equiv="refresh" content="20" />
+
+
+<div class="row">
+        <div class="col-lg-12">
+
+    <div class="ibox float-e-margins">
+
+
+        <div class="ibox-content">
+
+
+            <div class="row">
+
+                <div class="col-lg-12">
+                    <table id="history" class="table table-bordered table-striped table-responsive" data-page-length='25' style="width: 100%;">
+                        <thead>
+                            <th>PID</th>
+                            <th>Type</th>
+                            <th>Activity</th>
+                            <th>Timestamp</th>
+
+                        </thead>
+                        <tbody>
+                            {% for i in data %}
+                                <tr>
+                                    <td>{{ i.process_id }}</td>
+                                    <td>{{ i.activity_type }}</td>
+                                    <td>{{ i.activity }}</td>
+                                    <td>{{ i.created_on|date:'Y/m/d H:i:s '  }}</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+
+
+
+        </div>
+
+    </div>
+    </div>
+
+</div>
+
+{% endblock %}

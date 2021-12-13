@@ -1,0 +1,187 @@
+ESYNC_WORKER1_COMMAND_START
+
+PLAY [om-clientgamecalled_nginx] ***********************************************
+
+TASK [nginx_sync : Notify] *****************************************************
+ok: [119.9.110.31] => {
+
+    "msg": "Syncing om-clientgamecalled_nginx"
+}
+ok: [23.99.114.30] => {
+    "msg": "Syncing om-clientgamecalled_nginx"
+}
+
+
+TASK [nginx_sync : include_vars] ***********************************************
+ok: [119.9.110.31]
+ok: [23.99.114.30]
+
+
+TASK [nginx_sync : Synchronizing Nginx] ****************************************
+ok: [119.9.110.31] => (item=conf)
+ok: [23.99.114.30] => (item=conf)
+changed: [119.9.110.31] => (item=conf.d)
+changed: [23.99.114.30] => (item=conf.d)
+
+ok: [23.99.114.30] => (item=data)
+ok: [119.9.110.31] => (item=data)
+ok: [119.9.110.31] => (item=html)
+ok: [23.99.114.30] => (item=html)
+
+
+TASK [all_servers : include_vars] **********************************************
+ok: [119.9.110.31]
+ok: [23.99.114.30]
+
+TASK [all_servers : Notify] ****************************************************
+
+ok: [119.9.110.31] => {
+    "msg": "Clearing Nginx Cache for om-clientgamecalled_nginx"
+}
+ok: [23.99.114.30] => {
+    "msg": "Clearing Nginx Cache for om-clientgamecalled_nginx"
+
+}
+
+TASK [all_servers : Copying clear_nginxcache.sh to remote hosts] ***************
+ok: [23.99.114.30]
+ok: [119.9.110.31]
+
+
+TASK [all_servers : Nginx Clear Cache] *****************************************
+changed: [23.99.114.30]
+changed: [119.9.110.31]
+
+
+TASK [all_servers : debug] *****************************************************
+ok: [119.9.110.31] => {
+    "script_result.stdout_lines": [
+        "-----------------------------------------------------------", 
+        "|                 Checking Nginx Config                   |", 
+
+        "-----------------------------------------------------------", 
+        "", 
+        " nginx -t ", 
+        "", 
+        "-----------------------------------------------------------", 
+
+        "|                 Stopping Nginx Process                  |", 
+        "-----------------------------------------------------------", 
+        "", 
+        " /usr/bin/killall -9 nginx ", 
+        "", 
+
+        "-----------------------------------------------------------", 
+        "|                 Clearing Proxy Cache                    |", 
+        "-----------------------------------------------------------", 
+        "", 
+        " /bin/rm -rf /tmp/nginx_cache ", 
+
+        "", 
+        "-----------------------------------------------------------", 
+        "|                Restarting Nginx Process                 |", 
+        "-----------------------------------------------------------", 
+        "root     31098  0.0  0.0 106064  1432 ?        S    16:51   0:00 /bin/bash /bak/bin/clear_nginxcache.sh", 
+
+        "root     31297  0.0  0.0 462060  3936 ?        Ss   16:51   0:00 nginx: master process /usr/local/nginx/sbin/nginx", 
+        "nobody   31298  0.0  0.3 470552 12684 ?        S    16:51   0:00 nginx: worker process      ", 
+        "nobody   31299  0.0  0.3 470552 12684 ?        S    16:51   0:00 nginx: worker process      ", 
+        "nobody   31300  0.0  0.3 470552 12684 ?        S    16:51   0:00 nginx: worker process      ", 
+        "nobody   31301  0.0  0.3 470552 12684 ?        S    16:51   0:00 nginx: worker process      ", 
+
+        "nobody   31302  0.0  0.1 462060  4436 ?        S    16:51   0:00 nginx: cache manager process", 
+        "nobody   31303  0.0  0.1 462060  4308 ?        S    16:51   0:00 nginx: cache loader process", 
+        "root     31328  0.0  0.0 103244   880 ?        R    16:51   0:00 grep nginx", 
+        "             total       used       free     shared    buffers     cached", 
+        "Mem:          3954       3630        324          2        287        368", 
+
+        "-/+ buffers/cache:       2974        979", 
+        "Swap:            0          0          0", 
+        "-----------------------------------------------------------", 
+        "|                     Reload SUCCESS!                     |", 
+        "-----------------------------------------------------------"
+
+    ]
+}
+ok: [23.99.114.30] => {
+    "script_result.stdout_lines": [
+        "-----------------------------------------------------------", 
+
+        "|                 Checking Nginx Config                   |", 
+        "-----------------------------------------------------------", 
+        "", 
+        " nginx -t ", 
+        "", 
+
+        "-----------------------------------------------------------", 
+        "|                 Stopping Nginx Process                  |", 
+        "-----------------------------------------------------------", 
+        "", 
+        " /usr/bin/killall -9 nginx ", 
+
+        "", 
+        "-----------------------------------------------------------", 
+        "|                 Clearing Proxy Cache                    |", 
+        "-----------------------------------------------------------", 
+        "", 
+
+        " /bin/rm -rf /tmp/nginx_cache ", 
+        "", 
+        "-----------------------------------------------------------", 
+        "|                Restarting Nginx Process                 |", 
+        "-----------------------------------------------------------", 
+
+        "root      93962  0.0  0.0   9120   592 ?        Ss   Mar19   0:00 /sbin/dhclient -H om-clientgamecalled_nginx2.hk.az.monaco1.me -1 -q -lf /var/lib/dhclient/dhclient-eth0.leases -pf /var/run/dhclient-eth0.pid eth0", 
+        "root     121754  0.0  0.0 106120  1296 ?        S    16:51   0:00 /bin/bash /bak/bin/clear_nginxcache.sh", 
+        "root     121768  0.0  0.1 459928  3824 ?        Ss   16:51   0:00 nginx: master process /usr/local/nginx/sbin/nginx", 
+        "nobody   121770  0.0  0.3 468420 12956 ?        S    16:51   0:00 nginx: worker process      ", 
+        "nobody   121771  0.0  0.3 468420 13148 ?        S    16:51   0:00 nginx: worker process      ", 
+
+        "nobody   121772  0.0  0.3 468420 12956 ?        S    16:51   0:00 nginx: worker process      ", 
+        "nobody   121773  0.0  0.3 468420 12996 ?        S    16:51   0:00 nginx: worker process      ", 
+        "nobody   121774  0.0  0.1 459928  4240 ?        S    16:51   0:00 nginx: cache manager process", 
+        "nobody   121775  0.0  0.1 459928  4188 ?        S    16:51   0:00 nginx: cache loader process", 
+        "root     121816  0.0  0.0 103332   856 ?        S    16:51   0:00 grep nginx", 
+
+        "             total       used       free     shared    buffers     cached", 
+        "Mem:          3440       3314        125          2        204       1297", 
+        "-/+ buffers/cache:       1812       1627", 
+        "Swap:            0          0          0", 
+        "-----------------------------------------------------------", 
+
+        "|                     Reload SUCCESS!                     |", 
+        "-----------------------------------------------------------"
+    ]
+}
+
+
+PLAY [127.0.0.1] ***************************************************************
+
+TASK [sync_to_git : Synchronizing Nginx To GIT] ********************************
+changed: [127.0.0.1]
+
+
+TASK [sync_to_git : debug] *****************************************************
+ok: [127.0.0.1] => {
+    "script_result.stdout_lines": [
+        "[master 29e97b8] jax.laut", 
+        " 1 file changed, 15 insertions(+), 11 deletions(-)", 
+
+        "Branch master set up to track remote branch master from origin."
+    ]
+}
+
+PLAY [om-clientgamecalled_nginx] ***********************************************
+
+
+PLAY [127.0.0.1] ***************************************************************
+
+PLAY RECAP *********************************************************************
+119.9.110.31               : ok=8    changed=2    unreachable=0    failed=0   
+
+127.0.0.1                  : ok=2    changed=1    unreachable=0    failed=0   
+23.99.114.30               : ok=8    changed=2    unreachable=0    failed=0   
+
+
+ESYNC_WORKER1_COMMAND_END
+MAX RETRIES EXECUTED, COMMAND NOT RESPONDING

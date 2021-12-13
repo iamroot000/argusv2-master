@@ -1,0 +1,62 @@
+PUPPET_COMMAND_START
+
+PLAY [puppetmaster] ************************************************************
+
+TASK [puppetmaster : Read hostvars] ********************************************
+fatal: [161.202.63.231]: FAILED! => {"changed": true, "cmd": "cat /ansible/puppet/hostvars.json|grep om-chengdu_nginx", "delta": "0:00:00.047938", "end": "2019-06-03 15:03:22.905384", "msg": "non-zero return code", "rc": 1, "start": "2019-06-03 15:03:22.857446", "stderr": "cat: /ansible/puppet/hostvars.json: No such file or directory", "stderr_lines": ["cat: /ansible/puppet/hostvars.json: No such file or directory"], "stdout": "", "stdout_lines": []}
+
+...ignoring
+
+TASK [puppetmaster : Create Json Template] *************************************
+ok: [161.202.63.231 -> localhost]
+
+
+TASK [puppetmaster : Append Json Data] *****************************************
+changed: [161.202.63.231 -> localhost]
+
+TASK [puppetmaster : remove ansible block] *************************************
+changed: [161.202.63.231 -> localhost]
+
+
+TASK [puppetmaster : stat] *****************************************************
+ok: [161.202.63.231 -> localhost]
+
+TASK [puppetmaster : debug] ****************************************************
+
+ok: [161.202.63.231] => {
+    "msg": "THERE IS NO iptables.sh ON /puppet/om-chengdu_nginx/templates/"
+}
+
+PLAY [om-chengdu_nginx] ********************************************************
+
+
+PLAY [om-chengdu_nginx] ********************************************************
+
+TASK [Gathering Facts] *********************************************************
+ok: [47.112.127.70]
+
+
+TASK [Kill Old Puppet Agent] ***************************************************
+fatal: [47.112.127.70]: FAILED! => {"changed": true, "cmd": "killall -9 puppet", "delta": "0:00:00.026153", "end": "2019-06-03 15:03:32.972535", "msg": "non-zero return code", "rc": 1, "start": "2019-06-03 15:03:32.946382", "stderr": "puppet: no process found", "stderr_lines": ["puppet: no process found"], "stdout": "", "stdout_lines": []}
+...ignoring
+
+
+TASK [Generate Puppet Cert] ****************************************************
+changed: [47.112.127.70]
+
+PLAY [127.0.0.1] ***************************************************************
+
+
+TASK [sync_to_git : Synchronizing Puppet template To GIT] **********************
+fatal: [localhost]: FAILED! => {"changed": true, "cmd": "git add .\n git commit -m \"jax.laut\"\n git push\n git push -u origin master", "delta": "0:00:00.498947", "end": "2019-06-03 15:03:37.476229", "msg": "non-zero return code", "rc": 128, "start": "2019-06-03 15:03:36.977282", "stderr": "warning: You ran 'git add' with neither '-A (--all)' or '--ignore-removal',\nwhose behaviour will change in Git 2.0 with respect to paths you removed.\nPaths like 'iptables.sh' that are\nremoved from your working tree are ignored with this version of Git.\n\n* 'git add --ignore-removal <pathspec>', which is the current default,\n  ignores paths you removed from your working tree.\n\n* 'git add --all <pathspec>' will let you also record the removals.\n\nRun 'git status' to check the paths you removed from your working tree.\n\nfatal: could not read Password for 'http://om@git.neweb.me': No such device or address\nfatal: could not read Password for 'http://om@git.neweb.me': No such device or address", "stderr_lines": ["warning: You ran 'git add' with neither '-A (--all)' or '--ignore-removal',", "whose behaviour will change in Git 2.0 with respect to paths you removed.", "Paths like 'iptables.sh' that are", "removed from your working tree are ignored with this version of Git.", "", "* 'git add --ignore-removal <pathspec>', which is the current default,", "  ignores paths you removed from your working tree.", "", "* 'git add --all <pathspec>' will let you also record the removals.", "", "Run 'git status' to check the paths you removed from your working tree.", "", "fatal: could not read Password for 'http://om@git.neweb.me': No such device or address", "fatal: could not read Password for 'http://om@git.neweb.me': No such device or address"], "stdout": "# On branch master\n# Changes not staged for commit:\n#   (use \"git add/rm <file>...\" to update what will be committed)\n#   (use \"git checkout -- <file>...\" to discard changes in working directory)\n#\n#\tdeleted:    iptables.sh\n#\nno changes added to commit (use \"git add\" and/or \"git commit -a\")", "stdout_lines": ["# On branch master", "# Changes not staged for commit:", "#   (use \"git add/rm <file>...\" to update what will be committed)", "#   (use \"git checkout -- <file>...\" to discard changes in working directory)", "#", "#\tdeleted:    iptables.sh", "#", "no changes added to commit (use \"git add\" and/or \"git commit -a\")"]}
+	to retry, use: --limit @/ansible/puppet/site.retry
+
+PLAY RECAP *********************************************************************
+
+161.202.63.231             : ok=6    changed=3    unreachable=0    failed=0   
+47.112.127.70              : ok=3    changed=2    unreachable=0    failed=0   
+localhost                  : ok=0    changed=0    unreachable=0    failed=1   
+
+
+PUPPET_COMMAND_END
+MAX RETRIES EXECUTED, COMMAND NOT RESPONDING

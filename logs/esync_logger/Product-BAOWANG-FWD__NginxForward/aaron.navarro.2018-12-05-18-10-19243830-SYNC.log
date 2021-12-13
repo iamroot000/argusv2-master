@@ -1,0 +1,56 @@
+ESYNC_COMMAND_START
+
+PLAY [Product-BAOWANG-FWD__NginxForward] ***************************************
+
+TASK [nginx_sync : Notify] *****************************************************
+ok: [203.60.2.4] => {
+
+    "msg": "Syncing Product-BAOWANG-FWD__NginxForward"
+}
+ok: [65.52.179.46] => {
+    "msg": "Syncing Product-BAOWANG-FWD__NginxForward"
+}
+
+
+TASK [nginx_sync : include_vars] ***********************************************
+ok: [203.60.2.4]
+ok: [65.52.179.46]
+
+
+TASK [nginx_sync : Synchronizing Nginx] ****************************************
+changed: [65.52.179.46] => (item=conf)
+ok: [65.52.179.46] => (item=conf.d)
+ok: [65.52.179.46] => (item=data)
+ok: [65.52.179.46] => (item=html)
+
+failed: [203.60.2.4] (item=conf) => {"changed": false, "cmd": "/usr/bin/rsync --delay-updates -F --compress --delete-after --copy-links --archive --rsh=/usr/bin/ssh -S none -o Port=2556 -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null --out-format=<<CHANGED>>%i %n%L /srv/Product-BAOWANG-FWD__NginxForward/nginx/conf/ root@203.60.2.4:/usr/local/nginx/conf/", "item": "conf", "msg": "ssh: connect to host 203.60.2.4 port 2556: Connection timed out\r\nrsync: connection unexpectedly closed (0 bytes received so far) [sender]\nrsync error: unexplained error (code 255) at io.c(226) [sender=3.1.2]\n", "rc": 255}
+failed: [203.60.2.4] (item=conf.d) => {"changed": false, "cmd": "/usr/bin/rsync --delay-updates -F --compress --delete-after --copy-links --archive --rsh=/usr/bin/ssh -S none -o Port=2556 -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null --out-format=<<CHANGED>>%i %n%L /srv/Product-BAOWANG-FWD__NginxForward/nginx/conf.d/ root@203.60.2.4:/usr/local/nginx/conf.d/", "item": "conf.d", "msg": "ssh: connect to host 203.60.2.4 port 2556: Connection timed out\r\nrsync: connection unexpectedly closed (0 bytes received so far) [sender]\nrsync error: unexplained error (code 255) at io.c(226) [sender=3.1.2]\n", "rc": 255}
+ok: [203.60.2.4] => (item=data)
+failed: [203.60.2.4] (item=html) => {"changed": false, "cmd": "/usr/bin/rsync --delay-updates -F --compress --delete-after --copy-links --archive --rsh=/usr/bin/ssh -S none -o Port=2556 -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null --out-format=<<CHANGED>>%i %n%L /srv/Product-BAOWANG-FWD__NginxForward/nginx/html/ root@203.60.2.4:/usr/local/nginx/html/", "item": "html", "msg": "ssh: connect to host 203.60.2.4 port 2556: Connection timed out\r\nrsync: connection unexpectedly closed (0 bytes received so far) [sender]\nrsync error: unexplained error (code 255) at io.c(226) [sender=3.1.2]\n", "rc": 255}
+
+
+TASK [all_servers : include_vars] **********************************************
+ok: [65.52.179.46]
+
+TASK [all_servers : Notify] ****************************************************
+ok: [65.52.179.46] => {
+
+    "msg": "Clearing Nginx Cache for Product-BAOWANG-FWD__NginxForward"
+}
+
+TASK [all_servers : Copying clear_nginxcache.sh to remote hosts] ***************
+ok: [65.52.179.46]
+
+
+TASK [all_servers : Nginx Clear Cache] *****************************************
+fatal: [65.52.179.46]: FAILED! => {"changed": true, "cmd": ["/bak/bin/clear_nginxcache.sh"], "delta": "0:00:00.018694", "end": "2018-12-05 18:10:37.303610", "msg": "non-zero return code", "rc": 1, "start": "2018-12-05 18:10:37.284916", "stderr": "nginx: [emerg] unknown directive \"geoip_country\" in /usr/local/nginx/conf.d/global/geoip.conf:2\nnginx: configuration file /usr/local/nginx/conf/nginx.conf test failed", "stderr_lines": ["nginx: [emerg] unknown directive \"geoip_country\" in /usr/local/nginx/conf.d/global/geoip.conf:2", "nginx: configuration file /usr/local/nginx/conf/nginx.conf test failed"], "stdout": "-----------------------------------------------------------\n|                 Checking Nginx Config                   |\n-----------------------------------------------------------\n\n nginx -t \n\n+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n|                  CONFIGURATION ERROR!                   |\n+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++", "stdout_lines": ["-----------------------------------------------------------", "|                 Checking Nginx Config                   |", "-----------------------------------------------------------", "", " nginx -t ", "", "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++", "|                  CONFIGURATION ERROR!                   |", "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"]}
+	to retry, use: --limit @/ansible/nginx/site.retry
+
+
+PLAY RECAP *********************************************************************
+203.60.2.4                 : ok=2    changed=0    unreachable=0    failed=1   
+65.52.179.46               : ok=6    changed=1    unreachable=0    failed=1   
+
+
+ESYNC_COMMAND_END
+MAX RETRIES EXECUTED, COMMAND NOT RESPONDING

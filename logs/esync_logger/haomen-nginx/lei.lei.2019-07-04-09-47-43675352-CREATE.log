@@ -1,0 +1,21 @@
+--- /ansible/nginx/hostgroups/haomen-nginx/nginx/conf.d/include/websocket.cdn.include	2019-07-04 09:47:27.133389161 +0800
++++ /tmp/websocket.cdn.include	2019-07-04 09:47:43.570389161 +0800
+@@ -1,4 +1,16 @@
+-
++	location /{
++	proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
++	proxy_set_header X-Real-IP  $remote_addr;
++	proxy_next_upstream http_502 http_504 http_404 error timeout invalid_header;
++	proxy_set_header Host $host:$server_port;
++	proxy_http_version 1.1;
++	proxy_set_header Upgrade $http_upgrade;
++	proxy_set_header Connection $connection_upgrade;
++	proxy_connect_timeout   1800;
++	proxy_send_timeout      1800;
++	proxy_read_timeout      1800;
++	proxy_pass http://9280;
++}
+ 
+ 
+ 
+

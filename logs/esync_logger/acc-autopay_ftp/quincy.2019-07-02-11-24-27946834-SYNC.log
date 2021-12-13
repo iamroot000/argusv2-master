@@ -1,0 +1,134 @@
+ESYNC_WORKER1_COMMAND_START
+ [WARNING]: Invalid characters were found in group names but not replaced, use
+-vvvv to see details
+
+PLAY [acc-autopay_ftp] *********************************************************
+
+
+TASK [nginx_sync : Notify] *****************************************************
+ok: [119.9.106.122] => {
+    "msg": "Syncing acc-autopay_ftp"
+}
+ok: [161.202.63.250] => {
+
+    "msg": "Syncing acc-autopay_ftp"
+}
+
+TASK [nginx_sync : include_vars] ***********************************************
+ok: [119.9.106.122]
+
+ok: [161.202.63.250]
+
+TASK [nginx_sync : Synchronizing Nginx] ****************************************
+ok: [119.9.106.122] => (item=conf)
+ok: [161.202.63.250] => (item=conf)
+
+changed: [119.9.106.122] => (item=conf.d)
+ok: [119.9.106.122] => (item=data)
+changed: [161.202.63.250] => (item=conf.d)
+ok: [119.9.106.122] => (item=html)
+ok: [161.202.63.250] => (item=data)
+
+ok: [161.202.63.250] => (item=html)
+
+TASK [all_servers : include_vars] **********************************************
+ok: [119.9.106.122]
+ok: [161.202.63.250]
+
+
+TASK [all_servers : Notify] ****************************************************
+ok: [119.9.106.122] => {
+    "msg": "Clearing Nginx Cache for acc-autopay_ftp"
+}
+
+ok: [161.202.63.250] => {
+    "msg": "Clearing Nginx Cache for acc-autopay_ftp"
+}
+
+TASK [all_servers : Copying clear_nginxcache.sh to remote hosts] ***************
+
+ok: [119.9.106.122]
+ok: [161.202.63.250]
+
+TASK [all_servers : Nginx Clear Cache] *****************************************
+changed: [161.202.63.250]
+
+fatal: [119.9.106.122]: FAILED! => {"changed": true, "cmd": ["/bak/bin/clear_nginxcache.sh"], "delta": "0:00:07.576104", "end": "2019-07-02 11:24:51.586168", "msg": "non-zero return code", "rc": 1, "start": "2019-07-02 11:24:44.010064", "stderr": "nginx: the configuration file /usr/local/nginx/conf/nginx.conf syntax is ok\nnginx: configuration file /usr/local/nginx/conf/nginx.conf test is successful\nnginx: [emerg] bind() to 0.0.0.0:80 failed (98: Address already in use)\nnginx: [emerg] bind() to 0.0.0.0:443 failed (98: Address already in use)\nnginx: [emerg] bind() to 0.0.0.0:80 failed (98: Address already in use)\nnginx: [emerg] bind() to 0.0.0.0:443 failed (98: Address already in use)\nnginx: [emerg] bind() to 0.0.0.0:80 failed (98: Address already in use)\nnginx: [emerg] bind() to 0.0.0.0:443 failed (98: Address already in use)\nnginx: [emerg] bind() to 0.0.0.0:80 failed (98: Address already in use)\nnginx: [emerg] bind() to 0.0.0.0:443 failed (98: Address already in use)\nnginx: [emerg] bind() to 0.0.0.0:80 failed (98: Address already in use)\nnginx: [emerg] bind() to 0.0.0.0:443 failed (98: Address already in use)\nnginx: [emerg] still could not bind()", "stderr_lines": ["nginx: the configuration file /usr/local/nginx/conf/nginx.conf syntax is ok", "nginx: configuration file /usr/local/nginx/conf/nginx.conf test is successful", "nginx: [emerg] bind() to 0.0.0.0:80 failed (98: Address already in use)", "nginx: [emerg] bind() to 0.0.0.0:443 failed (98: Address already in use)", "nginx: [emerg] bind() to 0.0.0.0:80 failed (98: Address already in use)", "nginx: [emerg] bind() to 0.0.0.0:443 failed (98: Address already in use)", "nginx: [emerg] bind() to 0.0.0.0:80 failed (98: Address already in use)", "nginx: [emerg] bind() to 0.0.0.0:443 failed (98: Address already in use)", "nginx: [emerg] bind() to 0.0.0.0:80 failed (98: Address already in use)", "nginx: [emerg] bind() to 0.0.0.0:443 failed (98: Address already in use)", "nginx: [emerg] bind() to 0.0.0.0:80 failed (98: Address already in use)", "nginx: [emerg] bind() to 0.0.0.0:443 failed (98: Address already in use)", "nginx: [emerg] still could not bind()"], "stdout": "-----------------------------------------------------------\n|                 Checking Nginx Config                   |\n-----------------------------------------------------------\n\n nginx -t \n\n-----------------------------------------------------------\n|                 Stopping Nginx Process                  |\n-----------------------------------------------------------\n\n /usr/bin/killall -9 nginx \n\n-----------------------------------------------------------\n|                 Clearing Proxy Cache                    |\n-----------------------------------------------------------\n\n /bin/rm -rf /tmp/nginx_cache \n\n-----------------------------------------------------------\n|                Restarting Nginx Process                 |\n-----------------------------------------------------------\nroot     10132  0.0  0.0 108128  1428 ?        S    11:24   0:00 /bin/bash /bak/bin/clear_nginxcache.sh\nnobody   10135  0.0  0.1 298712  7780 ?        S    11:24   0:00 nginx: worker process      \nnobody   10136  0.1  0.1 298712  7888 ?        S    11:24   0:00 nginx: worker process      \nnobody   10137  0.1  0.1 298712  7940 ?        S    11:24   0:00 nginx: worker process      \nroot     10143  0.0  0.0 105368   888 ?        R    11:24   0:00 grep nginx\n             total       used       free     shared    buffers     cached\nMem:          3953       3675        278          1        106       3323\n-/+ buffers/cache:        245       3708\nSwap:            0          0          0\n+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n|                      RELOAD ERROR!                      |\n+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++", "stdout_lines": ["-----------------------------------------------------------", "|                 Checking Nginx Config                   |", "-----------------------------------------------------------", "", " nginx -t ", "", "-----------------------------------------------------------", "|                 Stopping Nginx Process                  |", "-----------------------------------------------------------", "", " /usr/bin/killall -9 nginx ", "", "-----------------------------------------------------------", "|                 Clearing Proxy Cache                    |", "-----------------------------------------------------------", "", " /bin/rm -rf /tmp/nginx_cache ", "", "-----------------------------------------------------------", "|                Restarting Nginx Process                 |", "-----------------------------------------------------------", "root     10132  0.0  0.0 108128  1428 ?        S    11:24   0:00 /bin/bash /bak/bin/clear_nginxcache.sh", "nobody   10135  0.0  0.1 298712  7780 ?        S    11:24   0:00 nginx: worker process      ", "nobody   10136  0.1  0.1 298712  7888 ?        S    11:24   0:00 nginx: worker process      ", "nobody   10137  0.1  0.1 298712  7940 ?        S    11:24   0:00 nginx: worker process      ", "root     10143  0.0  0.0 105368   888 ?        R    11:24   0:00 grep nginx", "             total       used       free     shared    buffers     cached", "Mem:          3953       3675        278          1        106       3323", "-/+ buffers/cache:        245       3708", "Swap:            0          0          0", "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++", "|                      RELOAD ERROR!                      |", "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"]}
+
+TASK [all_servers : debug] *****************************************************
+ok: [161.202.63.250] => {
+    "script_result.stdout_lines": [
+
+        "-----------------------------------------------------------", 
+        "|                 Checking Nginx Config                   |", 
+        "-----------------------------------------------------------", 
+        "", 
+        " nginx -t ", 
+
+        "", 
+        "-----------------------------------------------------------", 
+        "|                 Stopping Nginx Process                  |", 
+        "-----------------------------------------------------------", 
+        "", 
+
+        " /usr/bin/killall -9 nginx ", 
+        "", 
+        "-----------------------------------------------------------", 
+        "|                 Clearing Proxy Cache                    |", 
+        "-----------------------------------------------------------", 
+
+        "", 
+        " /bin/rm -rf /tmp/nginx_cache ", 
+        "", 
+        "-----------------------------------------------------------", 
+        "|                Restarting Nginx Process                 |", 
+
+        "-----------------------------------------------------------", 
+        "root     14143  4.3  0.0 106112  1280 ?        S    11:24   0:00 /bin/bash /bak/bin/clear_nginxcache.sh", 
+        "root     14149  0.3  0.0 294140  1668 ?        Ss   11:24   0:00 nginx: master process /usr/local/nginx/sbin/nginx", 
+        "nobody   14151  0.0  0.3 298392  6164 ?        S    11:24   0:00 nginx: worker process      ", 
+        "nobody   14152  0.3  0.3 298392  6164 ?        S    11:24   0:00 nginx: worker process      ", 
+
+        "nobody   14153  0.3  0.3 298392  6164 ?        S    11:24   0:00 nginx: worker process      ", 
+        "nobody   14154  0.3  0.3 298392  6164 ?        S    11:24   0:00 nginx: worker process      ", 
+        "nobody   14155  0.0  0.1 294140  2152 ?        S    11:24   0:00 nginx: cache manager process", 
+        "nobody   14156  0.0  0.1 294140  2036 ?        S    11:24   0:00 nginx: cache loader process", 
+        "root     14158  0.0  0.0 103316   840 ?        S    11:24   0:00 grep nginx", 
+
+        "             total       used       free     shared    buffers     cached", 
+        "Mem:          1869       1837         31          1        484       1184", 
+        "-/+ buffers/cache:        168       1700", 
+        "Swap:         2047          5       2041", 
+        "-----------------------------------------------------------", 
+
+        "|                     Reload SUCCESS!                     |", 
+        "-----------------------------------------------------------"
+    ]
+}
+
+
+PLAY [127.0.0.1] ***************************************************************
+
+TASK [sync_to_git : Synchronizing Nginx To GIT] ********************************
+changed: [127.0.0.1]
+
+
+TASK [sync_to_git : debug] *****************************************************
+ok: [127.0.0.1] => {
+    "msg": " [u'[master 525bdb9] quincy', u' 1 file changed, 5 insertions(+), 1 deletion(-)', u'Branch master set up to track remote branch master from origin.']"
+}
+
+
+PLAY [acc-autopay_ftp] *********************************************************
+
+PLAY [127.0.0.1] ***************************************************************
+
+PLAY RECAP *********************************************************************
+
+119.9.106.122              : ok=6    changed=1    unreachable=0    failed=1    skipped=0    rescued=0    ignored=0   
+127.0.0.1                  : ok=2    changed=1    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0   
+161.202.63.250             : ok=8    changed=2    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0   
+
+
+ESYNC_WORKER1_COMMAND_END
+MAX RETRIES EXECUTED, COMMAND NOT RESPONDING

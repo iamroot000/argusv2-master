@@ -1,0 +1,158 @@
+ESYNC_WORKER1_COMMAND_START
+
+PLAY [newpujing-nginx] *********************************************************
+
+TASK [nginx_sync : Notify] *****************************************************
+ok: [47.52.25.165] => {
+
+    "msg": "Syncing newpujing-nginx"
+}
+ok: [52.184.29.70] => {
+    "msg": "Syncing newpujing-nginx"
+}
+
+ok: [119.9.106.50] => {
+    "msg": "Syncing newpujing-nginx"
+}
+
+TASK [nginx_sync : include_vars] ***********************************************
+
+ok: [47.52.25.165]
+ok: [52.184.29.70]
+ok: [119.9.106.50]
+
+TASK [nginx_sync : Synchronizing Nginx] ****************************************
+
+ok: [47.52.25.165] => (item=conf)
+ok: [119.9.106.50] => (item=conf)
+ok: [52.184.29.70] => (item=conf)
+changed: [47.52.25.165] => (item=conf.d)
+changed: [119.9.106.50] => (item=conf.d)
+
+changed: [52.184.29.70] => (item=conf.d)
+ok: [47.52.25.165] => (item=data)
+ok: [47.52.25.165] => (item=html)
+changed: [119.9.106.50] => (item=data)
+changed: [52.184.29.70] => (item=data)
+
+ok: [119.9.106.50] => (item=html)
+ok: [52.184.29.70] => (item=html)
+
+TASK [all_servers : include_vars] **********************************************
+ok: [47.52.25.165]
+
+ok: [52.184.29.70]
+ok: [119.9.106.50]
+
+TASK [all_servers : Notify] ****************************************************
+ok: [47.52.25.165] => {
+
+    "msg": "Clearing Nginx Cache for newpujing-nginx"
+}
+ok: [52.184.29.70] => {
+    "msg": "Clearing Nginx Cache for newpujing-nginx"
+}
+
+ok: [119.9.106.50] => {
+    "msg": "Clearing Nginx Cache for newpujing-nginx"
+}
+
+TASK [all_servers : Copying clear_nginxcache.sh to remote hosts] ***************
+
+ok: [47.52.25.165]
+ok: [52.184.29.70]
+ok: [119.9.106.50]
+
+TASK [all_servers : Nginx Clear Cache] *****************************************
+
+fatal: [52.184.29.70]: FAILED! => {"changed": true, "cmd": ["/bak/bin/clear_nginxcache.sh"], "delta": "0:00:00.057022", "end": "2019-03-27 17:32:59.396040", "msg": "non-zero return code", "rc": 1, "start": "2019-03-27 17:32:59.339018", "stderr": "nginx: [emerg] unknown directive \"geoip_country\" in /usr/local/nginx/conf.d/global/geoip.conf:2\nnginx: configuration file /usr/local/nginx-1.14.0/conf/nginx.conf test failed", "stderr_lines": ["nginx: [emerg] unknown directive \"geoip_country\" in /usr/local/nginx/conf.d/global/geoip.conf:2", "nginx: configuration file /usr/local/nginx-1.14.0/conf/nginx.conf test failed"], "stdout": "-----------------------------------------------------------\n|                 Checking Nginx Config                   |\n-----------------------------------------------------------\n\n nginx -t \n\n+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n|                  CONFIGURATION ERROR!                   |\n+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++", "stdout_lines": ["-----------------------------------------------------------", "|                 Checking Nginx Config                   |", "-----------------------------------------------------------", "", " nginx -t ", "", "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++", "|                  CONFIGURATION ERROR!                   |", "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"]}
+fatal: [119.9.106.50]: FAILED! => {"changed": true, "cmd": ["/bak/bin/clear_nginxcache.sh"], "delta": "0:00:00.099902", "end": "2019-03-27 17:32:59.421191", "msg": "non-zero return code", "rc": 1, "start": "2019-03-27 17:32:59.321289", "stderr": "nginx: [emerg] unknown directive \"geoip_country\" in /usr/local/nginx/conf.d/global/geoip.conf:2\nnginx: configuration file /usr/local/nginx-1.14.0/conf/nginx.conf test failed", "stderr_lines": ["nginx: [emerg] unknown directive \"geoip_country\" in /usr/local/nginx/conf.d/global/geoip.conf:2", "nginx: configuration file /usr/local/nginx-1.14.0/conf/nginx.conf test failed"], "stdout": "-----------------------------------------------------------\n|                 Checking Nginx Config                   |\n-----------------------------------------------------------\n\n nginx -t \n\n+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n|                  CONFIGURATION ERROR!                   |\n+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++", "stdout_lines": ["-----------------------------------------------------------", "|                 Checking Nginx Config                   |", "-----------------------------------------------------------", "", " nginx -t ", "", "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++", "|                  CONFIGURATION ERROR!                   |", "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"]}
+changed: [47.52.25.165]
+
+TASK [all_servers : debug] *****************************************************
+
+ok: [47.52.25.165] => {
+    "script_result.stdout_lines": [
+        "-----------------------------------------------------------", 
+        "|                 Checking Nginx Config                   |", 
+        "-----------------------------------------------------------", 
+
+        "", 
+        " nginx -t ", 
+        "", 
+        "-----------------------------------------------------------", 
+        "|                 Stopping Nginx Process                  |", 
+
+        "-----------------------------------------------------------", 
+        "", 
+        " /usr/bin/killall -9 nginx ", 
+        "", 
+        "-----------------------------------------------------------", 
+
+        "|                 Clearing Proxy Cache                    |", 
+        "-----------------------------------------------------------", 
+        "", 
+        " /bin/rm -rf /tmp/nginx_cache ", 
+        "", 
+
+        "-----------------------------------------------------------", 
+        "|                Restarting Nginx Process                 |", 
+        "-----------------------------------------------------------", 
+        "root     25517  0.0  0.1 151452  5152 pts/0    S+   17:30   0:00 vim /usr/local/nginx/conf.d/global/geoip.conf", 
+        "root     25905  0.4  0.0 113180  1504 ?        S    17:32   0:00 /bin/bash /bak/bin/clear_nginxcache.sh", 
+
+        "root     25918  0.0  0.0 775896  3552 ?        Ss   17:33   0:00 nginx: master process /usr/local/nginx/sbin/nginx", 
+        "www      25919  0.0  0.2 780148  7924 ?        S    17:33   0:00 nginx: worker process", 
+        "www      25921  0.0  0.2 780148  7924 ?        S    17:33   0:00 nginx: worker process", 
+        "www      25922  0.0  0.2 780148  7924 ?        S    17:33   0:00 nginx: worker process", 
+        "www      25923  0.0  0.2 780148  7924 ?        S    17:33   0:00 nginx: worker process", 
+
+        "www      25924  0.0  0.1 775768  4064 ?        S    17:33   0:00 nginx: cache manager process", 
+        "www      25925  0.0  0.1 775768  4064 ?        S    17:33   0:00 nginx: cache loader process", 
+        "root     25928  0.0  0.0 112712   960 ?        S    17:33   0:00 grep nginx", 
+        "              total        used        free      shared  buff/cache   available", 
+        "Mem:           3789         128        1900           4        1760        3357", 
+
+        "Swap:             0           0           0", 
+        "-----------------------------------------------------------", 
+        "|                     Reload SUCCESS!                     |", 
+        "-----------------------------------------------------------"
+    ]
+
+}
+
+PLAY [127.0.0.1] ***************************************************************
+
+TASK [sync_to_git : Synchronizing Nginx To GIT] ********************************
+
+changed: [127.0.0.1]
+
+TASK [sync_to_git : debug] *****************************************************
+ok: [127.0.0.1] => {
+    "script_result.stdout_lines": [
+
+        "[master 256c102] aaron.navarro", 
+        " 3 files changed, 26 insertions(+), 1 deletion(-)", 
+        " create mode 100644 nginx/conf.d/80-443/xpj6.in.conf", 
+        " create mode 120000 nginx/conf.d/ssl/xpj6.in", 
+        "Branch master set up to track remote branch master from origin."
+
+    ]
+}
+
+PLAY [newpujing-nginx] *********************************************************
+
+
+PLAY [127.0.0.1] ***************************************************************
+	to retry, use: --limit @/ansible/nginx/site.retry
+
+PLAY RECAP *********************************************************************
+119.9.106.50               : ok=6    changed=1    unreachable=0    failed=1   
+
+127.0.0.1                  : ok=2    changed=1    unreachable=0    failed=0   
+47.52.25.165               : ok=8    changed=2    unreachable=0    failed=0   
+52.184.29.70               : ok=6    changed=1    unreachable=0    failed=1   
+
+
+ESYNC_WORKER1_COMMAND_END
+MAX RETRIES EXECUTED, COMMAND NOT RESPONDING

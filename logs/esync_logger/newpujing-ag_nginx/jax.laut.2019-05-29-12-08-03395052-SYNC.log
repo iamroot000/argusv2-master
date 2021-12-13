@@ -1,0 +1,121 @@
+ESYNC_WORKER1_COMMAND_START
+
+PLAY [newpujing-ag_nginx] ******************************************************
+
+TASK [nginx_sync : Notify] *****************************************************
+ok: [112.124.200.38] => {
+
+    "msg": "Syncing newpujing-ag_nginx"
+}
+
+TASK [nginx_sync : include_vars] ***********************************************
+ok: [112.124.200.38]
+
+
+TASK [nginx_sync : Synchronizing Nginx] ****************************************
+changed: [112.124.200.38] => (item=conf)
+changed: [112.124.200.38] => (item=conf.d)
+ok: [112.124.200.38] => (item=data)
+
+ok: [112.124.200.38] => (item=html)
+
+TASK [all_servers : include_vars] **********************************************
+ok: [112.124.200.38]
+
+
+TASK [all_servers : Notify] ****************************************************
+ok: [112.124.200.38] => {
+    "msg": "Clearing Nginx Cache for newpujing-ag_nginx"
+}
+
+
+TASK [all_servers : Copying clear_nginxcache.sh to remote hosts] ***************
+ok: [112.124.200.38]
+
+TASK [all_servers : Nginx Clear Cache] *****************************************
+changed: [112.124.200.38]
+
+
+TASK [all_servers : debug] *****************************************************
+ok: [112.124.200.38] => {
+    "script_result.stdout_lines": [
+        "-----------------------------------------------------------", 
+
+        "|                 Checking Nginx Config                   |", 
+        "-----------------------------------------------------------", 
+        "", 
+        " nginx -t ", 
+        "", 
+
+        "-----------------------------------------------------------", 
+        "|                 Stopping Nginx Process                  |", 
+        "-----------------------------------------------------------", 
+        "", 
+        " /usr/bin/killall -9 nginx ", 
+
+        "", 
+        "-----------------------------------------------------------", 
+        "|                 Clearing Proxy Cache                    |", 
+        "-----------------------------------------------------------", 
+        "", 
+
+        " /bin/rm -rf /tmp/nginx_cache ", 
+        "", 
+        "-----------------------------------------------------------", 
+        "|                Restarting Nginx Process                 |", 
+        "-----------------------------------------------------------", 
+
+        "root     24537  0.2  0.0 113180  1488 ?        S    12:08   0:00 /bin/bash /bak/bin/clear_nginxcache.sh", 
+        "root     24543  0.0  0.0 292748  1416 ?        Ss   12:08   0:00 nginx: master process /usr/local/nginx/sbin/nginx", 
+        "nobody   24544  0.0  0.1 297000  5780 ?        S    12:08   0:00 nginx: worker process", 
+        "nobody   24546  0.0  0.1 297000  5780 ?        S    12:08   0:00 nginx: worker process", 
+        "nobody   24547  0.0  0.1 297000  5780 ?        S    12:08   0:00 nginx: worker process", 
+
+        "nobody   24548  0.0  0.1 297000  5780 ?        S    12:08   0:00 nginx: worker process", 
+        "nobody   24549  0.0  0.0 292748  1832 ?        S    12:08   0:00 nginx: cache manager process", 
+        "nobody   24550  0.0  0.0 292748  1832 ?        S    12:08   0:00 nginx: cache loader process", 
+        "root     24552  0.0  0.0 112708   956 ?        S    12:08   0:00 grep nginx", 
+        "root     30100  0.0  0.0 107464  2296 ?        Ss   May28   0:00 /sbin/dhclient -1 -q -lf /var/lib/dhclient/dhclient--eth0.lease -pf /var/run/dhclient-eth0.pid -H newpujing-ag_nginx1 eth0", 
+
+        "              total        used        free      shared  buff/cache   available", 
+        "Mem:           3789         214        1605           2        1968        3273", 
+        "Swap:             0           0           0", 
+        "-----------------------------------------------------------", 
+        "|                     Reload SUCCESS!                     |", 
+
+        "-----------------------------------------------------------"
+    ]
+}
+
+PLAY [127.0.0.1] ***************************************************************
+
+
+TASK [sync_to_git : Synchronizing Nginx To GIT] ********************************
+changed: [127.0.0.1]
+
+TASK [sync_to_git : debug] *****************************************************
+
+ok: [127.0.0.1] => {
+    "script_result.stdout_lines": [
+        "[master 3b09b30] jax.laut", 
+        " 4 files changed, 98 insertions(+), 42 deletions(-)", 
+        " create mode 100644 nginx/conf.d/global/geoip", 
+
+        " create mode 100644 nginx/conf.d/other/ag.conf", 
+        "Branch master set up to track remote branch master from origin."
+    ]
+}
+
+
+PLAY [newpujing-ag_nginx] ******************************************************
+
+PLAY [127.0.0.1] ***************************************************************
+
+PLAY RECAP *********************************************************************
+
+112.124.200.38             : ok=8    changed=2    unreachable=0    failed=0   
+127.0.0.1                  : ok=2    changed=1    unreachable=0    failed=0   
+
+
+ESYNC_WORKER1_COMMAND_END
+MAX RETRIES EXECUTED, COMMAND NOT RESPONDING

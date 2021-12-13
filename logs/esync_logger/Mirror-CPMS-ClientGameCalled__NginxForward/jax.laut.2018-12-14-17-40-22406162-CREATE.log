@@ -1,0 +1,21 @@
+--- /srv/Mirror-CPMS-ClientGameCalled__NginxForward/nginx/conf.d/other/callback-lb-baibo.conf	2018-12-13 14:49:43.230221953 +0800
++++ /tmp/callback-lb-baibo.conf	2018-12-14 17:40:22.244016049 +0800
+@@ -13,7 +13,16 @@
+ server {
+     listen 80;
+     server_name  callback.lbbaibo.authapi.net;
+-    rewrite     ^(.*)   https://$http_$host$1 permanent;
++#    rewrite     ^(.*)   https://$http_$host$1 permanent;
++        charset utf-8;
++        access_log  logs/callback80.access.log main;
++        error_log  logs/callback80.error.log  ;
++
++        location / {
++        include /usr/local/nginx/conf.d/include/proxy.conf.fwd.include ;
++        proxy_next_upstream http_500 http_502 http_503 http_504 http_404 timeout invalid_header error;
++        proxy_pass http://realcallbacklbbaibo;
++       }	
+ }
+ 
+ server {
+

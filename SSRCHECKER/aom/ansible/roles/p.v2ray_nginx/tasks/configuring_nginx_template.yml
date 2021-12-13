@@ -1,0 +1,63 @@
+---
+
+- name: Random choice
+
+  command: "echo {{ item }}"
+
+  register: temp_choice
+
+  with_random_choice:
+
+    - web.zip
+
+    - web2.zip
+
+    - web3.zip
+
+    - web4.zip
+
+    - web5.zip
+
+    - web6.zip
+
+    - web7.zip
+
+    - web8.zip
+
+    - web9.zip
+
+
+
+
+
+- name: Downloading web template
+
+  copy:
+
+    src: "{{ temp_choice.results.0.stdout }}"
+
+    dest: /root/extract/
+
+
+
+
+
+- name: Extracting web template
+
+  unarchive:
+
+    remote_src: yes
+
+    src: "/root/extract/{{ temp_choice.results.0.stdout }}"
+
+    dest: /root/extract/
+
+
+
+
+
+
+
+- name: Copying to nginx html
+
+  command: "cp -r /root/extract/html /usr/share/nginx/"

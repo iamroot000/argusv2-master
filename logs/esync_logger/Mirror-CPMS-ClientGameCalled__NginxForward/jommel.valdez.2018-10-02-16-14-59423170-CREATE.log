@@ -1,0 +1,72 @@
+--- /srv/Mirror-CPMS-ClientGameCalled__NginxForward/nginx/conf.d/other/n2.conf	2018-10-02 16:13:34.843892263 +0800
++++ /tmp/n2.conf	2018-10-02 16:14:59.297892263 +0800
+@@ -1,4 +1,68 @@
+ #####
+ 
++upstream realcallbackn2  {
++#        server  203.192.151.12:7111 max_fails=2  fail_timeout=30s ;
++#        server  203.177.198.116:7111 max_fails=2  fail_timeout=30s;
++        server  101.78.133.212:7111 max_fails=2  fail_timeout=30s;
++        server  205.177.199.12:7111 max_fails=2  fail_timeout=30s backup;
+ 
+ 
++}
++
++server {
++    listen 80;
++    server_name  callback.n2.authapi.net callbacktest.n2.authapi.net;
++    rewrite     ^(.*)   https://$http_$host$1 permanent;
++}
++
++server {
++        listen       443; #HTTP Port
++        server_name  callback.n2.authapi.net;
++
++        charset utf-8;
++        access_log  logs/realcallbackn2.access.log main;
++        error_log  logs/realcallbackn2.error.log  ;
++
++        ssl on;
++        ssl_certificate /usr/local/nginx/conf.d/ssl/authapi.net/fullchain.pem;
++        ssl_certificate_key /usr/local/nginx/conf.d/ssl/authapi.net/privkey.pem;
++
++        location / {
++#		    include /usr/local/nginx/conf.d/include/whitelistIP.include;
++	        include /usr/local/nginx/conf.d/include/proxy.conf.fwd.include ;
++	        proxy_next_upstream http_500 http_502 http_503 http_504 http_404 timeout invalid_header error;
++		    proxy_pass http://realcallbackn2;
++        }
++
++  }
++
++upstream cstestcallbackn2  {
++#        server  203.192.151.12:7011 max_fails=2  fail_timeout=30s ;
++#        server  203.177.198.116:7011 max_fails=2  fail_timeout=30s;
++        server  101.78.133.212:7011 max_fails=2  fail_timeout=30s;
++        server  205.177.199.12:7011 max_fails=2  fail_timeout=30s backup;
++
++
++}
++
++server {
++        listen       443; #HTTP Port
++        server_name  callback99.n2.authapi.net;
++
++        charset utf-8;
++        access_log  logs/cstestcallbackn2.access.log main;
++        error_log  logs/cstestcallbackn2.error.log  ;
++
++        ssl on;
++        ssl_certificate /usr/local/nginx/conf.d/ssl/authapi.net/fullchain.pem;
++        ssl_certificate_key /usr/local/nginx/conf.d/ssl/authapi.net/privkey.pem;
++
++        location / {
++#           include /usr/local/nginx/conf.d/include/whitelistIP.include;
++            include /usr/local/nginx/conf.d/include/proxy.conf.fwd.include ;
++            proxy_next_upstream http_500 http_502 http_503 http_504 http_404 timeout invalid_header error;
++            proxy_pass http://cstestcallbackn2;
++        }
++
++  }
++
+

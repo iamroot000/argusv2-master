@@ -1,0 +1,24 @@
+FILENAME: 80-443/xpj8.in.conf
+-  
++  server {
++      listen 80;
++      server_name xpj8.in www.xpj8.in;
++      rewrite ^(.*)$ https://www.xpj8.in$1 permanent;
++  }
++  
++  server {
++      listen 443;
++      server_name xpj8.in www.xpj8.in;
++      ssl on;
++      ssl_certificate /usr/local/nginx/conf.d/ssl/xpj8.in/fullchain.pem;
++      ssl_certificate_key /usr/local/nginx/conf.d/ssl/xpj8.in/privkey.pem;
++  
++      if ($http_host !~* 'www') {
++          rewrite ^(.*)$ https://www.$http_host$1 permanent;
++      }
++  
++      include /usr/local/nginx/conf.d/include/xpj_proxy_official_masterconfig.include;
++  }
++  
++  
+

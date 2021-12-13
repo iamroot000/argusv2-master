@@ -1,0 +1,215 @@
+--- /srv/Product-XBET__NginxForward/nginx/conf.d/other/ptfish-OLD.conf	2018-08-20 23:46:30.611384315 +0800
++++ /tmp/ptfish-OLD.conf	2018-08-20 23:53:26.834384315 +0800
+@@ -1,84 +1,138 @@
+-
+-
+ server {
+-        listen         80;#HTTP 的端口
+-        server_name     ptclient.889byh.com;
+-        index   index.jsp index.html index.htm;
+-
+-        charset utf-8;
+-
+-        access_log  logs/ptclient-889byh.access.log main;
+-
+-         location ~ ^/(WEB-INF)/ {
+-            deny all;
+-         }
+-
+-        location / {
+-             proxy_redirect          off;
+-             proxy_set_header        Host            $host;
+-             proxy_set_header        X-Real-IP       $remote_addr;
+-             proxy_set_header        referer         "";
+-             proxy_set_header        X-Forwarded-For $proxy_add_x_forwarded_for;
+-             proxy_connect_timeout   80;
+-             proxy_send_timeout      80;
+-             proxy_read_timeout      80;
+-             client_max_body_size    35m;
+-             client_body_buffer_size 256k;
+-             proxy_buffer_size       256k;
+-             proxy_buffers           4 256k;
+-             proxy_busy_buffers_size 256k;
+-             proxy_temp_file_write_size      256k;
+-             proxy_pass http://ptclientbyh;
+-        }
++    listen         80;#HTTP 的端口
++    server_name     ptclient.889byh.com;
++    index   index.jsp index.html index.htm;
++
++    charset utf-8;
++
++    access_log  logs/ptclient-889byh.access.log main;
++    error_page 403 /ip.html;
++    location = /ip.html {
++        root   /usr/local/nginx/html/;
++        allow all;
++    }
++    location /blocked {
++        root /usr/local/nginx/html/;
++        allow all;
++    }
++
++    if ($request_method !~* GET|POST|HEAD){
++        return 403;
++    }
++
++    limit_req zone=anti_spider burst=5 nodelay;
++    if ($http_user_agent ~* "baiduspider") {
++        set $anti_spider $http_user_agent;
++    }
++
++    if ($allowed_country ~ "yes" ){ 
++        set $test ALLOW; 
++    }
++    if ($allowed_country ~ "no" ){
++        set $test BLOCK; 
++    }
++
++    if ($allowed_ip ~ "yes" ){ 
++        set $test ALLOW; 
++    }
++
++    location ~ ^/(WEB-INF)/ {
++        deny all;
++    }
++
++
++    location / {
++        if ( $test = "BLOCK" ) { return 403;  }
++        proxy_redirect          off;
++        proxy_set_header        Host            $host;
++        proxy_set_header        X-Real-IP       $remote_addr;
++        proxy_set_header        referer         "";
++        proxy_set_header        X-Forwarded-For $proxy_add_x_forwarded_for;
++        proxy_connect_timeout   80;
++        proxy_send_timeout      80;
++        proxy_read_timeout      80;
++        client_max_body_size    35m;
++        client_body_buffer_size 256k;
++        proxy_buffer_size       256k;
++        proxy_buffers           4 256k;
++        proxy_busy_buffers_size 256k;
++        proxy_temp_file_write_size      256k;
++        proxy_pass http://ptclientbyh;
++    }
+ 
+-location ~* (conf|logs|lib|work|temp|bin)/{
++    location ~* (conf|logs|lib|work|temp|bin)/{
+         return 444;
+-        }
++    }
+ }
+ 
+-
+-
+ server {
+-        listen         443;#HTTP 的端口
+-        server_name     ptclient.889byh.com;
+-        index   index.jsp index.html index.htm;
+-
+-        charset utf-8;
+-
+-        access_log  logs/ptclient-889byh.access.log main;
+-        ssl on;
+-        ssl_certificate /usr/local/nginx/conf.d/ssl/889byh.com/fullchain.pem;
+-        ssl_certificate_key /usr/local/nginx/conf.d/ssl/889byh.com/privkey.pem;
+-  		location ~ ^/(WEB-INF)/ {
+-            deny all;
+-         }
+-
+-        location / {
+-             proxy_redirect          off;
+-             proxy_set_header        Host            $host;
+-             proxy_set_header        X-Real-IP       $remote_addr;
+-             proxy_set_header        referer         "";
+-             proxy_set_header        X-Forwarded-For $proxy_add_x_forwarded_for;
+-             proxy_connect_timeout   80;
+-             proxy_send_timeout      80;
+-             proxy_read_timeout      80;
+-             client_max_body_size    35m;
+-             client_body_buffer_size 256k;
+-             proxy_buffer_size       256k;
+-             proxy_buffers           4 256k;
+-             proxy_busy_buffers_size 256k;
+-             proxy_temp_file_write_size      256k;
+-             proxy_pass http://ptclientbyh;
+-        }
++    listen         443;#HTTP 的端口
++    server_name     ptclient.889byh.com;
++    index   index.jsp index.html index.htm;
++
++    charset utf-8;
++
++    access_log  logs/ptclient-889byh.access.log main;
++    ssl on;
++    ssl_certificate /usr/local/nginx/conf.d/ssl/889byh.com/fullchain.pem;
++    ssl_certificate_key /usr/local/nginx/conf.d/ssl/889byh.com/privkey.pem;
++
++    error_page 403 /ip.html;
++    location = /ip.html {
++        root   /usr/local/nginx/html/;
++        allow all;
++    }
++    location /blocked {
++        root /usr/local/nginx/html/;
++        allow all;
++    }
++
++    if ($request_method !~* GET|POST|HEAD){
++        return 403;
++    }
++
++    limit_req zone=anti_spider burst=5 nodelay;
++    if ($http_user_agent ~* "baiduspider") {
++        set $anti_spider $http_user_agent;
++    }
++
++    if ($allowed_country ~ "yes" ){ 
++        set $test ALLOW; 
++    }
++    if ($allowed_country ~ "no" ){
++        set $test BLOCK; 
++    }
++
++    if ($allowed_ip ~ "yes" ){ 
++        set $test ALLOW; 
++    }
++
++    location ~ ^/(WEB-INF)/ {
++        deny all;
++    }
++
++    location / {
++        if ( $test = "BLOCK" ) { return 403;  }
++        proxy_redirect          off;
++        proxy_set_header        Host            $host;
++        proxy_set_header        X-Real-IP       $remote_addr;
++        proxy_set_header        referer         "";
++        proxy_set_header        X-Forwarded-For $proxy_add_x_forwarded_for;
++        proxy_connect_timeout   80;
++        proxy_send_timeout      80;
++        proxy_read_timeout      80;
++        client_max_body_size    35m;
++        client_body_buffer_size 256k;
++        proxy_buffer_size       256k;
++        proxy_buffers           4 256k;
++        proxy_busy_buffers_size 256k;
++        proxy_temp_file_write_size      256k;
++        proxy_pass http://ptclientbyh;
++    }
+ 
+-location ~* (conf|logs|lib|work|temp|bin)/{
++    location ~* (conf|logs|lib|work|temp|bin)/{
+         return 444;
+-        }
++    }
+ }
+ 
+ 
+-
+-
+-
+-
+-
+

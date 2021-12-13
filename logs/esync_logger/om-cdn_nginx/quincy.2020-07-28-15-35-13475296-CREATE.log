@@ -1,0 +1,45 @@
+--- /ansible/nginx/hostgroups/om-cdn_nginx/nginx/conf.d/other/ali-cdn.conf	2020-06-29 12:43:27.084628825 +0800
++++ /tmp/ali-cdn.conf	2020-07-28 15:35:13.361307908 +0800
+@@ -1,6 +1,6 @@
+ server {
+     listen 80; 
+-    server_name ssocdn2.51zgsb.cn;
++    server_name ssocdn2.51zgsb.cn ssocdn3.foxbu.cn  ;
+     charset utf-8;
+     access_log  logs/ssocdn2.51zgsb.cn.access.log main;
+     error_log   logs/ssocdn2.51zgsb.cn.error.log;
+@@ -490,6 +490,33 @@
+     location / {
+         proxy_pass https://www.inxedu.com/;
+     }
++    location ^~ /images/ {
++        alias /var/ftp/images/;
++    }
++  
++    location ^~ /cdn/ {
++        alias /var/ftp/allcdn/;
++	}
++  	location ^~ /nav-html/ {
++        alias /var/ftp/allcdn/nav-html/;
++	}
++}
++
++
++
++
++server {
++    listen 443; 
++    server_name ssocdn3.foxbu.cn;
++    charset utf-8;
++    access_log  logs/ssocdn2.foxbu.cn.access.log main;
++    error_log   logs/ssocdn2.foxbu.cn.error.log;
++    ssl on; 
++    ssl_certificate     /usr/local/nginx/conf.d/ssl/foxbu.cn/fullchain.pem;
++    ssl_certificate_key /usr/local/nginx/conf.d/ssl/foxbu.cn/privkey.pem;
++    location / {
++        proxy_pass https://www.inxedu.com/;
++    }
+     location ^~ /images/ {
+         alias /var/ftp/images/;
+     }
+

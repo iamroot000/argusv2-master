@@ -1,0 +1,39 @@
+---
+
+- name: Check systemctl
+
+  stat:
+
+    path: '/usr/bin/systemctl'
+
+  register: systemctl_loc
+
+
+
+
+
+- name: Restarting nginx
+
+  systemd:
+
+    name: nginx
+
+    state: restarted
+
+  when: 'systemctl_loc.stat.path is defined'
+
+
+
+
+
+
+
+- name: Restarting nginx (2)
+
+  service:
+
+    name: nginx
+
+    state: restarted
+
+  when: 'systemctl_loc.stat.path is not defined'

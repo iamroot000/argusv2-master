@@ -1,0 +1,399 @@
+upstream  by_backend  {
+        server   183.182.68.12:80 max_fails=2  fail_timeout=10s; #new IP linkapi.bbet8.me linkapi.sand88.info
+}
+
+server {
+        listen       80; #HTTP Port
+        server_name  888.bbet8.info 888.bbet8.me 888.sand88.me 888.sand88.info 888.sand88.org 888.bbet8.org linkapi.bbet8.me linkapi.bbet8.org linkapi.sand88.info;
+
+        charset utf-8;
+        access_log  logs/bybackend.access.log main;
+        error_log  logs/bybackend.error.log  ;
+
+	if ($request_method !~* GET|POST|HEAD) {
+                return 403;
+        }
+
+        location / {
+	include whitelistIP.conf;
+        include proxy.conf.fwd ;
+        proxy_next_upstream http_500 http_502 http_503 http_504 http_404 timeout invalid_header error;
+        proxy_pass http://by_backend;
+        }
+
+  }
+
+upstream  salon_backend  {
+        server   api.sa-gaming.net:80 max_fails=2  fail_timeout=10s; #
+}
+
+server {
+        listen       80; #HTTP Port
+        server_name  api.sa-gaming.net;
+
+        charset utf-8;
+        access_log  logs/salon.access.log main;
+        error_log  logs/salon.error.log  ;          
+
+        if ($request_method !~* GET|POST|HEAD) {
+                return 403;
+        }
+
+        location / {
+        include whitelistIP.conf;
+	include proxy.conf.fwd ;
+        proxy_pass http://salon_backend;
+        }
+
+    }
+
+upstream  ipmfirst_backend  {
+        server   ruibo.sbws.imapi.net:80 max_fails=2  fail_timeout=10s; #
+}
+
+server {
+        listen       80; #HTTP Port
+        server_name  ruibo.sbws.imapi.net;
+
+        charset utf-8;
+        access_log  logs/IPM.access.log main;
+        error_log  logs/IPM.error.log  ;          
+
+        if ($request_method !~* GET|POST|HEAD) {
+                return 403;
+        }   
+
+        location / {
+        include whitelistIP.conf;
+	include proxy.conf.fwd ;
+        #proxy_next_upstream http_500 http_502 http_503 http_504 http_404 timeout invalid_header error;
+                proxy_pass http://ipmfirst_backend;
+        }
+
+    }
+
+upstream  hg_backend  {
+        server   webapi-asia.hointeractive.com:80 max_fails=2  fail_timeout=10s; #
+}
+
+#HG betorder only, since web uses https
+server {
+        listen       80; #HTTP Port
+        server_name  webapi-asia.hointeractive.com;
+
+        charset utf-8;
+        access_log  logs/HG.access.log main;
+        error_log  logs/HG.error.log  ;          
+
+        if ($request_method !~* GET|POST|HEAD) {
+                return 403;
+        }        
+
+        location / {
+        include whitelistIP.conf;
+        include proxy.conf.fwd ;
+        #proxy_next_upstream http_500 http_502 http_503 http_504 http_404 timeout invalid_header error;
+                proxy_pass http://hg_backend;
+        }
+}
+
+
+upstream opus_backend {
+        server api.mansion888.net:80  max_fails=2  fail_timeout=20s;
+        server 110.173.50.178  max_fails=2  fail_timeout=20s; #hk
+   #     server 23.99.114.30:80  max_fails=2  fail_timeout=20s; #azure
+        server 119.9.110.31:80  max_fails=2  fail_timeout=20s; #rackspace
+
+}
+
+server {
+        listen       80; #HTTP Port
+        server_name  api.mansion888.net;
+
+        charset utf-8;
+        access_log  logs/opus.access.log main;
+        error_log  logs/opus.error.log  ;
+
+        if ($request_method !~* GET|POST|HEAD) {
+                return 403;
+        }
+
+        location / {
+	include whitelistIP.conf;
+         #include proxy.conf.fwd ;
+        proxy_redirect off;
+                proxy_set_header        Host            api.mansion888.net;
+                proxy_set_header        X-Real-IP       $server_addr;
+               proxy_set_header        X-Forwarded-For $server_addr;
+                client_max_body_size    10m;
+                client_body_buffer_size 128k;
+                proxy_connect_timeout   90;
+                proxy_send_timeout      90;
+                proxy_read_timeout      90;
+                proxy_buffers           32 4k;
+                proxy_pass http://opus_backend;
+        }
+
+    }
+
+server {
+        listen       81; #HTTP Port
+        server_name  gi.xdlag888.info;
+
+        charset utf-8;
+        access_log  logs/agbackend_xdl.access.log main;
+        error_log  logs/agbackend_xdl.error.log  ;
+
+        if ($request_method !~* GET|POST|HEAD) {
+                return 403;
+        }
+
+        location / {
+        include whitelistIP.conf;
+        #include proxy.conf.fwd ;
+                proxy_redirect off;
+                proxy_set_header        Host            $http_host;
+                proxy_set_header        X-Real-IP       $remote_addr;
+                proxy_set_header        X-Forwarded-For 23.99.114.30;
+                client_max_body_size    10m;
+                client_body_buffer_size 128k;
+                proxy_connect_timeout   90;
+                proxy_send_timeout      90;
+                proxy_read_timeout      90;
+                proxy_buffers           32 4k;
+                proxy_pass http://b41gi.cnamedns.net:81;
+        }
+
+
+    }#b41
+
+
+upstream agbackend {
+        server   216.108.245.13:81 fail_timeout=10s; 				#reference email: AG - API 调整 21/11/2017
+        server   116.251.238.168:81 max_fails=2  fail_timeout=20s backup; 	#old, just in case new one fails
+}
+
+server {
+        listen       81; #HTTP Port
+        server_name gi.bally888888.info gi.b8aag888.info gc.b8aag888.info gi.rbag888.info gc.rbag888.info gi.jshag888.info gc.jshag888.info gc.xdlag888.info gi.clhag888.info gc.clhag888.info gi.hmag888.info gc.hmag888.info;
+
+        charset utf-8;
+        access_log  logs/agbackend.access.log main;
+        error_log  logs/agbackend.error.log  ;
+
+        if ($request_method !~* GET|POST|HEAD) {
+                return 403;
+        }
+
+        location / {
+	include whitelistIP.conf;
+        #include proxy.conf.fwd ;
+		proxy_redirect off;
+		proxy_set_header        Host            $http_host;
+		proxy_set_header        X-Real-IP       $remote_addr;
+		proxy_set_header        X-Forwarded-For 23.99.114.30;
+		client_max_body_size    10m;
+		client_body_buffer_size 128k;
+		proxy_connect_timeout   90;
+		proxy_send_timeout      90;
+		proxy_read_timeout      90;
+		proxy_buffers           32 4k;
+                proxy_pass http://agbackend;
+        }
+
+
+    }
+
+
+upstream  opapi_backend  {
+#        server   103.230.193.236:80 max_fails=2  fail_timeout=20s;
+        server   103.230.193.246:80 max_fails=2  fail_timeout=20s;
+}
+
+server {
+        listen       80; #HTTP Port
+        server_name  api.oplive777.com;
+
+        charset utf-8;
+        access_log  logs/opapi.access.log main;
+        error_log  logs/opapi.error.log  ;
+
+        if ($request_method !~* GET|POST|HEAD) {
+                return 403;
+        }
+
+        location / {
+	include whitelistIP.conf;
+        include proxy.conf.fwd ;
+                proxy_pass http://opapi_backend;
+        }
+
+    }
+
+#upstream ptopus {
+#    server kiosk.mightypanda88.com;
+#}
+#
+#server {
+#    listen 443;
+#    server_name kiosk.mightypanda88.com;
+#    access_log logs/ptopus.access.log main;
+#    location / {
+#        proxy_pass https://kiosk.mightypanda88.com;
+#    }
+#    
+#}
+
+
+server {
+        listen 80;
+        server_name gapi.k16888.net;
+        
+        access_log  logs/keno.access.log main;
+        error_log  logs/keno.error.log  ;
+            
+        if ($request_method !~* GET|POST|HEAD) {
+                return 403;
+        }
+
+        location / {
+	include whitelistIP.conf;
+        include proxy.conf.fwd ;
+        #proxy_next_upstream http_500 http_502 http_503 http_504 http_404 timeout invalid_header error;
+                proxy_pass http://gapi.k16888.net;
+        }
+}
+
+
+
+
+server {
+        listen 80;
+        server_name master.8opus.info;
+
+        access_log  logs/keno-opus.access.log main;
+        error_log  logs/keno-opus.error.log  ;
+
+        if ($request_method !~* GET|POST|HEAD) {
+                return 403;
+        }
+
+        location / {
+	include whitelistIP.conf;
+        include proxy.conf.fwd ;
+        #proxy_next_upstream http_500 http_502 http_503 http_504 http_404 timeout invalid_header error;
+                proxy_pass http://master.8opus.info;
+        }
+}
+
+
+#PTOTHS
+upstream ptoths {
+        server 43.224.90.1:80;
+}
+
+server {
+        listen     80;
+        server_name ws-keryx.imapi.net ;
+        index index.jsp index.html index.htm;
+        charset utf-8;
+
+        access_log  logs/ptoths.access.log main;
+        error_log logs/ptoths.error.log;
+
+        if ($request_method !~* GET|POST|HEAD) {
+                return 403;
+        }
+
+        location / {
+		include whitelistIP.conf;
+		proxy_redirect off;
+                proxy_set_header        Host            ws-keryx.imapi.net;
+                proxy_set_header        X-Real-IP       $remote_addr;
+                proxy_set_header        X-Forwarded-For 23.99.114.30;
+                client_max_body_size    10m;
+                client_body_buffer_size 128k;
+                proxy_connect_timeout   90;
+                proxy_send_timeout      90;
+                proxy_read_timeout      90;
+                proxy_buffers           32 4k;
+	        proxy_pass http://ptoths;
+        }
+        error_page   404 404.jsp;
+        error_page   500 502 503 500.jsp;
+} # server end
+
+#BSOTHS (betsoft)
+upstream bsoths {
+        server ebet-gp3.betsoftgaming.com:80;
+}
+
+server {
+        listen     80;
+        server_name ebet-gp3.betsoftgaming.com;
+        index index.jsp index.html index.htm;
+        charset utf-8;
+
+        access_log  logs/bsoths.access.log main;
+        error_log logs/bsoths.error.log;
+
+        if ($request_method !~* GET|POST|HEAD) {
+                return 403;
+        }
+
+        location / {
+		include whitelistIP.conf;
+		proxy_redirect off;
+                proxy_set_header        Host            ebet-gp3.betsoftgaming.com;
+                proxy_set_header        X-Real-IP       $remote_addr;
+                proxy_set_header        X-Forwarded-For 23.99.114.30;
+                client_max_body_size    10m;
+                client_body_buffer_size 128k;
+                proxy_connect_timeout   90;
+                proxy_send_timeout      90;
+                proxy_read_timeout      90;
+                proxy_buffers           32 4k;
+	        proxy_pass http://bsoths;
+        }
+        error_page   404 404.jsp;
+        error_page   500 502 503 500.jsp;
+} # server end
+
+
+#DT
+server {
+        listen     80;
+        server_name api-dtservice.com;
+        index index.jsp index.html index.htm;
+        charset utf-8;
+
+        access_log  logs/api-dtservice.com.access.log main;
+        error_log logs/api-dtservice.com.error.log;
+
+        if ($request_method !~* GET|POST|HEAD) {
+                return 403;
+        }
+
+        location / {
+	include whitelistIP.conf;
+                proxy_redirect off;
+                proxy_set_header        Host            api-dtservice.com;
+                proxy_set_header        X-Real-IP       $remote_addr;
+                proxy_set_header        X-Forwarded-For 23.99.114.30;
+                client_max_body_size    10m;
+                client_body_buffer_size 128k;
+                proxy_connect_timeout   90;
+                proxy_send_timeout      90;
+                proxy_read_timeout      90;
+                proxy_buffers           32 4k;
+                proxy_pass http://api-dtservice.com;
+        }
+        error_page   404 404.jsp;
+        error_page   500 502 503 500.jsp;
+} # server end
+
+
+
+
+
+

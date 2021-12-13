@@ -1,0 +1,24 @@
+FILENAME: 80-443/baoyunlai-daili1.com.conf
+-  
++  server {
++      listen 80;
++      server_name baoyunlai-daili1.com www.baoyunlai-daili1.com;
++      rewrite ^(.*)$ https://www.baoyunlai-daili1.com$1 permanent;
++  }
++  
++  server {
++      listen 443;
++      server_name baoyunlai-daili1.com www.baoyunlai-daili1.com;
++      ssl on;
++      ssl_certificate /usr/local/nginx/conf.d/ssl/baoyunlai-daili1.com/fullchain.pem;
++      ssl_certificate_key /usr/local/nginx/conf.d/ssl/baoyunlai-daili1.com/privkey.pem;
++  
++      if ($http_host !~* 'www') {
++          rewrite ^(.*)$ https://www.$http_host$1 permanent;
++      }
++  
++      include /usr/local/nginx/conf.d/include/byl_proxy_official_masterconfig.include;
++  }
++  
++  
+

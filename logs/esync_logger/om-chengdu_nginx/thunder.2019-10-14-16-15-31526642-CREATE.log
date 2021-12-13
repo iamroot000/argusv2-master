@@ -1,0 +1,54 @@
+--- /ansible/nginx/hostgroups/om-chengdu_nginx/nginx/conf.d/other/v68.conf	2019-10-14 16:08:02.421834383 +0800
++++ /tmp/v68.conf	2019-10-14 16:15:31.431834383 +0800
+@@ -284,8 +284,50 @@
+ }
+ 
+ 
++server {
++        listen 8030;;
++        server_name   dev.v68pc.com;
++        access_log logs/7080.access.log main;
++        error_log logs/7080.error.log;
++        location / {
++                    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
++                proxy_set_header X-Real-IP  $remote_addr;
++                proxy_next_upstream http_502 http_504 http_404 error timeout invalid_header;
++                proxy_set_header Host $host:$server_port;
++                proxy_http_version 1.1;
++                proxy_set_header Upgrade $http_upgrade;
++                proxy_set_header Connection $connection_upgrade;
++                proxy_connect_timeout   1800;
++                proxy_send_timeout      1800;
++                proxy_read_timeout      1800;
++                #root html;
++                #index index.html index.htm index.jsp index.php;
++                proxy_pass http://47.56.195.82:8030;
++        }
++}
+ 
+ 
++server {
++        listen 8047;
++        server_name   dev.v68pc.com;
++        access_log logs/7080.access.log main;
++        error_log logs/7080.error.log;
++        location / {
++                    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
++                proxy_set_header X-Real-IP  $remote_addr;
++                proxy_next_upstream http_502 http_504 http_404 error timeout invalid_header;
++                proxy_set_header Host $host:$server_port;
++                proxy_http_version 1.1;
++                proxy_set_header Upgrade $http_upgrade;
++                proxy_set_header Connection $connection_upgrade;
++                proxy_connect_timeout   1800;
++                proxy_send_timeout      1800;
++                proxy_read_timeout      1800;
++                #root html;
++                #index index.html index.htm index.jsp index.php;
++                proxy_pass http://47.56.195.82:8047;
++        }
++}
+ 
+ 
+ 
+

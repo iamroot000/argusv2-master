@@ -1,0 +1,24 @@
+FILENAME: 80-443/xindeli02.com.conf
+-  
++  server {
++      listen 80;
++      server_name xindeli02.com www.xindeli02.com;
++      rewrite ^(.*)$ https://www.xindeli02.com$1 permanent;
++  }
++  
++  server {
++      listen 443;
++      server_name xindeli02.com www.xindeli02.com;
++      ssl on;
++      ssl_certificate /usr/local/nginx/conf.d/ssl/xindeli02.com/fullchain.pem;
++      ssl_certificate_key /usr/local/nginx/conf.d/ssl/xindeli02.com/privkey.pem;
++  
++      if ($http_host !~* 'www') {
++          rewrite ^(.*)$ https://www.$http_host$1 permanent;
++      }
++  
++      include /usr/local/nginx/conf.d/include/bbet8_official_masterconfig.include;
++  }
++  
++  
+

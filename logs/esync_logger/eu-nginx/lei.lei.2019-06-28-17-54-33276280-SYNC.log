@@ -1,0 +1,460 @@
+ESYNC_WORKER1_COMMAND_START
+
+PLAY [eu-nginx] ****************************************************************
+
+TASK [nginx_sync : Notify] *****************************************************
+ok: [13.94.45.24] => {
+
+    "msg": "Syncing eu-nginx"
+}
+ok: [13.75.115.255] => {
+    "msg": "Syncing eu-nginx"
+}
+
+ok: [52.229.205.134] => {
+    "msg": "Syncing eu-nginx"
+}
+ok: [52.229.206.25] => {
+    "msg": "Syncing eu-nginx"
+
+}
+ok: [119.9.94.172] => {
+    "msg": "Syncing eu-nginx"
+}
+ok: [207.46.140.151] => {
+
+    "msg": "Syncing eu-nginx"
+}
+
+TASK [nginx_sync : include_vars] ***********************************************
+ok: [13.94.45.24]
+
+ok: [13.75.115.255]
+ok: [52.229.205.134]
+ok: [52.229.206.25]
+ok: [119.9.94.172]
+ok: [207.46.140.151]
+
+
+TASK [nginx_sync : Synchronizing Nginx] ****************************************
+ok: [13.75.115.255] => (item=conf)
+ok: [119.9.94.172] => (item=conf)
+ok: [52.229.206.25] => (item=conf)
+
+ok: [52.229.205.134] => (item=conf)
+ok: [13.94.45.24] => (item=conf)
+changed: [119.9.94.172] => (item=conf.d)
+changed: [13.75.115.255] => (item=conf.d)
+changed: [13.94.45.24] => (item=conf.d)
+
+changed: [52.229.206.25] => (item=conf.d)
+ok: [119.9.94.172] => (item=data)
+ok: [13.75.115.255] => (item=data)
+changed: [52.229.205.134] => (item=conf.d)
+ok: [13.94.45.24] => (item=data)
+
+ok: [119.9.94.172] => (item=html)
+ok: [13.75.115.255] => (item=html)
+ok: [52.229.206.25] => (item=data)
+ok: [52.229.205.134] => (item=data)
+ok: [13.94.45.24] => (item=html)
+
+ok: [52.229.206.25] => (item=html)
+ok: [207.46.140.151] => (item=conf)
+ok: [52.229.205.134] => (item=html)
+changed: [207.46.140.151] => (item=conf.d)
+ok: [207.46.140.151] => (item=data)
+
+ok: [207.46.140.151] => (item=html)
+
+TASK [all_servers : include_vars] **********************************************
+ok: [13.94.45.24]
+ok: [13.75.115.255]
+
+ok: [52.229.205.134]
+ok: [52.229.206.25]
+ok: [119.9.94.172]
+ok: [207.46.140.151]
+
+
+TASK [all_servers : Notify] ****************************************************
+ok: [13.94.45.24] => {
+    "msg": "Clearing Nginx Cache for eu-nginx"
+}
+ok: [13.75.115.255] => {
+
+    "msg": "Clearing Nginx Cache for eu-nginx"
+}
+ok: [52.229.205.134] => {
+    "msg": "Clearing Nginx Cache for eu-nginx"
+}
+
+ok: [52.229.206.25] => {
+    "msg": "Clearing Nginx Cache for eu-nginx"
+}
+ok: [119.9.94.172] => {
+    "msg": "Clearing Nginx Cache for eu-nginx"
+
+}
+ok: [207.46.140.151] => {
+    "msg": "Clearing Nginx Cache for eu-nginx"
+}
+
+
+TASK [all_servers : Copying clear_nginxcache.sh to remote hosts] ***************
+ok: [13.75.115.255]
+ok: [119.9.94.172]
+ok: [52.229.206.25]
+ok: [13.94.45.24]
+
+ok: [52.229.205.134]
+ok: [207.46.140.151]
+
+TASK [all_servers : Nginx Clear Cache] *****************************************
+changed: [13.75.115.255]
+
+changed: [52.229.206.25]
+changed: [13.94.45.24]
+changed: [52.229.205.134]
+changed: [119.9.94.172]
+changed: [207.46.140.151]
+
+
+TASK [all_servers : debug] *****************************************************
+ok: [13.94.45.24] => {
+    "script_result.stdout_lines": [
+        "-----------------------------------------------------------", 
+
+        "|                 Checking Nginx Config                   |", 
+        "-----------------------------------------------------------", 
+        "", 
+        " nginx -t ", 
+        "", 
+
+        "-----------------------------------------------------------", 
+        "|                 Stopping Nginx Process                  |", 
+        "-----------------------------------------------------------", 
+        "", 
+        " /usr/bin/killall -9 nginx ", 
+
+        "", 
+        "-----------------------------------------------------------", 
+        "|                 Clearing Proxy Cache                    |", 
+        "-----------------------------------------------------------", 
+        "", 
+
+        " /bin/rm -rf /tmp/nginx_cache ", 
+        "", 
+        "-----------------------------------------------------------", 
+        "|                Restarting Nginx Process                 |", 
+        "-----------------------------------------------------------", 
+
+        "root       4793  0.0  0.0 106120  1292 ?        S    17:54   0:00 /bin/bash /bak/bin/clear_nginxcache.sh", 
+        "root       4802  0.6  3.2 879680 114432 ?       Ss   17:54   0:00 nginx: master process /usr/local/nginx/sbin/nginx", 
+        "nobody     4803  0.0  3.3 881608 119388 ?       S    17:54   0:00 nginx: worker process      ", 
+        "nobody     4804  0.0  3.3 881608 119448 ?       S    17:54   0:00 nginx: worker process      ", 
+        "nobody     4805  0.0  3.3 881608 119384 ?       S    17:54   0:00 nginx: worker process      ", 
+
+        "nobody     4807  0.0  3.3 881608 119384 ?       S    17:54   0:00 nginx: worker process      ", 
+        "nobody     4808  0.0  3.2 879680 115972 ?       S    17:54   0:00 nginx: cache manager process", 
+        "nobody     4809  0.0  3.2 879680 115920 ?       S    17:54   0:00 nginx: cache loader process", 
+        "root       4811  0.0  0.0 103328   844 ?        S    17:54   0:00 grep nginx", 
+        "root      52366  0.0  0.0   9120   532 ?        Ss    2018   0:00 /sbin/dhclient -H eu-nginx3.hk.az.monaco1.me -1 -q -lf /var/lib/dhclient/dhclient-eth0.leases -pf /var/run/dhclient-eth0.pid eth0", 
+
+        "             total       used       free     shared    buffers     cached", 
+        "Mem:          3440       2897        543          5        306        771", 
+        "-/+ buffers/cache:       1819       1620", 
+        "Swap:            0          0          0", 
+        "-----------------------------------------------------------", 
+
+        "|                     Reload SUCCESS!                     |", 
+        "-----------------------------------------------------------"
+    ]
+}
+ok: [13.75.115.255] => {
+
+    "script_result.stdout_lines": [
+        "-----------------------------------------------------------", 
+        "|                 Checking Nginx Config                   |", 
+        "-----------------------------------------------------------", 
+        "", 
+
+        " nginx -t ", 
+        "", 
+        "-----------------------------------------------------------", 
+        "|                 Stopping Nginx Process                  |", 
+        "-----------------------------------------------------------", 
+
+        "", 
+        " /usr/bin/killall -9 nginx ", 
+        "", 
+        "-----------------------------------------------------------", 
+        "|                 Clearing Proxy Cache                    |", 
+
+        "-----------------------------------------------------------", 
+        "", 
+        " /bin/rm -rf /tmp/nginx_cache ", 
+        "", 
+        "-----------------------------------------------------------", 
+
+        "|                Restarting Nginx Process                 |", 
+        "-----------------------------------------------------------", 
+        "root      11696  0.0  0.0 106124  1292 ?        S    17:54   0:00 /bin/bash /bak/bin/clear_nginxcache.sh", 
+        "root      11706  1.0  3.2 879684 114432 ?       Ss   17:54   0:00 nginx: master process /usr/local/nginx/sbin/nginx", 
+        "nobody    11708  0.0  3.3 881612 119080 ?       S    17:54   0:00 nginx: worker process      ", 
+
+        "nobody    11709  0.5  3.4 881612 120248 ?       S    17:54   0:00 nginx: worker process      ", 
+        "nobody    11710  0.0  3.3 881612 119064 ?       S    17:54   0:00 nginx: worker process      ", 
+        "nobody    11711  0.0  3.3 881612 119064 ?       S    17:54   0:00 nginx: worker process      ", 
+        "nobody    11712  0.0  3.2 879684 115972 ?       S    17:54   0:00 nginx: cache manager process", 
+        "nobody    11713  0.0  3.2 879684 115920 ?       S    17:54   0:00 nginx: cache loader process", 
+
+        "root      11715  0.0  0.0 103332   836 ?        R    17:54   0:00 grep nginx", 
+        "             total       used       free     shared    buffers     cached", 
+        "Mem:          3440       1578       1861          5        274        602", 
+        "-/+ buffers/cache:        701       2739", 
+        "Swap:            0          0          0", 
+
+        "-----------------------------------------------------------", 
+        "|                     Reload SUCCESS!                     |", 
+        "-----------------------------------------------------------"
+    ]
+}
+
+ok: [52.229.205.134] => {
+    "script_result.stdout_lines": [
+        "-----------------------------------------------------------", 
+        "|                 Checking Nginx Config                   |", 
+        "-----------------------------------------------------------", 
+
+        "", 
+        " nginx -t ", 
+        "", 
+        "-----------------------------------------------------------", 
+        "|                 Stopping Nginx Process                  |", 
+
+        "-----------------------------------------------------------", 
+        "", 
+        " /usr/bin/killall -9 nginx ", 
+        "", 
+        "-----------------------------------------------------------", 
+
+        "|                 Clearing Proxy Cache                    |", 
+        "-----------------------------------------------------------", 
+        "", 
+        " /bin/rm -rf /tmp/nginx_cache ", 
+        "", 
+
+        "-----------------------------------------------------------", 
+        "|                Restarting Nginx Process                 |", 
+        "-----------------------------------------------------------", 
+        "root     115223  0.0  0.0   9120   644 ?        Ss    2018   0:00 /sbin/dhclient -H eu-nginx7.hk.az.monaco1.me -1 -q -cf /etc/dhcp/dhclient-eth0.conf -lf /var/lib/dhclient/dhclient-eth0.leases -pf /var/run/dhclient-eth0.pid eth0", 
+        "root     130493  0.0  0.0 106112  1292 ?        S    17:54   0:00 /bin/bash /bak/bin/clear_nginxcache.sh", 
+
+        "root     130499  0.0  2.8 880144 114428 ?       Ss   17:54   0:00 nginx: master process /usr/local/nginx/sbin/nginx", 
+        "nobody   130500  0.3  2.9 882072 119064 ?       S    17:54   0:00 nginx: worker process      ", 
+        "nobody   130502  0.0  2.9 882072 120252 ?       S    17:54   0:00 nginx: worker process      ", 
+        "nobody   130503  0.0  2.9 882072 120284 ?       S    17:54   0:00 nginx: worker process      ", 
+        "nobody   130504  0.0  2.9 882072 119064 ?       S    17:54   0:00 nginx: worker process      ", 
+
+        "nobody   130505  0.0  2.8 880144 115988 ?       S    17:54   0:00 nginx: cache manager process", 
+        "nobody   130506  0.0  2.8 880144 115920 ?       S    17:54   0:00 nginx: cache loader process", 
+        "root     130508  0.0  0.0 103264   832 ?        S    17:54   0:00 grep nginx", 
+        "             total       used       free     shared    buffers     cached", 
+        "Mem:          3944       3488        455          0        249        662", 
+
+        "-/+ buffers/cache:       2577       1367", 
+        "Swap:            0          0          0", 
+        "-----------------------------------------------------------", 
+        "|                     Reload SUCCESS!                     |", 
+        "-----------------------------------------------------------"
+
+    ]
+}
+ok: [52.229.206.25] => {
+    "script_result.stdout_lines": [
+        "-----------------------------------------------------------", 
+
+        "|                 Checking Nginx Config                   |", 
+        "-----------------------------------------------------------", 
+        "", 
+        " nginx -t ", 
+        "", 
+
+        "-----------------------------------------------------------", 
+        "|                 Stopping Nginx Process                  |", 
+        "-----------------------------------------------------------", 
+        "", 
+        " /usr/bin/killall -9 nginx ", 
+
+        "", 
+        "-----------------------------------------------------------", 
+        "|                 Clearing Proxy Cache                    |", 
+        "-----------------------------------------------------------", 
+        "", 
+
+        " /bin/rm -rf /tmp/nginx_cache ", 
+        "", 
+        "-----------------------------------------------------------", 
+        "|                Restarting Nginx Process                 |", 
+        "-----------------------------------------------------------", 
+
+        "root      17873  0.0  0.0 106112  1292 ?        S    17:54   0:00 /bin/bash /bak/bin/clear_nginxcache.sh", 
+        "root      17879  0.3  2.8 880144 114428 ?       Ss   17:54   0:00 nginx: master process /usr/local/nginx/sbin/nginx", 
+        "nobody    17881  0.0  2.9 882072 119068 ?       S    17:54   0:00 nginx: worker process      ", 
+        "nobody    17882  0.0  2.9 882072 119436 ?       S    17:54   0:00 nginx: worker process      ", 
+        "nobody    17883  0.0  2.9 882072 119380 ?       S    17:54   0:00 nginx: worker process      ", 
+
+        "nobody    17884  0.0  2.9 882072 119064 ?       S    17:54   0:00 nginx: worker process      ", 
+        "nobody    17885  0.0  2.8 880144 115972 ?       S    17:54   0:00 nginx: cache manager process", 
+        "nobody    17886  0.0  2.8 880144 115920 ?       S    17:54   0:00 nginx: cache loader process", 
+        "root      17888  0.0  0.0 103264   828 ?        R    17:54   0:00 grep nginx", 
+        "root     115512  0.0  0.0   9120   644 ?        Ss    2018   0:00 /sbin/dhclient -H eu-nginx8.hk.az.monaco1.me -1 -q -cf /etc/dhcp/dhclient-eth0.conf -lf /var/lib/dhclient/dhclient-eth0.leases -pf /var/run/dhclient-eth0.pid eth0", 
+
+        "             total       used       free     shared    buffers     cached", 
+        "Mem:          3944       3560        383          0        274        542", 
+        "-/+ buffers/cache:       2744       1200", 
+        "Swap:            0          0          0", 
+        "-----------------------------------------------------------", 
+
+        "|                     Reload SUCCESS!                     |", 
+        "-----------------------------------------------------------"
+    ]
+}
+ok: [119.9.94.172] => {
+
+    "script_result.stdout_lines": [
+        "-----------------------------------------------------------", 
+        "|                 Checking Nginx Config                   |", 
+        "-----------------------------------------------------------", 
+        "", 
+
+        " nginx -t ", 
+        "", 
+        "-----------------------------------------------------------", 
+        "|                 Stopping Nginx Process                  |", 
+        "-----------------------------------------------------------", 
+
+        "", 
+        " /usr/bin/killall -9 nginx ", 
+        "", 
+        "-----------------------------------------------------------", 
+        "|                 Clearing Proxy Cache                    |", 
+
+        "-----------------------------------------------------------", 
+        "", 
+        " /bin/rm -rf /tmp/nginx_cache ", 
+        "", 
+        "-----------------------------------------------------------", 
+
+        "|                Restarting Nginx Process                 |", 
+        "-----------------------------------------------------------", 
+        "root     18575  0.0  0.0 106084  1436 ?        S    17:54   0:00 /bin/bash /bak/bin/clear_nginxcache.sh", 
+        "root     18585  0.3  2.8 879680 114488 ?       Ss   17:54   0:00 nginx: master process /usr/local/nginx/sbin/nginx", 
+        "nobody   18587  0.0  2.9 881608 119152 ?       S    17:54   0:00 nginx: worker process      ", 
+
+        "nobody   18588  0.0  2.9 881608 119136 ?       S    17:54   0:00 nginx: worker process      ", 
+        "nobody   18589  0.0  2.9 881608 119444 ?       S    17:54   0:00 nginx: worker process      ", 
+        "nobody   18590  0.0  2.9 881608 119124 ?       S    17:54   0:00 nginx: worker process      ", 
+        "nobody   18591  0.0  2.8 879680 116032 ?       S    17:54   0:00 nginx: cache manager process", 
+        "nobody   18592  0.0  2.8 879680 115980 ?       S    17:54   0:00 nginx: cache loader process", 
+
+        "root     18596  0.0  0.0 103324   888 ?        S    17:55   0:00 grep nginx", 
+        "             total       used       free     shared    buffers     cached", 
+        "Mem:          3953       3672        280          5        219        794", 
+        "-/+ buffers/cache:       2659       1294", 
+        "Swap:            0          0          0", 
+
+        "-----------------------------------------------------------", 
+        "|                     Reload SUCCESS!                     |", 
+        "-----------------------------------------------------------"
+    ]
+}
+
+ok: [207.46.140.151] => {
+    "script_result.stdout_lines": [
+        "-----------------------------------------------------------", 
+        "|                 Checking Nginx Config                   |", 
+        "-----------------------------------------------------------", 
+
+        "", 
+        " nginx -t ", 
+        "", 
+        "-----------------------------------------------------------", 
+        "|                 Stopping Nginx Process                  |", 
+
+        "-----------------------------------------------------------", 
+        "", 
+        " /usr/bin/killall -9 nginx ", 
+        "", 
+        "-----------------------------------------------------------", 
+
+        "|                 Clearing Proxy Cache                    |", 
+        "-----------------------------------------------------------", 
+        "", 
+        " /bin/rm -rf /tmp/nginx_cache ", 
+        "", 
+
+        "-----------------------------------------------------------", 
+        "|                Restarting Nginx Process                 |", 
+        "-----------------------------------------------------------", 
+        "root      17356  0.0  0.0 106120  1292 ?        S    17:55   0:00 /bin/bash /bak/bin/clear_nginxcache.sh", 
+        "root      17369  0.5  3.2 879680 114428 ?       Ss   17:55   0:00 nginx: master process /usr/local/nginx/sbin/nginx", 
+
+        "nobody    17370  0.5  3.4 881608 120276 ?       S    17:55   0:00 nginx: worker process      ", 
+        "nobody    17371  0.0  3.4 881608 120260 ?       S    17:55   0:00 nginx: worker process      ", 
+        "nobody    17372  0.5  3.4 881608 120240 ?       S    17:55   0:00 nginx: worker process      ", 
+        "nobody    17373  1.0  3.4 881608 120280 ?       S    17:55   0:00 nginx: worker process      ", 
+        "nobody    17374  0.0  3.2 879680 115972 ?       S    17:55   0:00 nginx: cache manager process", 
+
+        "nobody    17376  0.0  3.2 879680 115916 ?       S    17:55   0:00 nginx: cache loader process", 
+        "root      17381  0.0  0.0 103328   848 ?        S    17:55   0:00 grep nginx", 
+        "root      79665  0.0  0.0   9120   540 ?        Ss    2018   0:00 /sbin/dhclient -H eu-nginx2.hk.az.monaco1.me -1 -q -lf /var/lib/dhclient/dhclient-eth0.leases -pf /var/run/dhclient-eth0.pid eth0", 
+        "             total       used       free     shared    buffers     cached", 
+        "Mem:          3440       3091        348          5        252        843", 
+
+        "-/+ buffers/cache:       1995       1445", 
+        "Swap:            0          0          0", 
+        "-----------------------------------------------------------", 
+        "|                     Reload SUCCESS!                     |", 
+        "-----------------------------------------------------------"
+
+    ]
+}
+
+PLAY [127.0.0.1] ***************************************************************
+
+
+TASK [sync_to_git : Synchronizing Nginx To GIT] ********************************
+changed: [127.0.0.1]
+
+TASK [sync_to_git : debug] *****************************************************
+ok: [127.0.0.1] => {
+
+    "script_result.stdout_lines": [
+        "[master 1cd8763] lei.lei", 
+        " 1 file changed, 1 insertion(+), 1 deletion(-)", 
+        "Branch master set up to track remote branch master from origin."
+    ]
+
+}
+
+PLAY [eu-nginx] ****************************************************************
+
+PLAY [127.0.0.1] ***************************************************************
+
+
+PLAY RECAP *********************************************************************
+119.9.94.172               : ok=8    changed=2    unreachable=0    failed=0   
+127.0.0.1                  : ok=2    changed=1    unreachable=0    failed=0   
+13.75.115.255              : ok=8    changed=2    unreachable=0    failed=0   
+
+13.94.45.24                : ok=8    changed=2    unreachable=0    failed=0   
+207.46.140.151             : ok=8    changed=2    unreachable=0    failed=0   
+52.229.205.134             : ok=8    changed=2    unreachable=0    failed=0   
+52.229.206.25              : ok=8    changed=2    unreachable=0    failed=0   
+
+
+
+ESYNC_WORKER1_COMMAND_END
+MAX RETRIES EXECUTED, COMMAND NOT RESPONDING

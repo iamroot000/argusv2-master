@@ -1,0 +1,24 @@
+server {
+    listen 80;
+    server_name xdianwan.com www.xdianwan.com;
+    rewrite ^(.*)$ https://www.xdianwan.com$1 permanent;
+}
+
+server {
+    listen 443;
+    server_name xdianwan.com www.xdianwan.com;
+    ssl on;
+    ssl_certificate /usr/local/nginx/conf.d/ssl/xdianwan.com/fullchain.pem;
+    ssl_certificate_key /usr/local/nginx/conf.d/ssl/xdianwan.com/privkey.pem;
+
+    if ($http_host !~* 'www') {
+        rewrite ^(.*)$ https://www.$http_host$1 permanent;
+    }
+
+    include /usr/local/nginx/conf.d/include/xbet_official_masterconfig.include;
+}
+
+
+
+
+

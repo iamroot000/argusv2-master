@@ -1,0 +1,40 @@
+
+###jiabo-cdn
+server {
+    listen 443;
+    server_name osscdn.196311.com;
+    charset utf-8;
+    access_log  logs/196311.com.access.log main;
+    error_log  logs/196311.com.error.log;
+    ssl on; 
+    ssl_certificate /usr/local/nginx/conf.d/ssl/196311.com/fullchain.pem;
+    ssl_certificate_key /usr/local/nginx/conf.d/ssl/196311.com/privkey.pem;
+	location / {
+		proxy_pass https://www.inxedu.com/;
+	}
+    location ^~ /cdn/ {
+        alias /var/ftp/allcdn/;
+	}
+}
+
+###jiabo-ftp
+server {
+    listen 443; 
+    server_name osscdn.360891.com;
+    charset utf-8;
+    access_log  logs/360891.com.access.log main;
+    error_log  logs/360891.com.error.log;
+    ssl on; 
+    ssl_certificate /usr/local/nginx/conf.d/ssl/360891.com/fullchain.pem;
+    ssl_certificate_key /usr/local/nginx/conf.d/ssl/360891.com/privkey.pem;
+    location / {
+        proxy_pass https://www.inxedu.com/;
+    }
+    location ^~ /images/ {
+        alias /var/ftp/images/;
+    }
+}
+
+
+
+

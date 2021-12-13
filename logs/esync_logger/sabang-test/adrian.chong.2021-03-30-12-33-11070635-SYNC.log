@@ -1,0 +1,140 @@
+ESYNC_WORKER1_COMMAND_START
+[WARNING]: Invalid characters were found in group names but not replaced, use
+-vvvv to see details
+
+PLAY [sabang-test] *************************************************************
+
+
+TASK [Gathering Facts] *********************************************************
+ok: [18.166.243.116]
+
+TASK [nginx_sync : Change python interpreter] **********************************
+skipping: [18.166.243.116]
+
+
+TASK [nginx_sync : change python interpreter] **********************************
+skipping: [18.166.243.116]
+
+TASK [nginx_sync : Notify] *****************************************************
+
+ok: [18.166.243.116] => {
+    "msg": "Syncing sabang-test"
+}
+
+TASK [nginx_sync : include_vars] ***********************************************
+
+ok: [18.166.243.116]
+
+TASK [nginx_sync : Synchronizing Nginx] ****************************************
+skipping: [18.166.243.116] => (item=conf) 
+skipping: [18.166.243.116] => (item=conf.d) 
+
+skipping: [18.166.243.116] => (item=data) 
+skipping: [18.166.243.116] => (item=html) 
+
+TASK [nginx_sync : Synchronizing Nginx] ****************************************
+ok: [18.166.243.116] => (item=conf)
+
+changed: [18.166.243.116] => (item=conf.d)
+ok: [18.166.243.116] => (item=data)
+
+TASK [nginx_sync : Set HTML Dir to root] ***************************************
+changed: [18.166.243.116]
+
+
+TASK [all_servers : include_vars] **********************************************
+ok: [18.166.243.116]
+
+TASK [all_servers : Notify] ****************************************************
+
+ok: [18.166.243.116] => {
+    "msg": "Clearing Nginx Cache for sabang-test"
+}
+
+TASK [all_servers : Copying clear_nginxcache.sh to remote hosts] ***************
+
+ok: [18.166.243.116]
+
+TASK [all_servers : Nginx Clear Cache] *****************************************
+changed: [18.166.243.116]
+
+
+TASK [all_servers : debug] *****************************************************
+ok: [18.166.243.116] => {
+    "script_result.stdout_lines": [
+        "-----------------------------------------------------------", 
+        "|                 Checking Nginx Config                   |", 
+
+        "-----------------------------------------------------------", 
+        "", 
+        " nginx -t ", 
+        "", 
+        "-----------------------------------------------------------", 
+
+        "|                 Stopping Nginx Process                  |", 
+        "-----------------------------------------------------------", 
+        "", 
+        " /usr/bin/killall -9 nginx ", 
+        "", 
+
+        "-----------------------------------------------------------", 
+        "|                 Clearing Proxy Cache                    |", 
+        "-----------------------------------------------------------", 
+        "", 
+        " /bin/rm -rf /tmp/nginx_cache ", 
+
+        "", 
+        "-----------------------------------------------------------", 
+        "|                Restarting Nginx Process                 |", 
+        "-----------------------------------------------------------", 
+        "root     21636  0.5  0.0 113288  1484 ?        S    12:33   0:00 /bin/bash /bak/bin/clear_nginxcache.sh", 
+
+        "root     21726  0.6  0.0  32616  3228 pts/0    Ss+  12:33   0:00 nginx: master process /usr/sbin/nginx -g daemon off;", 
+        "root     21733  0.6  0.0  32616  3232 pts/0    Ss+  12:33   0:00 nginx: master process /usr/sbin/nginx -g daemon off;", 
+        "101      21753  0.0  0.0  33068  1600 pts/0    S+   12:33   0:00 nginx: worker process", 
+        "101      21759  0.0  0.0  33068  1604 pts/0    S+   12:33   0:00 nginx: worker process", 
+        "root     21779  0.0  0.0 297336  1972 ?        Ss   12:33   0:00 nginx: master process /usr/local/nginx/sbin/nginx", 
+
+        "nobody   21780  0.0  0.0 301592  6576 ?        S    12:33   0:00 nginx: worker process", 
+        "nobody   21782  0.0  0.0 301592  6576 ?        S    12:33   0:00 nginx: worker process", 
+        "nobody   21783  0.0  0.0 301592  6576 ?        S    12:33   0:00 nginx: worker process", 
+        "nobody   21784  0.0  0.0 301592  6576 ?        S    12:33   0:00 nginx: worker process", 
+        "nobody   21785  0.0  0.0 297340  2376 ?        S    12:33   0:00 nginx: cache manager process", 
+
+        "nobody   21786  0.0  0.0 297340  2376 ?        S    12:33   0:00 nginx: cache loader process", 
+        "root     21826  0.0  0.0 112816   952 ?        S    12:33   0:00 grep nginx", 
+        "              total        used        free      shared  buff/cache   available", 
+        "Mem:          15308        6817        1144         780        7345        7382", 
+        "Swap:             0           0           0", 
+
+        "-----------------------------------------------------------", 
+        "|                     Reload SUCCESS!                     |", 
+        "-----------------------------------------------------------"
+    ]
+}
+
+
+PLAY [127.0.0.1] ***************************************************************
+
+TASK [sync_to_git : Synchronizing Nginx To GIT] ********************************
+changed: [127.0.0.1]
+
+
+TASK [sync_to_git : debug] *****************************************************
+ok: [127.0.0.1] => {
+    "msg": " [u'[master 629296e] adrian.chong', u' 1 file changed, 39 insertions(+)', u'Branch master set up to track remote branch master from origin.']"
+}
+
+
+PLAY [sabang-test] *************************************************************
+
+PLAY [127.0.0.1] ***************************************************************
+
+
+PLAY RECAP *********************************************************************
+127.0.0.1                  : ok=2    changed=1    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0   
+18.166.243.116             : ok=10   changed=3    unreachable=0    failed=0    skipped=3    rescued=0    ignored=0   
+
+
+ESYNC_WORKER1_COMMAND_END
+MAX RETRIES EXECUTED, COMMAND NOT RESPONDING

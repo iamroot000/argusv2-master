@@ -1,0 +1,15 @@
+--- /puppet/OtherSystem-MonacoSites__NginxForward/templates/iptables.sh	2018-09-12 13:24:33.016607803 +0800
++++ /tmp/iptables.sh	2019-04-29 16:04:41.650634105 +0800
+@@ -32,6 +32,11 @@
+ 
+ /sbin/iptables -A INPUT -s 119.9.93.146 -j ACCEPT #Ansible
+ 
++#TSniperIPS
++ipset destroy TSniperIPS
++ipset create TSniperIPS hash:ip timeout 3600
++/sbin/iptables -A INPUT -m set --match-set TSniperIPS src -j DROP
++
+ #ENABLE FOR FORWARDING SERVERS
+ /sbin/iptables -A INPUT -p tcp -m multiport --dport 80 -j ACCEPT
+ /sbin/iptables -A INPUT -p tcp -m multiport --dport 443 -j ACCEPT
+

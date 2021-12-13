@@ -1,0 +1,143 @@
+ESYNC_WORKER1_COMMAND_START
+[WARNING]: Invalid characters were found in group names but not replaced, use
+-vvvv to see details
+
+PLAY [euqp-online_game] ********************************************************
+
+
+TASK [Gathering Facts] *********************************************************
+ok: [47.52.155.116]
+
+TASK [nginx_sync : Change python interpreter] **********************************
+skipping: [47.52.155.116]
+
+
+TASK [nginx_sync : change python interpreter] **********************************
+skipping: [47.52.155.116]
+
+TASK [nginx_sync : Notify] *****************************************************
+
+ok: [47.52.155.116] => {
+    "msg": "Syncing euqp-online_game"
+}
+
+TASK [nginx_sync : include_vars] ***********************************************
+
+ok: [47.52.155.116]
+
+TASK [nginx_sync : Synchronizing Nginx] ****************************************
+ok: [47.52.155.116] => (item=conf)
+changed: [47.52.155.116] => (item=conf.d)
+
+ok: [47.52.155.116] => (item=data)
+ok: [47.52.155.116] => (item=html)
+
+TASK [nginx_sync : Set HTML Dir to root] ***************************************
+ok: [47.52.155.116]
+
+
+TASK [all_servers : include_vars] **********************************************
+ok: [47.52.155.116]
+
+TASK [all_servers : Notify] ****************************************************
+
+ok: [47.52.155.116] => {
+    "msg": "Clearing Nginx Cache for euqp-online_game"
+}
+
+TASK [all_servers : Copying clear_nginxcache.sh to remote hosts] ***************
+
+ok: [47.52.155.116]
+
+TASK [all_servers : Nginx Clear Cache] *****************************************
+changed: [47.52.155.116]
+
+
+TASK [all_servers : debug] *****************************************************
+ok: [47.52.155.116] => {
+    "script_result.stdout_lines": [
+        "-----------------------------------------------------------", 
+        "|                 Checking Nginx Config                   |", 
+
+        "-----------------------------------------------------------", 
+        "", 
+        " nginx -t ", 
+        "", 
+        "-----------------------------------------------------------", 
+
+        "|                 Stopping Nginx Process                  |", 
+        "-----------------------------------------------------------", 
+        "", 
+        " /usr/bin/killall -9 nginx ", 
+        "", 
+
+        "-----------------------------------------------------------", 
+        "|                 Clearing Proxy Cache                    |", 
+        "-----------------------------------------------------------", 
+        "", 
+        " /bin/rm -rf /tmp/nginx_cache ", 
+
+        "", 
+        "-----------------------------------------------------------", 
+        "|                Restarting Nginx Process                 |", 
+        "-----------------------------------------------------------", 
+        "root     14119  0.0  0.1 410388 12576 ?        Sl   Nov09   1:17 /usr/bin/php -f /usr/share/nginx/html/v8/Jobs/accountCenterDataImport.php", 
+
+        "root     14141  0.0  0.1 410388 12572 ?        Sl   Nov09   1:10 /usr/bin/php -f /usr/share/nginx/html/v8/Jobs/ipInfoUpdate.php", 
+        "root     14164  0.0  0.1 410388 12592 ?        Sl   Nov09   1:36 /usr/bin/php -f /usr/share/nginx/html/v8/Jobs/Updatemoneylog.php", 
+        "root     14187  0.0  0.1 410388 12596 ?        Sl   Nov09   1:19 /usr/bin/php -f /usr/share/nginx/html/v8/Jobs/UpdateJackpotstatus.php", 
+        "root     14223  0.0  0.1 410388 12600 ?        Sl   Nov09   1:22 /usr/bin/php -f /usr/share/nginx/html/v8/Jobs/GamelogImport.php", 
+        "root     28560  0.6  0.0 113192  1488 ?        S    09:48   0:00 /bin/bash /bak/bin/clear_nginxcache.sh", 
+
+        "root     28636  0.7  0.0  10764  3964 ?        Ss   09:48   0:00 nginx: master process /usr/sbin/nginx -g daemon off;", 
+        "101      28661  0.0  0.0  11220  2368 ?        S    09:48   0:00 nginx: worker process", 
+        "root     28684  0.7  0.0  10616  3428 ?        Ss   09:48   0:00 nginx: master process /usr/sbin/nginx -g daemon off;", 
+        "101      28708  0.0  0.0  11088  1500 ?        S    09:48   0:00 nginx: worker process", 
+        "root     28709  0.0  0.0  45940  3428 ?        S    09:48   0:00 nginx: master process /usr/local/nginx/sbin/nginx", 
+
+        "ommgr    28710  0.0  0.0  46376  1952 ?        S    09:48   0:00 nginx: worker process", 
+        "root     28715  0.0  0.0 301016  5840 ?        Ss   09:48   0:00 nginx: master process /usr/local/nginx/sbin/nginx", 
+        "nobody   28716  0.0  0.1 449756 10464 ?        S    09:48   0:00 nginx: worker process", 
+        "nobody   28718  0.0  0.1 449756 10476 ?        S    09:48   0:00 nginx: worker process", 
+        "nobody   28719  0.0  0.1 449756 10476 ?        S    09:48   0:00 nginx: worker process", 
+
+        "nobody   28720  0.0  0.1 449756 10476 ?        S    09:48   0:00 nginx: worker process", 
+        "nobody   28721  0.0  0.0 445504  6280 ?        S    09:48   0:00 nginx: cache manager process", 
+        "nobody   28722  0.0  0.0 445504  6280 ?        S    09:48   0:00 nginx: cache loader process", 
+        "root     28727  0.0  0.0 112720   944 ?        S    09:48   0:00 grep nginx", 
+        "              total        used        free      shared  buff/cache   available", 
+
+        "Mem:           7821        1883         518         156        5419        5482", 
+        "Swap:             0           0           0", 
+        "-----------------------------------------------------------", 
+        "|                     Reload SUCCESS!                     |", 
+        "-----------------------------------------------------------"
+
+    ]
+}
+
+PLAY [127.0.0.1] ***************************************************************
+
+
+TASK [sync_to_git : Synchronizing Nginx To GIT] ********************************
+changed: [127.0.0.1]
+
+TASK [sync_to_git : debug] *****************************************************
+ok: [127.0.0.1] => {
+
+    "msg": " [u'[master 32e5f34] nikko.aratan', u' 1 file changed, 1 insertion(+)', u'Branch master set up to track remote branch master from origin.']"
+}
+
+PLAY [euqp-online_game] ********************************************************
+
+
+PLAY [127.0.0.1] ***************************************************************
+
+PLAY RECAP *********************************************************************
+127.0.0.1                  : ok=2    changed=1    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0   
+47.52.155.116              : ok=10   changed=2    unreachable=0    failed=0    skipped=2    rescued=0    ignored=0   
+
+
+
+ESYNC_WORKER1_COMMAND_END
+MAX RETRIES EXECUTED, COMMAND NOT RESPONDING

@@ -1,0 +1,23 @@
+---
+- name: Create /bak/bin directory
+  file:
+    path: /bak/bin
+    state: directory
+
+
+
+- name: Copying iptables rules
+  template:
+    src: iptables_ssr.sh.j2
+    dest: /bak/bin/iptables.sh
+    mode: '+x'
+
+
+
+- name: Run iptables.
+  command: '{{ item }}'
+  with_items:
+    - /bak/bin/iptables.sh
+    - /etc/init.d/iptables save
+  failed_when: false
+

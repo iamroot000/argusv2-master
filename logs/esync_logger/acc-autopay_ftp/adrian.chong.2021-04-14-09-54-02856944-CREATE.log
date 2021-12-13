@@ -1,0 +1,36 @@
+--- /ansible/nginx/hostgroups/acc-autopay_ftp/nginx/conf.d/other/pms2-ftp.conf	2021-04-02 15:23:08.272788440 +0800
++++ /tmp/pms2-ftp.conf	2021-04-14 09:54:03.012043529 +0800
+@@ -51,6 +51,32 @@
+     }
+ }
+ 
++server {
++        listen 80;
++        server_name images-dj.xiantjtzy.com;
++        location  / {
++        root /web/images/qrcode-dj;
++    	  access_log  logs/pmsdj-ftp.access.log main ;
++      	  access_log  logs/pmsdj-ftp.logstash.access.log logstash ;
++        error_log  logs/pmsdj-ftp.error.log ;
++    }
++}
++
++server {
++        listen 443 ssl;
++        server_name images-dj.xiantjtzy.com;
++ 
++  		ssl on;
++        ssl_certificate /usr/local/nginx/conf.d/ssl/xiantjtzy.com/fullchain.pem;
++        ssl_certificate_key /usr/local/nginx/conf.d/ssl/xiantjtzy.com/privkey.pem;
++  		location  / {
++        root /web/images/qrcode-dj;
++    	  access_log  logs/pmsdj-ftp.access.log main ;
++      	  access_log  logs/pmsdj-ftp.logstash.access.log logstash ;
++          error_log  logs/pmsdj-ftp.error.log ;
++    }
++}
++
+ 
+ server {
+         listen 80;
+

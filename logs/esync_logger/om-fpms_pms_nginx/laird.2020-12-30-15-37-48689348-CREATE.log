@@ -1,0 +1,60 @@
+--- /ansible/nginx/hostgroups/om-fpms_pms_nginx/nginx/conf.d/include/pay-web.include	2020-12-30 15:34:47.557342451 +0800
++++ /tmp/pay-web.include	2020-12-30 15:37:48.668378264 +0800
+@@ -23,55 +23,9 @@
+ 	return 403;
+ }
+ 
+-limit_req zone=anti_spider burst=5 nodelay;
+-if ($http_user_agent ~* "baiduspider") {
+-	set $anti_spider $http_user_agent;
+-}
+-
+-if ($request_method !~* GET|POST|HEAD) {
+-	return 403;
+-}
+-
+-	location /mstest/ {
+-  		return 404;
+-	}
+-
+-location ~ /\.
+-{ return 444; }
+-
+-error_page 403 302 /iph;
+-
+-
+-location  /iph {
+-	alias html/xpj;
+-    allow all;
+-    index index.html;
+-}
+-
+-if ($allowed_country = no ){
+-  set $test BLOCK; 
+-}
+-
+-if ($allowed_country = SG) {
+-   set $test ALLOW;
+-}
+-
+-if ($allowed_country = yes ){ 
+-  set $test ALLOW; 
+-}
+-
+-#if ($allowed_country = no ){
+-#  set $test BLOCK; 
+-#}
+-
+-if ($allowed_ip = yes ){ 
+-  set $test ALLOW; 
+-}
+ 
+ location / {
+-	if ( $test = BLOCK ){
+-		return 403;  
+-	}
++
+ 	proxy_set_header Host  $host;
+ 	proxy_set_header X-Forwarded-For  $remote_addr;
+ 	proxy_pass http://$upstream;
+

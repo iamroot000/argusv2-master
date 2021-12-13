@@ -1,0 +1,103 @@
+ESYNC_WORKER1_COMMAND_START
+
+PLAY [om-chengdu_nginx] ********************************************************
+
+TASK [nginx_sync : Notify] *****************************************************
+ok: [47.112.127.70] => {
+
+    "msg": "Syncing om-chengdu_nginx"
+}
+
+TASK [nginx_sync : include_vars] ***********************************************
+ok: [47.112.127.70]
+
+
+TASK [nginx_sync : Synchronizing Nginx] ****************************************
+changed: [47.112.127.70] => (item=conf)
+changed: [47.112.127.70] => (item=conf.d)
+changed: [47.112.127.70] => (item=data)
+
+changed: [47.112.127.70] => (item=html)
+
+TASK [all_servers : include_vars] **********************************************
+ok: [47.112.127.70]
+
+
+TASK [all_servers : Notify] ****************************************************
+ok: [47.112.127.70] => {
+    "msg": "Clearing Nginx Cache for om-chengdu_nginx"
+}
+
+
+TASK [all_servers : Copying clear_nginxcache.sh to remote hosts] ***************
+changed: [47.112.127.70]
+
+TASK [all_servers : Nginx Clear Cache] *****************************************
+changed: [47.112.127.70]
+
+
+TASK [all_servers : debug] *****************************************************
+ok: [47.112.127.70] => {
+    "script_result.stdout_lines": [
+        "-----------------------------------------------------------", 
+
+        "|                 Checking Nginx Config                   |", 
+        "-----------------------------------------------------------", 
+        "", 
+        " nginx -t ", 
+        "", 
+
+        "-----------------------------------------------------------", 
+        "|                 Stopping Nginx Process                  |", 
+        "-----------------------------------------------------------", 
+        "", 
+        " /usr/bin/killall -9 nginx ", 
+
+        "", 
+        "-----------------------------------------------------------", 
+        "|                 Clearing Proxy Cache                    |", 
+        "-----------------------------------------------------------", 
+        "", 
+
+        " /bin/rm -rf /tmp/nginx_cache ", 
+        "", 
+        "-----------------------------------------------------------", 
+        "|                Restarting Nginx Process                 |", 
+        "-----------------------------------------------------------", 
+
+        "root     20330  0.2  0.0 113180  1500 ?        S    17:03   0:00 /bin/bash /bak/bin/clear_nginxcache.sh", 
+        "root     20339  0.0  0.0 662752  1276 ?        Ss   17:04   0:00 nginx: master process /usr/local/nginx/sbin/nginx", 
+        "nobody   20340  0.0  0.1 667004  6140 ?        S    17:04   0:00 nginx: worker process", 
+        "nobody   20342  0.0  0.1 667004  5644 ?        S    17:04   0:00 nginx: worker process", 
+        "nobody   20343  0.0  0.1 667004  5892 ?        S    17:04   0:00 nginx: worker process", 
+
+        "nobody   20344  0.0  0.1 667004  5644 ?        S    17:04   0:00 nginx: worker process", 
+        "nobody   20345  0.0  0.0 662900  1696 ?        S    17:04   0:00 nginx: cache manager process", 
+        "nobody   20346  0.0  0.0 662900  1696 ?        S    17:04   0:00 nginx: cache loader process", 
+        "root     20348  0.0  0.0 112708   956 ?        S    17:04   0:00 grep nginx", 
+        "              total        used        free      shared  buff/cache   available", 
+
+        "Mem:           3789         243        1919           4        1625        3238", 
+        "Swap:             0           0           0", 
+        "-----------------------------------------------------------", 
+        "|                     Reload SUCCESS!                     |", 
+        "-----------------------------------------------------------"
+
+    ]
+}
+
+PLAY [127.0.0.1] ***************************************************************
+
+
+TASK [sync_to_git : Synchronizing Nginx To GIT] ********************************
+fatal: [127.0.0.1]: FAILED! => {"changed": true, "cmd": "git add .\n git commit -m \"aaron.navarro\"\n git push\n git push -u origin master", "delta": "0:00:00.646351", "end": "2019-06-03 17:04:04.478499", "msg": "non-zero return code", "rc": 128, "start": "2019-06-03 17:04:03.832148", "stderr": "fatal: Authentication failed for 'http://om:VA1913wm@git.neweb.me/omgroup/ansible-207.git/'\nfatal: Authentication failed for 'http://om:VA1913wm@git.neweb.me/omgroup/ansible-207.git/'", "stderr_lines": ["fatal: Authentication failed for 'http://om:VA1913wm@git.neweb.me/omgroup/ansible-207.git/'", "fatal: Authentication failed for 'http://om:VA1913wm@git.neweb.me/omgroup/ansible-207.git/'"], "stdout": "[master fcc324a] aaron.navarro\n 2 files changed, 33 insertions(+), 24 deletions(-)\n rewrite nginx/hostgroups/om-chengdu_nginx/nginx/conf.d/global/_default.conf (80%)\n create mode 100644 nginx/hostgroups/om-chengdu_nginx/nginx/conf.d/other/9280.conf", "stdout_lines": ["[master fcc324a] aaron.navarro", " 2 files changed, 33 insertions(+), 24 deletions(-)", " rewrite nginx/hostgroups/om-chengdu_nginx/nginx/conf.d/global/_default.conf (80%)", " create mode 100644 nginx/hostgroups/om-chengdu_nginx/nginx/conf.d/other/9280.conf"]}
+	to retry, use: --limit @/ansible/nginx/site.retry
+
+PLAY RECAP *********************************************************************
+
+127.0.0.1                  : ok=0    changed=0    unreachable=0    failed=1   
+47.112.127.70              : ok=8    changed=3    unreachable=0    failed=0   
+
+
+ESYNC_WORKER1_COMMAND_END
+MAX RETRIES EXECUTED, COMMAND NOT RESPONDING

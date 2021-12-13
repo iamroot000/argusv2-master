@@ -1,0 +1,24 @@
+FILENAME: 80-443/w5188.me.conf
+-  
++  server {
++      listen 80;
++      server_name w5188.me www.w5188.me;
++      rewrite ^(.*)$ https://www.w5188.me$1 permanent;
++  }
++  
++  server {
++      listen 443;
++      server_name w5188.me www.w5188.me;
++      ssl on;
++      ssl_certificate /usr/local/nginx/conf.d/ssl/w5188.me/fullchain.pem;
++      ssl_certificate_key /usr/local/nginx/conf.d/ssl/w5188.me/privkey.pem;
++  
++      if ($http_host !~* 'www') {
++          rewrite ^(.*)$ https://www.$http_host$1 permanent;
++      }
++  
++      include /usr/local/nginx/conf.d/include/bbet8_official_masterconfig.include;
++  }
++  
++  
+

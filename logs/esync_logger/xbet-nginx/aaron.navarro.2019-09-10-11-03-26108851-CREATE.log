@@ -1,0 +1,73 @@
+server {
+    listen       80;
+    server_name www.xbetapp.com xbetapp.com;
+    rewrite     ^(.*)   https://www.xbetapp.com permanent;
+}
+
+
+server {
+  	###ARGUS: xbetapp.com
+    listen       443;#HTTP Port
+    server_name  www.xbetapp.com xbetapp.com;
+    ssl on;
+    ssl_certificate /usr/local/nginx/conf.d/ssl/xbetapp.com/fullchain.pem;
+    ssl_certificate_key /usr/local/nginx/conf.d/ssl/xbetapp.com/privkey.pem;
+
+    index   index.html;
+	access_log  logs/xbet_app.access.log main;
+
+    if ($http_host !~* 'www') {
+        rewrite ^(.*)$ https://www.$http_host$1 permanent;
+    }
+
+
+	if ($request_method !~* GET|POST|HEAD) {
+		return 403;
+	}
+
+    error_page 403 /ip.html;
+    location = /ip.html {
+        root   /usr/local/nginx/html/;
+        allow all;
+    }
+    location /blocked {
+        root /usr/local/nginx/html/;
+        allow all;
+    }
+
+	if ($allowed_country ~ "yes" ){ 
+		set $test ALLOW; 
+	}
+
+	if ($allowed_country ~ "no" ){
+		set $test BLOCK; 
+	}
+
+	if ($allowed_ip ~ "yes" ){ 
+		set $test ALLOW; 
+	}
+	
+	if ($geoip_country_code ~ "PH" ){ 
+		set $test ALLOW; 
+	}
+
+	location / {
+		if ( $test = "BLOCK" ) { return 403;  }
+    	proxy_set_header        Host            $host;
+        proxy_set_header        X-Real-IP       $remote_addr;
+        proxy_set_header        X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_connect_timeout   3600;
+        proxy_send_timeout      3600;
+        proxy_read_timeout      3600;
+        client_max_body_size 100m;
+        client_body_buffer_size 512k;
+        proxy_buffer_size 512k;
+        proxy_buffers 4 512k;
+        proxy_busy_buffers_size 512k;
+        proxy_temp_file_write_size 512k;
+		alias /var/ftp/xbetapp/;
+
+	}
+}
+
+

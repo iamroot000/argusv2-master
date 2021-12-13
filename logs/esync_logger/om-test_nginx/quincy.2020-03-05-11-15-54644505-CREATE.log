@@ -1,0 +1,43 @@
+--- /ansible/nginx/hostgroups/om-test_nginx/nginx/conf.d/other/v68-test.fpms.conf	2020-03-05 11:14:14.837072461 +0800
++++ /tmp/v68-test.fpms.conf	2020-03-05 11:15:54.567251026 +0800
+@@ -9,6 +9,38 @@
+ server {
+     listen 80;
+     server_name verific.appcoffee.cn;
+-    include /usr/local/nginx/conf.d/include/v68-test_fpms.include;
++
++  index   index.jsp index.html index.htm;
++access_log  logs/verific.appcoffee.cn.access.log main;
++access_log  logs/verific.appcoffee.cn.logstash.access.log logstash;
++
++#if ($allowed_country ~ "no" ){
++#       set $test BLOCK;
++#}
++
++#if ($allowed_country ~ "yes" ){
++#       set $test ALLOW;
++#}
++
++#if ($allowed_ip ~ "yes" ){
++#       set $test ALLOW;
++#}
++
++
++location / {
++#  if ( $test = "BLOCK" ) { return 666;  }
++#	proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
++#	proxy_set_header X-Real-IP  $remote_addr;
++#  	proxy_set_header X-Forwarded-For $remote_addr;
++	proxy_next_upstream http_502 http_504 http_404 error timeout invalid_header;
++	proxy_set_header Host $host:$server_port;
++	proxy_connect_timeout   1800;
++	proxy_send_timeout      1800;
++	proxy_read_timeout      1800;
++	proxy_pass http://fpms-test-7000;
++}
++
++  
++  
+ }
+ 
+

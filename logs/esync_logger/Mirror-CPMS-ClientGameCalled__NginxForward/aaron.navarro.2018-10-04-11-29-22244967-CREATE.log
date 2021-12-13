@@ -1,0 +1,31 @@
+upstream callback-ebet-xbet {
+        server 203.192.151.12:6102 max_fails=2  fail_timeout=30s weight=5;
+        server 205.177.199.12:6102 max_fails=2  fail_timeout=30s weight=10;
+        server 101.78.133.212:6102 max_fails=2  fail_timeout=30s weight=5 backup;
+        #server 203.177.198.116:6102 max_fails=2  fail_timeout=30s weight=5 backup;
+}
+
+
+server {
+	listen       80;
+	server_name cpms-ebet-xbet.back2pay.me;
+	index   index.jsp index.html index.htm;
+
+	charset utf-8;
+
+	access_log  logs/cpms_callback_ebet_xbet.access.log ;
+	error_log  logs/cpms_callback_ebet_xbet.error.log ;
+
+	location ~ ^/(WEB-INF)/ {
+		deny all;
+	}
+
+	location / {
+        include /usr/local/nginx/conf.d/include/whiteEBETgame.include;
+		include /usr/local/nginx/conf.d/include/proxy.conf.fwd.include;
+		proxy_pass http://callback-ebet-xbet;
+	}
+}
+
+
+

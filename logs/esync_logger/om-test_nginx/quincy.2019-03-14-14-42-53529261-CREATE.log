@@ -1,0 +1,50 @@
+--- /ansible/nginx/hostgroups/om-test_nginx/nginx/conf.d/other/neweb.me.conf	2019-03-14 14:39:55.536689752 +0800
++++ /tmp/neweb.me.conf	2019-03-14 14:42:53.424689752 +0800
+@@ -1064,4 +1064,46 @@
+ }
+ 
+ 
++server {
++    listen       80;
++    server_name fpms_sslserver.neweb.me;
++    access_log  logs/fpms_sslserver.access.log main;
++    #return 307 https://$host$request_uri;
++    location / {
++        proxy_set_header X-Forwarded-For    $proxy_add_x_forwarded_for;
++        proxy_set_header X-Forwarded-For    $remote_addr;
++        proxy_set_header X-Real-IP          $remote_addr;
++        proxy_set_header Host               $host:$server_port;
++        proxy_set_header Upgrade            $http_upgrade;
++        proxy_set_header Connection         $connection_upgrade;
++        proxy_next_upstream http_502 http_504 http_404 error timeout invalid_header;
++        proxy_http_version 1.1;
++        proxy_connect_timeout   1800;
++        proxy_send_timeout      1800;
++        proxy_read_timeout      1800;
++        proxy_pass http://fpms_sslserver;
++    }
++}
++server {
++    listen       443 ssl;
++    server_name fpms_sslserver.neweb.me;
++    access_log  logs/fpms_sslserver.access.log main;
++    ssl_certificate /usr/local/nginx/conf.d/ssl/neweb.me/fullchain.pem;
++    ssl_certificate_key /usr/local/nginx/conf.d/ssl/neweb.me/privkey.pem;
++    location / {
++        proxy_set_header X-Forwarded-For    $proxy_add_x_forwarded_for;
++        proxy_set_header X-Forwarded-For    $remote_addr;
++        proxy_set_header X-Real-IP          $remote_addr;
++        proxy_set_header Host               $host:$server_port;
++        proxy_set_header Upgrade            $http_upgrade;
++        proxy_set_header Connection         $connection_upgrade;
++        proxy_next_upstream http_502 http_504 http_404 error timeout invalid_header;
++        proxy_http_version 1.1;
++        proxy_connect_timeout   1800;
++        proxy_send_timeout      1800;
++        proxy_read_timeout      1800;
++        proxy_pass http://fpms_sslserver;
++    }
++}
++
+ 
+

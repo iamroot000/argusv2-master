@@ -1,0 +1,66 @@
+---
+
+- name: Download Zabbix Release File for Centos 6 Server
+  copy:
+    src: zabbix-release-4.0-1.el6.noarch.rpm
+    dest: /root/
+
+- name: Download Zabbix Repo for Centos 6 Server
+  template:
+    src: zabbix.repo
+    dest: /etc/yum.repos.d/zabbix.repo
+
+- name: Install Zabbix RPM file for Centos 6 Server
+  command: "rpm -ivh /root/zabbix-release-4.0-1.el6.noarch.rpm"
+  ignore_errors: yes
+
+- name: Update Yum(Zabbix) for Centos 6 Server
+  shell: "yum update zabbix-release* -y"
+
+- name: Remove Existing Zabbix-Agent Centos 6 Server
+  yum:
+    name: 'zabbix-agent'
+    state: absent
+  ignore_errors: yes
+
+
+- name: Installing Development Tools Centos 6 Server
+  shell: 'yum groupinstall "Development Tools"'
+
+
+- name: Installing openssl-devel Centos 6 Server
+  yum:
+    name: 'openssl-devel'
+    state: present
+
+
+- name: Install Zabbix-Agent for Centos 6 Server
+  yum:
+    name: 'zabbix-agent'
+    state: present
+
+- name: Create Zabbix Include Directory for Centos 6 Server
+  file: 
+    path: /etc/zabbix/include
+    state: directory
+
+- name: Deploy Zabbix Configuration for Centos 6 Server
+  template:
+    src: '{{ item.src }}'
+    dest: '{{ item.dest }}'
+    owner: '{{ item.own_grp }}'
+    group: '{{ item.own_grp }}'
+    mode: '{{ item.mod }}'
+  with_items:
+    - { src: 'zabbix_agentd.j2', dest: '/etc/zabbix/zabbix_agentd.conf', own_grp: 'root', mod: '0644' }
+    - { src: 'userparameter_custom.conf.j2', dest: '/etc/zabbix/zabbix_agentd.d/userparameter_custom.conf', own_grp: 'root', mod: '0644' }
+    - { src: 'zabbix.j2', dest: '/etc/sudoers.d/zabbix', own_grp: 'root', mod: '0644' }
+
+
+- name: Download Zabbix Script for Centos 6 Server
+  copy:
+    src: port.py
+    dest: /etc/zabbix/include/port.py
+    mode: '0751'
+
+

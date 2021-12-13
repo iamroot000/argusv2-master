@@ -1,0 +1,63 @@
+---
+#- name: Find my public ip
+#  ipify_facts:
+#  register: ip_response
+
+#- name: Output
+#  debug: msg="{{ ip_response.ansible_facts.ipify_public_ip }}"
+#- name: Test hosts list
+#  debug:
+#    msg: "{{ hostvars[inventory_hostname]['inventory_hostname'] }}"
+
+- name: Converting ssr_password to base64
+  command: echo '{{ ssr_password | b64encode }}'
+  register: ssr_passwordb64
+
+
+
+- name: Saving SS_url
+#  command: echo "{{ ssr_method }}:{{ ssr_password }}@59.148.22.100:{{ ssr_port }}"
+  command: echo "{{ ssr_method }}:{{ ssr_password }}@{{ hostvars[inventory_hostname]['inventory_hostname'] }}:{{ ssr_port }}"
+  register: SSurl0
+
+
+
+- name: Saving SSR_url
+#  command: echo "59.148.22.100:{{ ssr_port }}:{{ ssr_protocol.replace('_compatible', '') }}:{{ ssr_method }}:{{ ssr_obfs }}:{{ ssr_passwordb64.stdout.replace('=', '').replace('+', '-').replace('/', '_') }}"
+  command: echo "{{ hostvars[inventory_hostname]['inventory_hostname'] }}:{{ ssr_port }}:{{ ssr_protocol.replace('_compatible', '') }}:{{ ssr_method }}:{{ ssr_obfs }}:{{ ssr_passwordb64.stdout.replace('=', '').replace('+', '-').replace('/', '_') }}"
+  register: SSRurl0
+
+
+
+- name: Converting SS_url to base64
+  command: echo '{{ SSurl0.stdout | b64encode }}'
+  register: SSurl
+
+
+
+- name: Converting SSR_url to base64
+  command: echo '{{ SSRurl0.stdout | b64encode }}'
+  register: SSRurl
+
+
+
+- name: View logs
+  debug:
+    msg:
+#      - "IP Address                   :         {{ ansible_default_ipv4.address }}"
+      - "IP Address                   :         {{ hostvars[inventory_hostname]['inventory_hostname'] }}"
+      - "Port                         :         {{ ssr_port }}"
+#      - "Password                     :         {{ ssr_password }}"
+      - "Encryption                   :         {{ ssr_method }}"
+      - "Protocol                     :         {{ ssr_protocol }}"
+      - "OBFS                         :         {{ ssr_obfs }}"
+      - "Device limit                 :         {{ ssr_protocol_param }} (Unlimited)"
+      - "Single thread speed limit    :         {{ ssr_speed_limit_per_con }} KB/S"
+      - "Port total speed limit       :         {{ ssr_speed_limit_per_user }} KB/S"
+      - "SS link                      :         ss://{{ SSurl.stdout.replace('=', '').replace('+', '-').replace('/', '_') }}"
+      - "SS QR code                   :         http://doub.pw/qr/qr.php?text=ss://{{ SSurl.stdout.replace('=', '').replace('+', '-').replace('/', '_') }}"
+      - "SSR link                     :         ssr://{{ SSRurl.stdout.replace('=', '').replace('+', '-').replace('/', '_') }}"
+      - "SSR QR code                  :         http://doub.pw/qr/qr.php?text=ssr://{{ SSRurl.stdout.replace('=', '').replace('+', '-').replace('/', '_') }}"
+
+
+

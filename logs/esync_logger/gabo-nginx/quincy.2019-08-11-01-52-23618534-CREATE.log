@@ -1,0 +1,23 @@
+server {
+    listen 80;
+    server_name 832765.com www.832765.com ;
+    rewrite ^(.*)$ https://webws.832765.com$1 permanent;
+}
+
+server {
+    listen 443;
+    server_name webws.832765.com;
+    ssl on;
+    ssl_certificate /usr/local/nginx/conf.d/ssl/832765.com/fullchain.pem;
+    ssl_certificate_key /usr/local/nginx/conf.d/ssl/832765.com/privkey.pem;
+
+    if ($http_host !~* 'www') {
+        rewrite ^(.*)$ https://www.$http_host$1 permanent;
+    }
+
+    include /usr/local/nginx/conf.d/include/jiabo_official_masterconfig.include;
+}
+
+
+
+

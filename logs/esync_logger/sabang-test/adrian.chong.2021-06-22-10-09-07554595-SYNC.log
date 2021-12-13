@@ -1,0 +1,202 @@
+ESYNC_WORKER1_COMMAND_START
+[WARNING]: Invalid characters were found in group names but not replaced, use
+-vvvv to see details
+
+PLAY [sabang-test] *************************************************************
+
+
+TASK [Gathering Facts] *********************************************************
+ok: [16.162.7.242]
+ok: [18.166.243.116]
+
+TASK [nginx_sync : Change python interpreter] **********************************
+
+skipping: [18.166.243.116]
+skipping: [16.162.7.242]
+
+TASK [nginx_sync : change python interpreter] **********************************
+skipping: [18.166.243.116]
+
+skipping: [16.162.7.242]
+
+TASK [nginx_sync : set_fact] ***************************************************
+ok: [18.166.243.116]
+ok: [16.162.7.242]
+
+
+TASK [nginx_sync : set_fact] ***************************************************
+skipping: [18.166.243.116]
+skipping: [16.162.7.242]
+
+
+TASK [nginx_sync : Notify] *****************************************************
+ok: [18.166.243.116] => {
+    "msg": "Syncing sabang-test"
+}
+ok: [16.162.7.242] => {
+
+    "msg": "Syncing sabang-test"
+}
+
+TASK [nginx_sync : include_vars] ***********************************************
+ok: [18.166.243.116]
+
+ok: [16.162.7.242]
+
+TASK [nginx_sync : Synchronizing Nginx] ****************************************
+skipping: [18.166.243.116] => (item=conf) 
+skipping: [18.166.243.116] => (item=conf.d) 
+
+skipping: [18.166.243.116] => (item=data) 
+skipping: [16.162.7.242] => (item=conf) 
+skipping: [18.166.243.116] => (item=html) 
+skipping: [16.162.7.242] => (item=conf.d) 
+skipping: [16.162.7.242] => (item=data) 
+
+skipping: [16.162.7.242] => (item=html) 
+
+TASK [nginx_sync : Synchronizing Nginx Excluding HTML] *************************
+ok: [16.162.7.242] => (item=conf)
+changed: [16.162.7.242] => (item=conf.d)
+
+ok: [16.162.7.242] => (item=data)
+ok: [18.166.243.116] => (item=conf)
+changed: [18.166.243.116] => (item=conf.d)
+ok: [18.166.243.116] => (item=data)
+
+
+TASK [nginx_sync : Set HTML Dir to root] ***************************************
+ok: [16.162.7.242]
+ok: [18.166.243.116]
+
+TASK [all_servers : include_vars] **********************************************
+
+ok: [18.166.243.116]
+ok: [16.162.7.242]
+
+TASK [all_servers : Notify] ****************************************************
+ok: [18.166.243.116] => {
+
+    "msg": "Clearing Nginx Cache for sabang-test"
+}
+ok: [16.162.7.242] => {
+    "msg": "Clearing Nginx Cache for sabang-test"
+}
+
+
+TASK [all_servers : Copying clear_nginxcache.sh to remote hosts] ***************
+ok: [16.162.7.242]
+ok: [18.166.243.116]
+
+
+TASK [all_servers : Nginx Clear Cache] *****************************************
+fatal: [16.162.7.242]: FAILED! => {"changed": true, "cmd": ["/bak/bin/clear_nginxcache.sh"], "delta": "0:00:00.046320", "end": "2021-06-22 10:09:38.585928", "msg": "non-zero return code", "rc": 1, "start": "2021-06-22 10:09:38.539608", "stderr": "nginx: [emerg] unknown directive \"fancyindex_default_sort\" in /usr/local/nginx/conf.d/other/port-90.conf:44\nnginx: configuration file /usr/local/nginx/conf/nginx.conf test failed", "stderr_lines": ["nginx: [emerg] unknown directive \"fancyindex_default_sort\" in /usr/local/nginx/conf.d/other/port-90.conf:44", "nginx: configuration file /usr/local/nginx/conf/nginx.conf test failed"], "stdout": "-----------------------------------------------------------\n|                 Checking Nginx Config                   |\n-----------------------------------------------------------\n\n nginx -t \n\n+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n|                  CONFIGURATION ERROR!                   |\n+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++", "stdout_lines": ["-----------------------------------------------------------", "|                 Checking Nginx Config                   |", "-----------------------------------------------------------", "", " nginx -t ", "", "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++", "|                  CONFIGURATION ERROR!                   |", "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"]}
+changed: [18.166.243.116]
+
+TASK [all_servers : debug] *****************************************************
+
+ok: [18.166.243.116] => {
+    "script_result.stdout_lines": [
+        "-----------------------------------------------------------", 
+        "|                 Checking Nginx Config                   |", 
+        "-----------------------------------------------------------", 
+
+        "", 
+        " nginx -t ", 
+        "", 
+        "-----------------------------------------------------------", 
+        "|                 Stopping Nginx Process                  |", 
+
+        "-----------------------------------------------------------", 
+        "", 
+        " /usr/bin/killall -9 nginx ", 
+        "", 
+        "-----------------------------------------------------------", 
+
+        "|                 Clearing Proxy Cache                    |", 
+        "-----------------------------------------------------------", 
+        "", 
+        " /bin/rm -rf /tmp/nginx_cache ", 
+        "", 
+
+        "-----------------------------------------------------------", 
+        "|                Restarting Nginx Process                 |", 
+        "-----------------------------------------------------------", 
+        "root      3249  0.0  0.0  17820 11004 ?        Sl   Jun18   0:39 ./nginx-vts-exporter", 
+        "root      9142  0.6  0.0 113288  1484 ?        S    10:09   0:00 /bin/bash /bak/bin/clear_nginxcache.sh", 
+
+        "root      9335  0.7  0.0  32616  3228 pts/0    Ss+  10:09   0:00 nginx: master process /usr/sbin/nginx -g daemon off;", 
+        "root      9442  0.7  0.0  32616  3232 pts/0    Ss+  10:09   0:00 nginx: master process /usr/sbin/nginx -g daemon off;", 
+        "root      9451  0.7  0.0  32616  3228 pts/0    Ss+  10:09   0:00 nginx: master process /usr/sbin/nginx -g daemon off;", 
+        "root      9459  0.5  0.0  32616  3236 pts/0    Ss+  10:09   0:00 nginx: master process /usr/sbin/nginx -g daemon off;", 
+        "root      9526  0.7  0.0  32616  3232 pts/0    Ss+  10:09   0:00 nginx: master process /usr/sbin/nginx -g daemon off;", 
+
+        "root      9570  0.5  0.0  32616  3228 pts/0    Ss+  10:09   0:00 nginx: master process /usr/sbin/nginx -g daemon off;", 
+        "root      9601  0.5  0.0  32616  3232 pts/0    Ss+  10:09   0:00 nginx: master process /usr/sbin/nginx -g daemon off;", 
+        "root      9637  0.5  0.0  32616  3232 pts/0    Ss+  10:09   0:00 nginx: master process /usr/sbin/nginx -g daemon off;", 
+        "root      9667  0.7  0.0  32616  3232 pts/0    Ss+  10:09   0:00 nginx: master process /usr/sbin/nginx -g daemon off;", 
+        "root      9669  0.7  0.0  32616  3236 pts/0    Ss+  10:09   0:00 nginx: master process /usr/sbin/nginx -g daemon off;", 
+
+        "101       9681  0.0  0.0  33068  1600 pts/0    S+   10:09   0:00 nginx: worker process", 
+        "root      9683  0.5  0.0  32616  3236 pts/0    Ss+  10:09   0:00 nginx: master process /usr/sbin/nginx -g daemon off;", 
+        "root      9690  0.5  0.0  32616  3228 pts/0    Ss+  10:09   0:00 nginx: master process /usr/sbin/nginx -g daemon off;", 
+        "101       9707  0.0  0.0  33068  1604 pts/0    S+   10:09   0:00 nginx: worker process", 
+        "101       9725  0.0  0.0  33068  1604 pts/0    S+   10:09   0:00 nginx: worker process", 
+
+        "101       9767  0.0  0.0  33068  1608 pts/0    S+   10:09   0:00 nginx: worker process", 
+        "101       9774  0.0  0.0  33068  1604 pts/0    S+   10:09   0:00 nginx: worker process", 
+        "101       9775  0.0  0.0  33068  1600 pts/0    S+   10:09   0:00 nginx: worker process", 
+        "101       9776  0.0  0.0  33068  1600 pts/0    S+   10:09   0:00 nginx: worker process", 
+        "101       9784  0.0  0.0  33068  1608 pts/0    S+   10:09   0:00 nginx: worker process", 
+
+        "101       9798  0.0  0.0  33068  1604 pts/0    S+   10:09   0:00 nginx: worker process", 
+        "101       9842  0.0  0.0  33068  1604 pts/0    S+   10:09   0:00 nginx: worker process", 
+        "101       9843  0.0  0.0  33068  1608 pts/0    S+   10:09   0:00 nginx: worker process", 
+        "101       9847  0.0  0.0  33068  1600 pts/0    S+   10:09   0:00 nginx: worker process", 
+        "root      9864  0.0  0.0 299308  3964 ?        Ss   10:09   0:00 nginx: master process /usr/local/nginx/sbin/nginx", 
+
+        "nobody    9865  0.0  0.0 303564  8568 ?        S    10:09   0:00 nginx: worker process", 
+        "nobody    9867  0.0  0.0 303564  8568 ?        S    10:09   0:00 nginx: worker process", 
+        "nobody    9868  0.0  0.0 303564  8568 ?        S    10:09   0:00 nginx: worker process", 
+        "nobody    9869  0.0  0.0 303564  8568 ?        S    10:09   0:00 nginx: worker process", 
+        "nobody    9870  0.0  0.0 299312  4368 ?        S    10:09   0:00 nginx: cache manager process", 
+
+        "nobody    9871  0.0  0.0 299312  4368 ?        S    10:09   0:00 nginx: cache loader process", 
+        "root      9887  0.0  0.0 112816   956 ?        S    10:09   0:00 grep nginx", 
+        "              total        used        free      shared  buff/cache   available", 
+        "Mem:          15420       10408        1066         100        3945        4582", 
+        "Swap:             0           0           0", 
+
+        "-----------------------------------------------------------", 
+        "|                     Reload SUCCESS!                     |", 
+        "-----------------------------------------------------------"
+    ]
+}
+
+
+PLAY [127.0.0.1] ***************************************************************
+
+TASK [sync_to_git : Synchronizing Nginx To GIT] ********************************
+changed: [127.0.0.1]
+
+
+TASK [sync_to_git : debug] *****************************************************
+ok: [127.0.0.1] => {
+    "msg": " [u'[master 463391d] adrian.chong', u' 3 files changed, 39 insertions(+)', u' create mode 100644 nginx/conf.d/other/client-h5.conf', u' create mode 100644 nginx/conf.d/other/client-pc.conf', u' create mode 100644 nginx/conf.d/other/public-resource.conf', u'Branch master set up to track remote branch master from origin.']"
+}
+
+
+PLAY [sabang-test] *************************************************************
+
+PLAY [127.0.0.1] ***************************************************************
+
+
+PLAY RECAP *********************************************************************
+127.0.0.1                  : ok=2    changed=1    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0   
+16.162.7.242               : ok=9    changed=1    unreachable=0    failed=1    skipped=4    rescued=0    ignored=0   
+18.166.243.116             : ok=11   changed=2    unreachable=0    failed=0    skipped=4    rescued=0    ignored=0   
+
+
+
+ESYNC_WORKER1_COMMAND_END
+MAX RETRIES EXECUTED, COMMAND NOT RESPONDING

@@ -1,0 +1,141 @@
+---
+
+
+
+- name: Download Zabbix Release File for Centos 7 Server
+
+  copy:
+
+    src: '{{ item.src }}'
+
+    dest: /root/
+
+  with_items:
+
+    - { src: 'zabbix-release-4.0-1.el7.noarch.rpm' }
+
+    - { src: 'zabbix-agent-4.0.24-1.el7.x86_64.rpm' }
+
+    
+
+- name: Download Zabbix Repo for Centos 7 Server
+
+  template:
+
+    src: zabbix.repo
+
+    dest: /etc/yum.repos.d/zabbix.repo
+
+
+
+- name: Install Zabbix RPM file for Centos 7 Server
+
+  command: "rpm -ivh /root/zabbix-release-4.0-1.el7.noarch.rpm"
+
+  ignore_errors: yes
+
+
+
+- name: Update Yum(Zabbix) for Centos 7 Server
+
+  shell: "yum update zabbix-release* -y"
+
+
+
+- name: Remove Existing Zabbix-Agent Centos 7 Server
+
+  yum:
+
+    name: 'zabbix-agent'
+
+    state: absent
+
+  ignore_errors: yes
+
+
+
+#- name: Installing Development Tools Centos 7 Server
+
+#  shell: 'yum groupinstall "Development Tools"'
+
+
+
+
+#- name: Installing openssl Centos 7 Server
+
+#  yum:
+
+#    name: '{{ item }}'
+
+#    state: present
+
+#  with_items:
+
+#    - openssl
+
+#    - openssl-devel
+
+#    - openssl-libs
+
+
+
+- name: Installing openssl Centos 7 Server
+
+  shell: 'yum install openssl openssl-devel openssl-libs -y'
+
+
+
+- name: Install Zabbix-Agent Centos 7 Server
+
+  command: "rpm -ivh /root/zabbix-agent-4.0.24-1.el7.x86_64.rpm"
+
+
+
+
+- name: Create Zabbix Include Directory for Centos 7 Server
+
+  file:
+
+    path: /etc/zabbix/include
+
+    state: directory
+
+
+
+- name: Deploy Zabbix Configuration for Centos 7 Server
+
+  template:
+
+    src: '{{ item.src }}'
+
+    dest: '{{ item.dest }}'
+
+    owner: '{{ item.own_grp }}'
+
+    group: '{{ item.own_grp }}'
+
+    mode: '{{ item.mod }}'
+
+  with_items:
+
+    - { src: 'zabbix_agentd.j2', dest: '/etc/zabbix/zabbix_agentd.conf', own_grp: 'root', mod: '0644' }
+
+    - { src: 'userparameter_custom.conf.j2', dest: '/etc/zabbix/zabbix_agentd.d/userparameter_custom.conf', own_grp: 'root', mod: '0644' }
+
+    - { src: 'zabbix.j2', dest: '/etc/sudoers.d/zabbix', own_grp: 'root', mod: '0644' }
+
+
+
+
+
+- name: Download Zabbix Script for Centos 7 Server
+
+  copy:
+
+    src: port.py
+
+    dest: /etc/zabbix/include/port.py
+
+    mode: '0751'
+
+

@@ -1,0 +1,55 @@
+ESYNC_WORKER1_COMMAND_START
+
+PLAY [fpms-test_nginx] *********************************************************
+
+TASK [nginx_sync : Notify] *****************************************************
+ok: [119.9.104.64] => {
+
+    "msg": "Syncing fpms-test_nginx"
+}
+ok: [118.184.0.43] => {
+    "msg": "Syncing fpms-test_nginx"
+}
+
+ESYNC_WORKER1_COMMAND_END
+MAX RETRIES EXECUTED, COMMAND NOT RESPONDING
+TASK [nginx_sync : include_vars] ***********************************************
+ok: [119.9.104.64]
+ok: [118.184.0.43]
+
+
+TASK [nginx_sync : Synchronizing Nginx] ****************************************
+changed: [119.9.104.64] => (item=conf)
+changed: [119.9.104.64] => (item=conf.d)
+failed: [118.184.0.43] (item=conf) => {"changed": false, "cmd": "/usr/bin/rsync --delay-updates -F --compress --delete-after --copy-links --archive --rsh=/usr/bin/ssh -S none -o Port=2556 -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null --out-format=<<CHANGED>>%i %n%L /ansible/nginx/hostgroups/fpms-test_nginx/nginx//conf/ root@118.184.0.43:/usr/local/nginx/conf/", "item": "conf", "msg": "ssh: connect to host 118.184.0.43 port 2556: Connection timed out\r\nrsync: connection unexpectedly closed (0 bytes received so far) [sender]\nrsync error: unexplained error (code 255) at io.c(226) [sender=3.1.2]\n", "rc": 255}
+failed: [118.184.0.43] (item=conf.d) => {"changed": false, "cmd": "/usr/bin/rsync --delay-updates -F --compress --delete-after --copy-links --archive --rsh=/usr/bin/ssh -S none -o Port=2556 -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null --out-format=<<CHANGED>>%i %n%L /ansible/nginx/hostgroups/fpms-test_nginx/nginx//conf.d/ root@118.184.0.43:/usr/local/nginx/conf.d/", "item": "conf.d", "msg": "ssh: connect to host 118.184.0.43 port 2556: Connection timed out\r\nrsync: connection unexpectedly closed (0 bytes received so far) [sender]\nrsync error: unexplained error (code 255) at io.c(226) [sender=3.1.2]\n", "rc": 255}
+
+changed: [119.9.104.64] => (item=data)
+failed: [118.184.0.43] (item=data) => {"changed": false, "cmd": "/usr/bin/rsync --delay-updates -F --compress --delete-after --copy-links --archive --rsh=/usr/bin/ssh -S none -o Port=2556 -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null --out-format=<<CHANGED>>%i %n%L /ansible/nginx/hostgroups/fpms-test_nginx/nginx//data/ root@118.184.0.43:/usr/local/nginx/data/", "item": "data", "msg": "ssh: connect to host 118.184.0.43 port 2556: Connection timed out\r\nrsync: connection unexpectedly closed (0 bytes received so far) [sender]\nrsync error: unexplained error (code 255) at io.c(226) [sender=3.1.2]\n", "rc": 255}
+changed: [119.9.104.64] => (item=html)
+failed: [118.184.0.43] (item=html) => {"changed": false, "cmd": "/usr/bin/rsync --delay-updates -F --compress --delete-after --copy-links --archive --rsh=/usr/bin/ssh -S none -o Port=2556 -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null --out-format=<<CHANGED>>%i %n%L /ansible/nginx/hostgroups/fpms-test_nginx/nginx//html/ root@118.184.0.43:/usr/local/nginx/html/", "item": "html", "msg": "ssh: connect to host 118.184.0.43 port 2556: Connection timed out\r\nrsync: connection unexpectedly closed (0 bytes received so far) [sender]\nrsync error: unexplained error (code 255) at io.c(226) [sender=3.1.2]\n", "rc": 255}
+
+
+TASK [all_servers : include_vars] **********************************************
+ok: [119.9.104.64]
+
+TASK [all_servers : Notify] ****************************************************
+ok: [119.9.104.64] => {
+
+    "msg": "Clearing Nginx Cache for fpms-test_nginx"
+}
+
+TASK [all_servers : Copying clear_nginxcache.sh to remote hosts] ***************
+changed: [119.9.104.64]
+
+
+TASK [all_servers : Nginx Clear Cache] *****************************************
+fatal: [119.9.104.64]: FAILED! => {"changed": true, "cmd": ["/bak/bin/clear_nginxcache.sh"], "delta": "0:00:00.047736", "end": "2019-03-12 09:42:45.142964", "msg": "non-zero return code", "rc": 1, "start": "2019-03-12 09:42:45.095228", "stderr": "nginx: [emerg] unknown directive \"vhost_traffic_status_zone\" in /usr/local/nginx/conf/nginx.conf:53\nnginx: configuration file /usr/local/nginx/conf/nginx.conf test failed", "stderr_lines": ["nginx: [emerg] unknown directive \"vhost_traffic_status_zone\" in /usr/local/nginx/conf/nginx.conf:53", "nginx: configuration file /usr/local/nginx/conf/nginx.conf test failed"], "stdout": "-----------------------------------------------------------\n|                 Checking Nginx Config                   |\n-----------------------------------------------------------\n\n nginx -t \n\n+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n|                  CONFIGURATION ERROR!                   |\n+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++", "stdout_lines": ["-----------------------------------------------------------", "|                 Checking Nginx Config                   |", "-----------------------------------------------------------", "", " nginx -t ", "", "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++", "|                  CONFIGURATION ERROR!                   |", "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"]}
+	to retry, use: --limit @/ansible/nginx/site.retry
+
+
+PLAY RECAP *********************************************************************
+118.184.0.43               : ok=2    changed=0    unreachable=0    failed=1   
+119.9.104.64               : ok=6    changed=2    unreachable=0    failed=1   
+
+

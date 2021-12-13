@@ -1,0 +1,149 @@
+{% extends "SSRCHECKER/base.html" %}
+
+
+{% block action %}
+
+{% endblock %}
+{% block details %}
+SSR Initialization
+{% endblock %}
+{% block details %}
+(<span id="config_src">{{ CONFIG_SRC }}</span>)
+{% endblock %}
+{% block content %}
+
+<div class="row border-bottom white-bg dashboard-header">
+    <ul class="nav nav-tabs" id="myTab" role="tablist">
+        {% for configtab1, filedata in files %}
+            {% if configtab1 == "CHANGE_PORT" %}
+              <li class="nav-item">
+                <a class="nav-link active" id="{{ configtab1 }}-tab" data-toggle="tab" href="#{{ configtab1 }}" role="tab" aria-controls="{{ configtab1 }}" aria-selected="true">{{ configtab1 }}</a>
+              </li>
+            {% else %}
+              <li class="nav-item">
+                <a class="nav-link" id="{{ configtab1 }}-tab" data-toggle="tab" href="#{{ configtab1 }}" role="tab" aria-controls="{{ configtab1 }}" aria-selected="false">{{ configtab1 }}</a>
+              </li>
+            {% endif %}
+        {% endfor %}
+    </ul>
+
+    <!-- Tab panes -->
+    <div class="tab-content">
+        {% for configtab1, filedata in files %}
+            {% if configtab1 == "CHANGE_PORT" %}
+              <div class="tab-pane active" id="{{ configtab1 }}" role="tabpanel" aria-labelledby="{{ configtab1 }}-tab">
+                  <pre class=" CodeMirror-line " role="presentation"><span role="presentation">{{ filedata }}</pre>
+                  {% block changeport %}
+                  {% endblock %}
+              </div>
+            {% else %}
+              <div class="tab-pane" id="{{ configtab1 }}" role="tabpanel" aria-labelledby="{{ configtab1 }}-tab">
+<!--                  <head>-->
+<!--  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.41.0/codemirror.css" />-->
+<!--  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.41.0/codemirror.js"></script>-->
+<!--  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.41.0/mode/htmlmixed/htmlmixed.js"></script>-->
+<!--  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.41.0/mode/xml/xml.js"></script>-->
+<!--  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.41.0/mode/javascript/javascript.js"></script>-->
+<!--  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.41.0/mode/css/css.js"></script>-->
+<!--</head>-->
+
+<!--                  <div id="{{ configtab1 }}-testing">-->
+<!--                  <pre class=" CodeMirror-line " id="{{ configtab1 }}" role="presentation"><span role="presentation">{{ filedata }}</pre>-->
+<!--                  </div>-->
+<!--                    <tr><th><label for="id_document">Document:</label></th><td><textarea name="document" cols="40" rows="10" id="{{ configtab1 }}-test" readonly>-->
+<!--                    </textarea>-->
+<!--                    <script type="text/javascript">CodeMirror.fromTextArea(document.getElementById("{{ configtab1 }}-test"), {"lineNumbers": true, "mode": {"name": "javascript"}, "theme": "default"});</script></td></tr>-->
+<!--                    {{ document }}-->
+                  {% block configall%}
+                  {% endblock %}
+              </div>
+
+            {% endif %}
+        {% endfor %}
+    </div>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="row border-bottom white-bg dashboard-header">
+        <h1 class="display-3">History:</h1>
+          <div class="col-sm">
+              <table class="table table-sm table-striped table-bordered" id="mydatatable" style="width: 100%">
+                <thead>
+                    <tr class="thead-default">
+                        <th align="center" scope="col">USERNAME</th>
+                        <th align="center" scope="col">SSR IP</th>
+                        <th align="center" scope="col">STATUS</th>
+                        <th align="center" scope="col">LOG FILE</th>
+                        <th align="center" scope="col">IDC</th>
+                        <th align="center" scope="col">DATE</th>
+                    </tr>
+                </thead>
+                <tbody>
+                {% for ssrinitdata in ssr_initdata %}
+                    <tr>
+                            <td align="center">{{ ssrinitdata.USERNAME }}</td>
+                            <td align="center">{{ ssrinitdata.IP }}</td>
+                            {% if ssrinitdata.STATUS == "ERROR" or ssrinitdata.STATUS == "FAILED" or ssrinitdata.STATUS == "UNREACHABLE" %}
+                            <td align="center">
+                                <span class="badge badge-danger">{{ ssrinitdata.STATUS }}</span>
+                            </td>
+                            {% elif ssrinitdata.STATUS == "TIMEOUT" %}
+                            <td align="center">
+                                <span class="badge badge-warning">{{ ssrinitdata.STATUS }}</span>
+                            </td>
+                            {% else %}
+                            <td align="center">
+                                <span class="badge badge-info">{{ ssrinitdata.STATUS }}</span>
+                            </td>
+                            {% endif %}
+                            <td align="center"><span class="glyphicon glyphicon-file"></span><a href='{% url "SSR_history" ssrinitdata.id %}' target="_blank"> Logs</a></td>
+                            <td align="center">{{ ssrinitdata.IDC }}</td>
+                            <td align="center">{{ ssrinitdata.CREATED }}</td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+                <tfoot>
+                </tfoot>
+            </table>
+          </div>
+</div>
+<!--datatable-->
+<script src="https://code.jquery.com/jquery-3.3.1.js"></script>
+<script src="https://cdn.datatables.net/1.10.20/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.10.20/js/dataTables.bootstrap4.min.js"></script>
+
+<script>
+        $(document).ready(function() {
+            var table = $('#mydatatable').DataTable({
+                            "order": [[ 5, "desc" ]], //or desc (for descending)
+                            "columnDefs" : [{"targets":1, "type":"DATE"}],
+                        });
+        } );
+</script>
+<!--datatable-->
+
+{% endblock %}

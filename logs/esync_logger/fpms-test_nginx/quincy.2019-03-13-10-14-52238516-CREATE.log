@@ -1,0 +1,85 @@
+server {
+        listen      80;
+        server_name www.payhome.site;
+        index   index.jsp index.html index.htm;
+        charset utf-8;
+        access_log  logs/pms2.access.log main;
+        location / {
+			include whitelistIP.conf;
+            include proxy.conf;
+            proxy_pass http://pms2_web;
+        }
+
+       location ~* .*\.(png|jpg|gif|jpeg|bmp|ico|css|js|json|exe)?$ {
+            proxy_next_upstream http_502 http_504 error timeout invalid_header;
+            proxy_cache cache_after;
+            proxy_cache_valid  200 304 2m;
+			proxy_cache_valid any 30s;
+            proxy_cache_key $uri$is_args$args;
+            proxy_set_header Host  $host;
+            proxy_set_header X-Forwarded-For  $remote_addr;
+            expires      30s;
+            proxy_pass http://pms2_web;
+    }
+}
+
+server {
+        listen      9005;
+        server_name www.payhome.site;
+        index   index.jsp index.html index.htm;
+        charset utf-8;
+        access_log  logs/pms2.access.log main;
+        location / {
+            include proxy.conf;
+            proxy_pass http://pms2_9005;
+        }
+}
+server {
+        listen      9001;
+        server_name www.payhome.site;
+        index   index.jsp index.html index.htm;
+        charset utf-8;
+        access_log  logs/pms2.access.log main;
+        location / {
+            include proxy.conf;
+            proxy_pass http://pms2_9001;
+        }
+}
+server {
+        listen      9003;
+        server_name www.payhome.site;
+        index   index.jsp index.html index.htm;
+        charset utf-8;
+        access_log  logs/pms2.access.log main;
+        location / {
+            include proxy.conf;
+            proxy_pass http://pms2_9003;
+        }
+}
+server {
+        listen      9004;
+        server_name www.payhome.site;
+        index   index.jsp index.html index.htm;
+        charset utf-8;
+        access_log  logs/pms2.access.log main;
+        location / {
+            include proxy.conf;
+            proxy_pass http://pms2_9004;
+        }
+}
+
+server {
+        listen      8888;
+        server_name www.payhome.site;
+        index   index.jsp index.html index.htm;
+        charset utf-8;
+        access_log  logs/pms2.access.log main;
+        location / {
+            include proxy.conf;
+            proxy_pass http://pms2_8888;
+        }
+}
+
+
+
+

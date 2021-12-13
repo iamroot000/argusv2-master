@@ -1,0 +1,47 @@
+--- /ansible/nginx/hostgroups/acc-autopay_ftp/nginx/conf.d/other/sslserver.conf	2021-03-10 11:59:53.726923440 +0800
++++ /tmp/sslserver.conf	2021-03-10 20:10:16.815105074 +0800
+@@ -80,3 +80,43 @@
+     }
+ 
+ 
++server {
++    listen 80;
++    server_name fpms-dj-ssl-ftp.neweb.me;
++    rewrite ^(.*)$ https://fpms-dj-ssl-ftp.neweb.me$1 permanent;
++}
++
++server {
++        listen       443 ssl;
++        server_name  fpms-dj-ssl-ftp.neweb.me;
++		gzip on;
++        charset utf-8;
++  		ssl on;
++		ssl_certificate /usr/local/nginx/conf.d/ssl/neweb.me/fullchain.pem;
++		ssl_certificate_key /usr/local/nginx/conf.d/ssl/neweb.me/privkey.pem;
++
++        location / {
++    
++    	allow 58.64.207.208;
++    	allow 59.148.22.110;
++    	allow 205.177.199.2;
++    	allow 101.78.133.210;
++    	allow 58.71.201.65;
++    	allow 211.24.72.105;
++    	allow 61.238.107.16;
++    	allow 52.184.38.87;
++   
++		deny all;
++   
++    	root /web/ssl/ssl-test-dj;
++	    autoindex on;
++		autoindex_localtime on;
++        }
++
++        access_log  logs/ssladmin.access.log main;
++        access_log  logs/ssladmin.logstash.access.log logstash;
++        error_log  logs/ssladmin.error.log ;
++
++    }
++
++
+

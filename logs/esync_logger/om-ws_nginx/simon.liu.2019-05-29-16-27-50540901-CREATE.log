@@ -1,0 +1,28 @@
+--- /ansible/nginx/hostgroups/om-ws_nginx/nginx/conf.d/other/qczxz.top.conf	2019-05-23 11:34:10.384427852 +0800
++++ /tmp/qczxz.top.conf	2019-05-29 16:27:50.421311258 +0800
+@@ -41,3 +41,24 @@
+ }
+ 
+ 
++server {
++    listen 80;
++    server_name qczxz.top cstest.qczxz.top;
++    rewrite ^(.*)$ https://cstest.qczxz.top$1 permanent;
++}
++
++server {
++    listen 443;
++    server_name qczxz.top cstest.qczxz.top;
++    ssl on;
++    ssl_certificate /usr/local/nginx/conf.d/ssl/qczxz.top/fullchain.pem;
++    ssl_certificate_key /usr/local/nginx/conf.d/ssl/qczxz.top/privkey.pem;
++
++    if ($http_host !~* 'cstest') {
++        rewrite ^(.*)$ https://cstest.$http_host$1 permanent;
++    }
++
++    include /usr/local/nginx/conf.d/include/ws_official_masterconfig.include;
++}
++
++
+

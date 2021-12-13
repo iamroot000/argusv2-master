@@ -1,0 +1,28 @@
+server {
+    listen 80;
+    server_name .b1056.com www.b1056.com;
+    #rewrite ^(.*)$ https://$http_host$1 redirect;
+    return      301 https://$http_host$1;
+
+
+}
+
+server {
+    listen 443;listen 8988;
+    server_name .b1056.com www.b1056.com;
+    ssl on;
+    ssl_certificate /usr/local/nginx/conf.d/ssl/b1056.com/fullchain.pem;
+    ssl_certificate_key /usr/local/nginx/conf.d/ssl/b1056.com/privkey.pem;
+
+
+    if ($http_host !~* 'www') { set $pp yes; }
+    if ($http_host ~* 81235237|81235231|55186|55189|10070|10118|55198|55688|55199|55208|10130|10150|10158|10160|10122|10189|10190|10195|10199|10200|10211|10220|10299|10511|10505|55211|10525|10565|10569|10566|) {set $pp 'no'; }
+
+    if ( $pp ~* 'yes' ) {
+        rewrite ^(.*)$ https://www.$http_host$1 permanent;
+    }
+
+    include /usr/local/nginx/conf.d/include/haomen_official_masterconfig.include;
+}
+
+

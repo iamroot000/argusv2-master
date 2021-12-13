@@ -1,0 +1,32 @@
+--- /ansible/nginx/hostgroups/om-cdn_ws/nginx/conf.d/other/v68-prod-test.conf	2019-10-23 10:29:45.163722492 +0800
++++ /tmp/v68-prod-test.conf	2019-10-23 10:41:53.315477339 +0800
+@@ -158,9 +158,27 @@
+         server_name   prod.v68game.com;
+         access_log logs/8040.access.log main;
+         error_log logs/8040.error.log;
++  
++  set $allowed_country yes;
++set $allowed_ip  yes;
++
++if ($allowed_country ~ "no" ){
++       set $test BLOCK;
++}
++
++if ($allowed_country ~ "yes" ){
++       set $test ALLOW;
++}
++
++if ($allowed_ip ~ "yes" ){
++       set $test ALLOW;
++}
++
++  
++  
+         location / {
+                 
+-    
++      if ( $test = "BLOCK" ) { return 666;  }
+      			proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+                 proxy_set_header X-Real-IP  $remote_addr;
+                 proxy_next_upstream http_502 http_504 http_404 error timeout invalid_header;
+

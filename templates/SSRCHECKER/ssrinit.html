@@ -1,0 +1,275 @@
+{% extends "SSRCHECKER/base.html" %}
+
+
+{% block action %}
+
+{% endblock %}
+{% block details %}
+VPN Initialization
+{% endblock %}
+{% block content %}
+<div class="row border-bottom white-bg dashboard-header">
+            <div class="col-10">
+                <form class="form-group mx-sm-1" method="POST" action="{% url 'SSR_initialization' %}">
+                    {% csrf_token %}
+                    <div class="row">
+                       <div class="col-lg-3">
+                           {{ form.IP.label_tag }}&emsp;{{ form.IP }}
+                           <br><br>
+
+                        </div>
+                        <div class="col-lg-3">
+                            <h4></h4>
+                           {{ form.PORT.label_tag }}&emsp;{{ form.PORT }}
+                            <br><br><br>
+                            {{ form.IDC.label_tag }}&emsp;{{ form.IDC }}
+                        </div>
+                        <div class="col-lg-3">
+                            <h4></h4>
+                            {{ form.USER.label_tag }}&emsp;&emsp;&emsp;&emsp;{{ form.USER }}
+                            <br><br><br>
+                            {{ form.PASSWORD.label_tag }} &emsp;{{ form.PASSWORD }} <input type="checkbox" onclick="PassFunction()"> Show
+                        </div>
+
+                    </div>
+                    <hr/>
+                    <div class="row">
+                        <div class="col-lg-3">
+                            <h4></h4>
+                           {{ form.V2RAY_PORT.label_tag }}&emsp;{{ form.V2RAY_PORT }}
+
+                        </div>
+                        <div class="col-lg-3">
+                            <h4></h4>
+                           {{ form.V2RAY_PATH.label_tag }}&emsp;{{ form.V2RAY_PATH }}
+
+                        </div>
+                        <div class="col-lg-3">
+                            <h4></h4>
+                           {{ form.V2RAY_DOMAIN.label_tag }}&emsp;{{ form.V2RAY_DOMAIN }}
+
+                        </div>
+                    </div>
+                    <hr/>
+                <div class="row-2 mb-3">
+                    &emsp;
+                    {% if logs_recap is not True %}
+                        <p align="right"><button type="submit" class="btn btn-primary" disabled><span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>Initializing...</button></p>
+                    {% else %}
+                        <p align="right"> <button type="submit" class="btn btn-primary"><span class="glyphicon glyphicon-ok"></span>Add</button></p>
+                    {% endif %}
+                </div>
+                </form>
+            </div>
+            {% if form.IP.errors %}
+                {% for error in form.IP.errors %}
+                <div align="center" class="alert alert-danger" ><h4>{{ error }}<h4></div>
+                {% endfor %}
+            {% endif %}
+            {% if form.PORT.errors %}
+                {% for error in form.PORT.errors %}
+                <div align="center" class="alert alert-danger" ><h4>{{ error }}<h4></div>
+                {% endfor %}
+            {% endif %}
+            {% if form.USER.errors %}
+                {% for error in form.USER.errors %}
+                <div align="center" class="alert alert-danger" ><h4>{{ error }}<h4></div>
+                {% endfor %}
+            {% endif %}
+            {% if form.PASSWORD.errors %}
+                {% for error in form.PASSWORD.errors %}
+                <div align="center" class="alert alert-danger" ><h4>{{ error }}<h4></div>
+                {% endfor %}
+            {% endif %}
+            {% if form.IDC.errors %}
+                {% for error in form.IDC.errors %}
+                <div align="center" class="alert alert-danger" ><h4>{{ error }}<h4></div>
+                {% endfor %}
+            {% endif %}
+            {% if form.V2RAY_DOMAIN.errors %}
+                {% for error in form.V2RAY_DOMAIN.errors %}
+                <div align="center" class="alert alert-danger" ><h4>{{ error }}<h4></div>
+                {% endfor %}
+            {% endif %}
+                {% if form.V2RAY_PORT.errors %}
+                {% for error in form.V2RAY_PORT.errors %}
+                <div align="center" class="alert alert-danger" ><h4>{{ error }}<h4></div>
+                {% endfor %}
+            {% endif %}
+            {% if messages %}
+            <ul class="messages">
+                {% for message in messages %}
+                    {% if message.tags == 'error' %}
+                        <div {% if message.tags %} class="alert alert-danger" {% endif %} align="left"><h4 align="center">{{ message }}</h4></div>
+                    {% else %}
+                        <div {% if message.tags %} class="alert alert-{{ message.tags }}" {% endif %} align="left"><h4 align="center">{{ message }}</h4></div>
+                    {% endif %}
+                {% endfor %}
+            </ul>
+        {% endif %}
+            <hr>
+    <div class="row-3 mb-3">
+                <div class="col-sm">
+                    <h1 class="display-3">Summary Information:</h1>
+                </div>
+              <div class="col-sm">
+                  <table class="table table-sm table-striped table-bordered" id="mydatatable2" style="width: 100%">
+                    <thead>
+                        <tr class="thead-default">
+                            <th align="center" scope="col">IP ADDRESS</th>
+                            <th align="center" scope="col">SSR PORT</th>
+                            <th align="center" scope="col">USER</th>
+                            <th align="center" scope="col">PASSWORD</th>
+                            <th align="center" scope="col">IDC</th>
+                            <th align="center" scope="col">V2RAY PORT</th>
+                            <th align="center" scope="col">V2RAY PATH</th>
+                            <th align="center" scope="col">V2RAY DOMAIN</th>
+                            <th align="center" scope="col">ACTION</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    {% for ssrdata in ssr_data %}
+                        <tr>
+                                <td align="center">{{ ssrdata.IP }}</td>
+                                <td align="center">{{ ssrdata.PORT }}</td>
+                                <td align="center">{{ ssrdata.USER }}</td>
+                                <td align="center">{{ ssrdata.PASSWORD }}</td>
+                                <td align="center">{{ ssrdata.IDC }}</td>
+                                <td align="center">{{ ssrdata.V2RAY_PORT }}</td>
+                                <td align="center">{{ ssrdata.V2RAY_PATH }}</td>
+                                <td align="center">{{ ssrdata.V2RAY_DOMAIN }}</td>
+                            {% if logs_recap is not True %}
+                                <td align="center"><button type="button" class="btn btn-danger" disabled><span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>Initializing...</button></td>
+                            {% else %}
+                                <td align="center"><a href='{% url "SSR_delete" ssrdata.id %}'><button type="button" class="btn btn-danger"><span class="glyphicon glyphicon-trash"></span>Delete</button></a></td>
+                            {% endif %}
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                    <tfoot>
+                    </tfoot>
+                </table>
+              </div>
+        </div>
+        {% if logs_recap is not True %}
+             <div class="row-2 mb-3">
+            <p align="right"><button type="submit" class="btn btn-success btn-lg" disabled><span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>Initializing...</button>&emsp;</p>
+            </div>
+        {% else %}
+        <hr>
+        <div class="row-2 mb-3">
+            <p align="right"><a href='{% url "SSR_init" %}'><button type="submit" class="btn btn-success btn-lg "><i class="fa fa-sync"></i><span>Initialize</span></button></a>&emsp;</p>
+<!--            <p align="right"><a href='{% url "SSR_init" %}' target="_blank"><button type="submit" class="btn btn-success btn-lg "><i class="fa fa-sync"></i><span>Initialize</span></button></a>&emsp;</p>-->
+
+        </div>
+        {% endif %}
+        <hr>
+        <div class="row-2 mb-3">
+            <h1 class="display-3">History:</h1>
+              <div class="col-sm">
+                  <table class="table table-sm table-striped table-bordered" id="mydatatable" style="width: 100%">
+                    <thead>
+                        <tr class="thead-default">
+                            <th align="center" scope="col">USERNAME</th>
+                            <th align="center" scope="col">IP ADDRESS</th>
+                            <th align="center" scope="col">STATUS</th>
+                            <th align="center" scope="col">LOG FILE</th>
+                            <th align="center" scope="col">IDC</th>
+                            <th align="center" scope="col">DATE</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    {% for ssrinitdata in ssr_initdata %}
+                        <tr>
+                                <td align="center">{{ ssrinitdata.USERNAME }}</td>
+                                <td align="center">{{ ssrinitdata.IP }}</td>
+                                {% if ssrinitdata.STATUS == "ERROR" or ssrinitdata.STATUS == "FAILED" or ssrinitdata.STATUS == "UNREACHABLE" %}
+                                <td align="center">
+                                    <span class="badge badge-danger">{{ ssrinitdata.STATUS }}</span>
+                                </td>
+                                {% elif ssrinitdata.STATUS == "TIMEOUT" %}
+                                <td align="center">
+                                    <span class="badge badge-warning">{{ ssrinitdata.STATUS }}</span>
+                                </td>
+                                {% else %}
+                                <td align="center">
+                                    <span class="badge badge-info">{{ ssrinitdata.STATUS }}</span>
+                                </td>
+                                {% endif %}
+                                <td align="center"><span class="glyphicon glyphicon-file"></span><a href='{% url "SSR_history" ssrinitdata.id %}' target="_blank"> Logs</a></td>
+                                <td align="center">{{ ssrinitdata.IDC }}</td>
+                                <td align="center">{{ ssrinitdata.CREATED }}</td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                    <tfoot>
+                    </tfoot>
+                </table>
+              </div>
+
+        </div>
+    </div>
+
+<!--SCRIPT-->
+<script>
+$(document).ready(function() {
+$('.mdb-select').materialSelect();
+});</script>
+
+<script src="https://code.jquery.com/jquery-3.3.1.js"></script>
+<script src="https://cdn.datatables.net/1.10.20/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.10.20/js/dataTables.bootstrap4.min.js"></script>
+<!--datatable-->
+<script>
+        $(document).ready(function() {
+            var table = $('#mydatatable').DataTable({
+                            "order": [[ 5, "desc" ]], //or desc (for descending)
+                            "columnDefs" : [{"targets":1, "type":"DATE"}],
+                        });
+        } );
+</script>
+<script>
+        $(document).ready(function() {
+            var table = $('#mydatatable2').DataTable({
+                            "order": [[ 1, "desc" ]], //or desc (for descending)
+                            "columnDefs" : [{"targets":1, "type":"DATE"}],
+                        });
+        } );
+</script>
+<!--datatable-->
+<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+<!--    autoscroll-->
+<script src=
+"https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js">
+</script>
+{% if logs_recap is not True %}
+   <script>
+    setTimeout(function() {
+       location.reload();
+    },5000);
+    $(function () {
+       $("#execute_content").animate({
+        scrollTop: $('#execute_content').get(0).scrollHeight}, 100);});
+   </script>
+{% endif %}
+<!--    autoscroll-->
+<!--showpassword-->
+<script>
+function PassFunction() {
+  var x = document.getElementById("id_PASSWORD");
+  if (x.type === "password") {
+    x.type = "text";
+  } else {
+    x.type = "password";
+  }
+}
+</script>
+<!--showpassword-->
+
+<!--SCRIPT-->
+
+
+{% endblock %}
+

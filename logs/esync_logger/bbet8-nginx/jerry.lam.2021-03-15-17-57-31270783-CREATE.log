@@ -1,0 +1,32 @@
+server {
+    listen 80;
+    server_name .deli166.com www.deli166.com;
+    #rewrite ^(.*)$ https://$http_host$1 redirect;
+    return      301 https://$http_host$1;
+
+
+}
+
+server {
+    listen 443;listen 8898;
+    server_name .deli166.com www.deli166.com;
+    ssl on;
+    ssl_certificate /usr/local/nginx/conf.d/ssl/deli166.com/fullchain.pem;
+    ssl_certificate_key /usr/local/nginx/conf.d/ssl/deli166.com/privkey.pem;
+
+
+    if ($http_host !~* 'www') { set $pp yes; }
+    if ($http_host ~* 10895|10899|10900|10909|10915|10919|10911|10922|10930|55882|55885|81235296|55889|55898|81235350|55899|10933|10939|10950|10955|10956|10959|10970|10969|10966|10975|10980|10989|10986|55909 ) {set $pp 'no'; }
+
+    if ( $pp ~* 'yes' ) {
+        rewrite ^(.*)$ https://www.$http_host$1 permanent;
+    }
+
+    include /usr/local/nginx/conf.d/include/bbet8_official_masterconfig.include;
+}
+
+
+
+
+
+

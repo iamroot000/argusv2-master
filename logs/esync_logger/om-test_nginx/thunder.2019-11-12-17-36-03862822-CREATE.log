@@ -1,0 +1,43 @@
+--- /ansible/nginx/hostgroups/om-test_nginx/nginx/conf.d/other/test_pms2_outside.conf	2019-11-12 17:20:31.334422248 +0800
++++ /tmp/test_pms2_outside.conf	2019-11-12 17:36:03.753422248 +0800
+@@ -1,8 +1,17 @@
+ server {
+         listen  80; 
+         server_name  www.paytech.site;
+-        index   index.php index.asp index.html index.htm;
+-		access_log  logs/www.payhome.site_9001.log main;
++        rewrite ^(.*)$ https://www.paytech.site$1 permanent;
++}
++
++server {
++       listen 443;
++       server_name www.paytech.site;
++       ssl on;
++       ssl_certificate /usr/local/nginx/conf.d/ssl/paytech.site/fullchain.pem;
++       ssl_certificate_key /usr/local/nginx/conf.d/ssl/paytech.site/privkey.pem;
++       index   index.php index.asp index.html index.htm;
++	   access_log  logs/www.paytech.site.log main;
+         
+ location / {
+     
+@@ -38,8 +47,17 @@
+ server {
+         listen  80; 
+         server_name  www99.paytech.site;
+-        index   index.php index.asp index.html index.htm;
+-		access_log  logs/www99.payhome.site.log main;
++        rewrite ^(.*)$ https://www99.paytech.site$1 permanent;
++}
++
++server {
++       listen 443;
++       server_name www99.paytech.site;
++       ssl on;
++       ssl_certificate /usr/local/nginx/conf.d/ssl/paytech.site/fullchain.pem;
++       ssl_certificate_key /usr/local/nginx/conf.d/ssl/paytech.site/privkey.pem;
++       index   index.php index.asp index.html index.htm;
++	   access_log  logs/www99.paytech.site.log main;
+         
+ location / {
+     
+

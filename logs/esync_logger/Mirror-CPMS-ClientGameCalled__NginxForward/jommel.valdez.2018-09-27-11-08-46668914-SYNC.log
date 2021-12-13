@@ -1,0 +1,133 @@
+ESYNC_COMMAND_START
+
+PLAY [Mirror-CPMS-ClientGameCalled__NginxForward] ******************************
+
+TASK [nginx_sync : Notify] *****************************************************
+ok: [23.99.114.30] => {
+
+    "msg": "Syncing Mirror-CPMS-ClientGameCalled__NginxForward"
+}
+ok: [119.9.110.31] => {
+    "msg": "Syncing Mirror-CPMS-ClientGameCalled__NginxForward"
+}
+
+
+TASK [nginx_sync : include_vars] ***********************************************
+ok: [23.99.114.30]
+ok: [119.9.110.31]
+
+
+TASK [nginx_sync : Synchronizing Nginx] ****************************************
+failed: [23.99.114.30] (item=conf) => {"changed": false, "cmd": "/usr/bin/rsync --delay-updates -F --compress --delete-after --copy-links --archive --rsh=/usr/bin/ssh -S none -o Port=2556 -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null --out-format=<<CHANGED>>%i %n%L /srv/Mirror-CPMS-ClientGameCalled__NginxForward/nginx/conf/ root@23.99.114.30:/usr/local/nginx/conf/", "item": "conf", "msg": "Warning: Permanently added '[23.99.114.30]:2556' (RSA) to the list of known hosts.\r\nPermission denied, please try again.\r\nPermission denied, please try again.\r\nPermission denied (publickey,password).\r\nrsync: connection unexpectedly closed (0 bytes received so far) [sender]\nrsync error: unexplained error (code 255) at io.c(226) [sender=3.1.2]\n", "rc": 255}
+changed: [119.9.110.31] => (item=conf)
+failed: [23.99.114.30] (item=conf.d) => {"changed": false, "cmd": "/usr/bin/rsync --delay-updates -F --compress --delete-after --copy-links --archive --rsh=/usr/bin/ssh -S none -o Port=2556 -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null --out-format=<<CHANGED>>%i %n%L /srv/Mirror-CPMS-ClientGameCalled__NginxForward/nginx/conf.d/ root@23.99.114.30:/usr/local/nginx/conf.d/", "item": "conf.d", "msg": "Warning: Permanently added '[23.99.114.30]:2556' (RSA) to the list of known hosts.\r\nPermission denied, please try again.\r\nPermission denied, please try again.\r\nPermission denied (publickey,password).\r\nrsync: connection unexpectedly closed (0 bytes received so far) [sender]\nrsync error: unexplained error (code 255) at io.c(226) [sender=3.1.2]\n", "rc": 255}
+failed: [23.99.114.30] (item=data) => {"changed": false, "cmd": "/usr/bin/rsync --delay-updates -F --compress --delete-after --copy-links --archive --rsh=/usr/bin/ssh -S none -o Port=2556 -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null --out-format=<<CHANGED>>%i %n%L /srv/Mirror-CPMS-ClientGameCalled__NginxForward/nginx/data/ root@23.99.114.30:/usr/local/nginx/data/", "item": "data", "msg": "Warning: Permanently added '[23.99.114.30]:2556' (RSA) to the list of known hosts.\r\nPermission denied, please try again.\r\nPermission denied, please try again.\r\nPermission denied (publickey,password).\r\nrsync: connection unexpectedly closed (0 bytes received so far) [sender]\nrsync error: unexplained error (code 255) at io.c(226) [sender=3.1.2]\n", "rc": 255}
+
+changed: [119.9.110.31] => (item=conf.d)
+failed: [23.99.114.30] (item=html) => {"changed": false, "cmd": "/usr/bin/rsync --delay-updates -F --compress --delete-after --copy-links --archive --rsh=/usr/bin/ssh -S none -o Port=2556 -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null --out-format=<<CHANGED>>%i %n%L /srv/Mirror-CPMS-ClientGameCalled__NginxForward/nginx/html/ root@23.99.114.30:/usr/local/nginx/html/", "item": "html", "msg": "Warning: Permanently added '[23.99.114.30]:2556' (RSA) to the list of known hosts.\r\nPermission denied, please try again.\r\nPermission denied, please try again.\r\nPermission denied (publickey,password).\r\nrsync: connection unexpectedly closed (0 bytes received so far) [sender]\nrsync error: unexplained error (code 255) at io.c(226) [sender=3.1.2]\n", "rc": 255}
+changed: [119.9.110.31] => (item=data)
+changed: [119.9.110.31] => (item=html)
+
+
+TASK [all_servers : include_vars] **********************************************
+ok: [119.9.110.31]
+
+TASK [all_servers : Notify] ****************************************************
+ok: [119.9.110.31] => {
+
+    "msg": "Clearing Nginx Cache for Mirror-CPMS-ClientGameCalled__NginxForward"
+}
+
+TASK [all_servers : Copying clear_nginxcache.sh to remote hosts] ***************
+changed: [119.9.110.31]
+
+
+TASK [all_servers : Nginx Clear Cache] *****************************************
+changed: [119.9.110.31]
+
+TASK [all_servers : debug] *****************************************************
+
+ok: [119.9.110.31] => {
+    "script_result.stdout_lines": [
+        "-----------------------------------------------------------", 
+        "|                 Checking Nginx Config                   |", 
+        "-----------------------------------------------------------", 
+
+        "", 
+        " nginx -t ", 
+        "", 
+        "-----------------------------------------------------------", 
+        "|                 Stopping Nginx Process                  |", 
+
+        "-----------------------------------------------------------", 
+        "", 
+        " /usr/bin/killall -9 nginx ", 
+        "", 
+        "-----------------------------------------------------------", 
+
+        "|                 Clearing Proxy Cache                    |", 
+        "-----------------------------------------------------------", 
+        "", 
+        " /bin/rm -rf /tmp/nginx_cache ", 
+        "", 
+
+        "-----------------------------------------------------------", 
+        "|                Restarting Nginx Process                 |", 
+        "-----------------------------------------------------------", 
+        "root     14944  0.0  0.0 106064  1436 ?        S    11:09   0:00 /bin/bash /bak/bin/clear_nginxcache.sh", 
+        "root     15011  0.0  0.0 461148  4000 ?        Ss   11:09   0:00 nginx: master process /usr/local/nginx/sbin/nginx", 
+
+        "nobody   15012  0.0  0.3 467556 12184 ?        S    11:09   0:00 nginx: worker process      ", 
+        "nobody   15014  0.0  0.3 467556 12592 ?        S    11:09   0:00 nginx: worker process      ", 
+        "nobody   15015  0.0  0.3 467556 12184 ?        S    11:09   0:00 nginx: worker process      ", 
+        "nobody   15017  0.0  0.3 467556 12184 ?        S    11:09   0:00 nginx: worker process      ", 
+        "nobody   15018  0.0  0.1 461148  4480 ?        S    11:09   0:00 nginx: cache manager process", 
+
+        "nobody   15019  0.0  0.1 461148  4364 ?        S    11:09   0:00 nginx: cache loader process", 
+        "root     15021  0.0  0.0 103244   880 ?        S    11:09   0:00 grep nginx", 
+        "             total       used       free     shared    buffers     cached", 
+        "Mem:          3954       3142        812          2        684       1197", 
+        "-/+ buffers/cache:       1260       2694", 
+
+        "Swap:            0          0          0", 
+        "-----------------------------------------------------------", 
+        "|                     Reload SUCCESS!                     |", 
+        "-----------------------------------------------------------"
+    ]
+
+}
+
+PLAY [127.0.0.1] ***************************************************************
+
+TASK [sync_to_git : Synchronizing Nginx To GIT] ********************************
+
+changed: [127.0.0.1]
+
+TASK [sync_to_git : debug] *****************************************************
+ok: [127.0.0.1] => {
+    "script_result.stdout_lines": [
+
+        "# On branch master", 
+        "# Changes not staged for commit:", 
+        "#   (use \"git add/rm <file>...\" to update what will be committed)", 
+        "#   (use \"git checkout -- <file>...\" to discard changes in working directory)", 
+        "#", 
+
+        "#\tdeleted:    nginx/conf/.nginx.conf.swp", 
+        "#", 
+        "no changes added to commit (use \"git add\" and/or \"git commit -a\")", 
+        "Branch master set up to track remote branch master from origin."
+    ]
+
+}
+	to retry, use: --limit @/ansible/nginx/site.retry
+
+PLAY RECAP *********************************************************************
+119.9.110.31               : ok=8    changed=3    unreachable=0    failed=0   
+
+127.0.0.1                  : ok=2    changed=1    unreachable=0    failed=0   
+23.99.114.30               : ok=2    changed=0    unreachable=0    failed=1   
+
+
+ESYNC_COMMAND_END
+MAX RETRIES EXECUTED, COMMAND NOT RESPONDING
